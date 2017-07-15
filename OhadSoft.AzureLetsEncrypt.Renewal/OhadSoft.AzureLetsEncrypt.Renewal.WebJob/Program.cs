@@ -2,7 +2,7 @@
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
 {
-    class Program
+    static class Program
     {
         static void Main()
         {
