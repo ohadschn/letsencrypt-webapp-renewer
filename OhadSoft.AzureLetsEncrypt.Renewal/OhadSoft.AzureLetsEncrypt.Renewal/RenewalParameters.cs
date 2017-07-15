@@ -54,9 +54,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal
                 ? webApp
                 : throw new ArgumentException("Web app name must not be null or whitespace", nameof(webApp));
 
-            Email = !String.IsNullOrWhiteSpace(email)
+            Email = !String.IsNullOrWhiteSpace(email) && email.Contains("@") && email.Length >= 3 && email.Length <= 254
                 ? email
-                : throw new ArgumentException("E-mail must not be null or whitespace", nameof(email));
+                : throw new ArgumentException("E-mail address must not be null and must be valid", nameof(email));
 
             Hosts = hosts != null && hosts.Count > 0
                 ? hosts
