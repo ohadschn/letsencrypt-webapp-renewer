@@ -1,41 +1,43 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Cryptography;
 using LetsEncrypt.Azure.Core;
 using LetsEncrypt.Azure.Core.Models;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal
 {
-    public class RenewalManager
+    public class RenewalManager : IRenewalManager
     {
         private static readonly RNGCryptoServiceProvider s_randomGenerator = new RNGCryptoServiceProvider(); //thread-safe
 
-        private readonly int _rsaKeyLength;
-        private readonly bool _useIpBasedSsl;
-        private readonly Uri _acmeBasedUri;
-
-        public RenewalManager(bool useIpBasedSsl = false, int rsaKeyLength = 2048, Uri acmeBasedUri = null)
+        public void Renew(RenewalParameters renewParams)
         {
-            _rsaKeyLength = rsaKeyLength;
-            _useIpBasedSsl = useIpBasedSsl;
-            _acmeBasedUri = acmeBasedUri ?? new Uri("https://acme-v01.api.letsencrypt.org/");
-        }
+            if (renewParams == null)
+            {
+                throw new ArgumentNullException(nameof(renewParams));
+            }
 
-        public void Renew(string tenantId, Guid subscriptionId, Guid clientId, string clientSecret, string resourceGroup, string webApp, string host, string email)
-        {
             byte[] pfxPassData = new byte[32];
             s_randomGenerator.GetBytes(pfxPassData);
 
             var manager = new CertificateManager(
-                new AzureEnvironment(tenantId, subscriptionId, clientId, clientSecret, resourceGroup, webApp),
+                new AzureEnvironment(
+                    renewParams.TenantId, 
+                    renewParams.SubscriptionId, 
+                    renewParams.ClientId, 
+                    renewParams.ClientSecret, 
+                    renewParams.ResourceGroup, 
+                    renewParams.WebApp),
                 new AcmeConfig
                 {
-                    Host = host,
-                    RegistrationEmail = email,
-                    RSAKeyLength = _rsaKeyLength,
+                    Host = renewParams.Hosts[0],
+                    AlternateNames = renewParams.Hosts.Skip(1).ToList(),
+                    RegistrationEmail = renewParams.Email,
+                    RSAKeyLength = renewParams.RsaKeyLength,
                     PFXPassword = Convert.ToBase64String(pfxPassData),
-                    BaseUri = _acmeBasedUri.ToString()
+                    BaseUri = (renewParams.AcmeBasedUri ?? new Uri("https://acme-v01.api.letsencrypt.org/")).ToString()
                 }, 
-                new CertificateServiceSettings { UseIPBasedSSL = _useIpBasedSsl }, 
+                new CertificateServiceSettings { UseIPBasedSSL = renewParams.UseIpBasedSsl }, 
                 new AuthProviderConfig());
 
             manager.AddCertificate();

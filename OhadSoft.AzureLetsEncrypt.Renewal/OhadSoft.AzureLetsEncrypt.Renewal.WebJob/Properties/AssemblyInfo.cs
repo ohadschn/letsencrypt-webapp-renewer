@@ -4,13 +4,13 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("OhadSoft.AzureLetsEncrypt.Renewal")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("OhadSoft.AzureLetsEncrypt.Renewal.WebJob")]
+[assembly: AssemblyDescription("Azure WebJob that renews Azure Web App SSL certificates using the LetsEncrypt API (based on letsencrypt-siteextension)")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("OhadSoft.AzureLetsEncrypt.Renewal")]
+[assembly: AssemblyCompany("OhadSoft")]
+[assembly: AssemblyProduct("OhadSoft.AzureLetsEncrypt.Renewal.WebJob")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("All Rights Reserved Ohad Schneider © 2017")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("7173122f-cf8b-4d1e-9cc5-e3ec479ed6f8")]
+[assembly: Guid("b8c64de4-15ec-4935-8891-85245e97e48b")]
 
 // Version information for an assembly consists of the following four values:
 //

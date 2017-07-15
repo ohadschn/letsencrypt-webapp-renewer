@@ -1,9 +1,14 @@
 <Dictionary>
-      <Words>
-         <Recognized>
-           <Word>Ohad</Word>
-           <Word>Ip</Word>
-           <Word>Id</Word>
-         </Recognized>
-      </Words>
+  <Words>
+    <Recognized>
+      <Word>Ohad</Word>
+      <Word>Ip</Word>
+      <Word>Id</Word>
+      <Word>Renewer</Word>
+      <Word>webApp</Word>
+    </Recognized>
+    <Compound>
+      <Term CompoundAlternate="WebApp">webApp</Term>
+    </Compound>
+  </Words>
 </Dictionary>
