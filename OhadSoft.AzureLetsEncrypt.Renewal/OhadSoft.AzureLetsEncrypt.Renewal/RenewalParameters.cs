@@ -18,16 +18,16 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal
         public Uri AcmeBasedUri { get; }
 
         public RenewalParameters(
-            string tenantId, 
-            Guid subscriptionId, 
-            Guid clientId, 
-            string clientSecret, 
-            string resourceGroup, 
-            string webApp, 
-            string email, 
-            IReadOnlyList<string> hosts, 
-            bool useIpBasedSsl = false, 
-            int rsaKeyLength = 2048, 
+            string tenantId,
+            Guid subscriptionId,
+            Guid clientId,
+            string clientSecret,
+            string resourceGroup,
+            string webApp,
+            string email,
+            IReadOnlyList<string> hosts,
+            bool useIpBasedSsl = false,
+            int rsaKeyLength = 2048,
             Uri acmeBasedUri = null)
         {
             TenantId = !String.IsNullOrWhiteSpace(tenantId)
@@ -38,8 +38,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal
                 ? subscriptionId
                 : throw new ArgumentException("Subscription ID must not be an empty GUID", nameof(subscriptionId));
 
-            ClientId = clientId != Guid.Empty ? 
-                clientId : 
+            ClientId = clientId != Guid.Empty ?
+                clientId :
                 throw new ArgumentException("Client ID must not be an empty GUID", nameof(clientId));
 
             ClientSecret = !String.IsNullOrWhiteSpace(clientSecret)

@@ -8,7 +8,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal
 {
     public class RenewalManager : IRenewalManager
     {
-        private static readonly RNGCryptoServiceProvider s_randomGenerator = new RNGCryptoServiceProvider(); //thread-safe
+        private static readonly RNGCryptoServiceProvider s_randomGenerator = new RNGCryptoServiceProvider(); // thread-safe
 
         public void Renew(RenewalParameters renewParams)
         {
@@ -22,11 +22,11 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal
 
             var manager = new CertificateManager(
                 new AzureEnvironment(
-                    renewParams.TenantId, 
-                    renewParams.SubscriptionId, 
-                    renewParams.ClientId, 
-                    renewParams.ClientSecret, 
-                    renewParams.ResourceGroup, 
+                    renewParams.TenantId,
+                    renewParams.SubscriptionId,
+                    renewParams.ClientId,
+                    renewParams.ClientSecret,
+                    renewParams.ResourceGroup,
                     renewParams.WebApp),
                 new AcmeConfig
                 {
@@ -36,8 +36,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal
                     RSAKeyLength = renewParams.RsaKeyLength,
                     PFXPassword = Convert.ToBase64String(pfxPassData),
                     BaseUri = (renewParams.AcmeBasedUri ?? new Uri("https://acme-v01.api.letsencrypt.org/")).ToString()
-                }, 
-                new CertificateServiceSettings { UseIPBasedSSL = renewParams.UseIpBasedSsl }, 
+                },
+                new CertificateServiceSettings { UseIPBasedSSL = renewParams.UseIpBasedSsl },
                 new AuthProviderConfig());
 
             manager.AddCertificate();

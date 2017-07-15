@@ -2,7 +2,7 @@
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal
 {
-    class AuthProviderConfig : IAuthorizationChallengeProviderConfig
+    internal class AuthProviderConfig : IAuthorizationChallengeProviderConfig
     {
         public bool DisableWebConfigUpdate => false;
     }

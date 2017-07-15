@@ -17,7 +17,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             var webApps = configHelper.GetDelimitedList("webApps");
             if (webApps.Any(String.IsNullOrWhiteSpace))
             {
-                throw new ConfigurationErrorsException("webApp list contains a whitespace-only entry");    
+                throw new ConfigurationErrorsException("webApp list contains a whitespace-only entry");
             }
 
             var webAppRenewalInfos = new RenewalParameters[webApps.Count];

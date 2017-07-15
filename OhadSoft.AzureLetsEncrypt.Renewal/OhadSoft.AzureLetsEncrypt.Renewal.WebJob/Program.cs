@@ -2,9 +2,9 @@
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
 {
-    static class Program
+    internal static class Program
     {
-        static void Main()
+        private static void Main()
         {
             try
             {
@@ -13,7 +13,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             catch (Exception e)
             {
                 Console.WriteLine("Unexpected exception:" + e);
-                throw; //we want the webjob to fail
+                throw; // we want the webjob to fail
             }
         }
     }
