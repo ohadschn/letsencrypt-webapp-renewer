@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using LetsEncrypt.Azure.Core;
@@ -17,9 +18,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal
                 throw new ArgumentNullException(nameof(renewParams));
             }
 
+            Trace.TraceInformation("Generating SSL certificate with parameters: {0}", renewParams);
+
+            Trace.TraceInformation("Generating secure PFX password for '{0}'...", renewParams.WebApp);
             byte[] pfxPassData = new byte[32];
             s_randomGenerator.GetBytes(pfxPassData);
 
+            Trace.TraceInformation("Adding SSL cert for '{0}'...", renewParams.WebApp);
             var manager = new CertificateManager(
                 new AzureEnvironment(
                     renewParams.TenantId,
@@ -41,6 +46,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal
                 new AuthProviderConfig());
 
             manager.AddCertificate();
+
+            Trace.TraceInformation("SSL cert added successfully to '{0}'", renewParams.WebApp);
         }
     }
 }

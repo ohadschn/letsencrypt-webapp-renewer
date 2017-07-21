@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using static System.FormattableString;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal
 {
@@ -71,6 +72,11 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal
                 : throw new ArgumentException("RSA key length must be positive", nameof(rsaKeyLength));
 
             UseIpBasedSsl = useIpBasedSsl;
+        }
+
+        public override string ToString()
+        {
+            return Invariant($"{nameof(TenantId)}: {TenantId}, {nameof(SubscriptionId)}: {SubscriptionId}, {nameof(ClientId)}: {ClientId}, {nameof(ResourceGroup)}: {ResourceGroup}, {nameof(WebApp)}: {WebApp}, {nameof(Email)}: {Email}, {nameof(Hosts)}: {Hosts}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBasedUri)}: {AcmeBasedUri}, {nameof(ClientSecret)}: [SCRUBBED]");
         }
     }
 }
