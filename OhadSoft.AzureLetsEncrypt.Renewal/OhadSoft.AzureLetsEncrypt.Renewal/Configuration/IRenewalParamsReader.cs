@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 
-namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Configuration
+namespace OhadSoft.AzureLetsEncrypt.Renewal.Configuration
 {
-    internal interface IRenewalParamsReader
+    public interface IRenewalParamsReader
     {
         IReadOnlyCollection<RenewalParameters> Read();
     }

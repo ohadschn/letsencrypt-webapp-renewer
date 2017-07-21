@@ -1,9 +1,8 @@
-﻿using OhadSoft.AzureLetsEncrypt.Renewal.Management;
-using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Configuration;
+﻿using OhadSoft.AzureLetsEncrypt.Renewal.Configuration;
 
-namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
+namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 {
-    internal class Renewer
+    public class Renewer
     {
         private readonly ICertRenewer m_certRenewer;
         private readonly IRenewalParamsReader m_renewalParamsReader;

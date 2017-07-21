@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using OhadSoft.AzureLetsEncrypt.Renewal.Configuration;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Configuration
 {
-    internal class RenewalParamsReader : IRenewalParamsReader
+    internal class AppSettingsRenewalParamsReader : IRenewalParamsReader
     {
         private readonly IAppSettingsReader m_appSettings;
 
-        public RenewalParamsReader(IAppSettingsReader appSettings)
+        public AppSettingsRenewalParamsReader(IAppSettingsReader appSettings)
         {
             m_appSettings = appSettings;
         }
