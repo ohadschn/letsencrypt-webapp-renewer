@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using OhadSoft.AzureLetsEncrypt.Renewal.Configuration;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Configuration
 {
-    public class AppSettingsReader : IConfigurationReader
+    public class AppSettingsReader : IAppSettingsReader
     {
         public string GetStringOrDefault(string key, string defaultValue = null)
         {

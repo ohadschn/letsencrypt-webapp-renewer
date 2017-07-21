@@ -49,8 +49,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AppSettingsReader.cs" />
+    <Compile Include="Configuration\IAppSettingsReader.cs" />
+    <Compile Include="Configuration\IRenewalParamsReader.cs" />
+    <Compile Include="Configuration\RenewalParamsReader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Renewer.cs" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json">

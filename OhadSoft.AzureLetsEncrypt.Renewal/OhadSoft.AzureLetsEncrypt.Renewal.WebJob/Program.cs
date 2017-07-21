@@ -14,9 +14,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
                 Environment.GetEnvironmentVariable("WEBJOBS_NAME"),
                 Environment.GetEnvironmentVariable("WEBJOBS_RUN_ID "));
 
+            var certRenewer = new CertRenewer(new RenewalManager());
+            var paramReader = new RenewalParamsReader(new AppSettingsReader());
+            var renewer = new Renewer(certRenewer, paramReader);
+
             try
             {
-                new Renewer().RenewWebAppCertFromConfiguration(new RenewalManager(), new AppSettingsReader());
+                renewer.Renew();
             }
             catch (Exception e)
             {

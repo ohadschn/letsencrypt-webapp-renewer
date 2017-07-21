@@ -6,6 +6,7 @@
       <Word>Id</Word>
       <Word>Renewer</Word>
       <Word>webApp</Word>
+      <Word>Params</Word>
     </Recognized>
     <Compound>
       <Term CompoundAlternate="WebApp">webApp</Term>
