@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using OhadSoft.AzureLetsEncrypt.Renewal.Management;
+using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Configuration;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
 {
@@ -14,7 +16,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
 
             try
             {
-                new Renewer().RenewWebAppCertFromConfiguration(new RenewalManager(), new ConfigurationHelper());
+                new Renewer().RenewWebAppCertFromConfiguration(new RenewalManager(), new AppSettingsReader());
             }
             catch (Exception e)
             {

@@ -1,4 +1,4 @@
-﻿namespace OhadSoft.AzureLetsEncrypt.Renewal
+﻿namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 {
     public interface IRenewalManager
     {

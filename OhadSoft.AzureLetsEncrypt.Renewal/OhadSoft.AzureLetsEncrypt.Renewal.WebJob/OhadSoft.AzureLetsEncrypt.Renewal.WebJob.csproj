@@ -48,10 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigurationHelper.cs" />
-    <Compile Include="IConfigurationHelper.cs" />
-    <Compile Include="IRenewer.cs" />
-    <Compile Include="Renewer.cs" />
+    <Compile Include="Configuration\AppSettingsReader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

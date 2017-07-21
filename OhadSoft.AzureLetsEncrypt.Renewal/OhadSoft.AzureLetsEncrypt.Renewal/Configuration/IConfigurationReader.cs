@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
+namespace OhadSoft.AzureLetsEncrypt.Renewal.Configuration
 {
-    public interface IConfigurationHelper
+    public interface IConfigurationReader
     {
         string GetStringOrDefault(string key, string defaultValue = null);
         string GetString(string key);

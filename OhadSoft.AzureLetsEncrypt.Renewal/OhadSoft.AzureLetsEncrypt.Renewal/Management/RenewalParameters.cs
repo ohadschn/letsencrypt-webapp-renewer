@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using static System.FormattableString;
 
-namespace OhadSoft.AzureLetsEncrypt.Renewal
+namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 {
     public sealed class RenewalParameters
     {

@@ -4,8 +4,9 @@ using System.Linq;
 using System.Security.Cryptography;
 using LetsEncrypt.Azure.Core;
 using LetsEncrypt.Azure.Core.Models;
+using OhadSoft.AzureLetsEncrypt.Renewal.Configuration;
 
-namespace OhadSoft.AzureLetsEncrypt.Renewal
+namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 {
     public class RenewalManager : IRenewalManager
     {

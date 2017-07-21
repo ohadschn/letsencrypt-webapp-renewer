@@ -1,6 +1,6 @@
 ﻿using LetsEncrypt.Azure.Core.Models;
 
-namespace OhadSoft.AzureLetsEncrypt.Renewal
+namespace OhadSoft.AzureLetsEncrypt.Renewal.Configuration
 {
     internal class AuthProviderConfig : IAuthorizationChallengeProviderConfig
     {
