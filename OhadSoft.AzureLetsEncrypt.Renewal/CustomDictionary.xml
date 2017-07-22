@@ -7,6 +7,7 @@
       <Word>Renewer</Word>
       <Word>webApp</Word>
       <Word>Params</Word>
+      <Word>Cli</Word>
     </Recognized>
     <Compound>
       <Term CompoundAlternate="WebApp">webApp</Term>

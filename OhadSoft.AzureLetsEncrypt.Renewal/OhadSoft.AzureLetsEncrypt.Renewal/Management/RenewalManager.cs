@@ -41,7 +41,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                     RegistrationEmail = renewParams.Email,
                     RSAKeyLength = renewParams.RsaKeyLength,
                     PFXPassword = Convert.ToBase64String(pfxPassData),
+#pragma warning disable S1075
                     BaseUri = (renewParams.AcmeBasedUri ?? new Uri("https://acme-v01.api.letsencrypt.org/")).ToString()
+#pragma warning restore S1075
                 },
                 new CertificateServiceSettings { UseIPBasedSSL = renewParams.UseIpBasedSsl },
                 new AuthProviderConfig());
