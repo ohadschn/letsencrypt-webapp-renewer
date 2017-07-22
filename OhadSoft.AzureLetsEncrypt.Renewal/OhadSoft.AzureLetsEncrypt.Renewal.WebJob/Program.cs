@@ -14,11 +14,14 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
                 Environment.GetEnvironmentVariable("WEBJOBS_NAME"),
                 Environment.GetEnvironmentVariable("WEBJOBS_RUN_ID "));
 
-            var renewer = new Renewer(new CertRenewer(new RenewalManager()), new AppSettingsRenewalParamsReader(new AppSettingsReader()));
+            // TODO unify with webjob (using something like fromConfig switch, or maybe detect if running in webjob context)
+            var certRenewer = new CertRenewer(new RenewalManager());
+            var renewalParamsReader = new AppSettingsRenewalParamsReader(new AppSettingsReader());
 
             try
             {
-                renewer.Renew();
+                var renewalParams = renewalParamsReader.Read();
+                certRenewer.Renew(renewalParams);
             }
             catch (Exception e)
             {

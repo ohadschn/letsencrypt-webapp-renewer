@@ -103,12 +103,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AuthProviderConfig.cs" />
-    <Compile Include="Configuration\IRenewalParamsReader.cs" />
     <Compile Include="Management\IRenewalManager.cs" />
     <Compile Include="Management\ICertRenewer.cs" />
     <Compile Include="Management\RenewalParameters.cs" />
     <Compile Include="Management\RenewalManager.cs" />
-    <Compile Include="Management\Renewer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Management\CertRenewer.cs" />
   </ItemGroup>
