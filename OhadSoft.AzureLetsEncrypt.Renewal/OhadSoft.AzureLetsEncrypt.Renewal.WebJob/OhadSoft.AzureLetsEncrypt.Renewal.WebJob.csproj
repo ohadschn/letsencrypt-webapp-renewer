@@ -48,9 +48,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\AppSettingsReader.cs" />
-    <Compile Include="Configuration\IAppSettingsReader.cs" />
-    <Compile Include="Configuration\AppSettingsRenewalParamsReader.cs" />
+    <Compile Include="AppSettings\AppSettingsReader.cs" />
+    <Compile Include="AppSettings\AppSettingsRenewer.cs" />
+    <Compile Include="AppSettings\IAppSettingsReader.cs" />
+    <Compile Include="AppSettings\AppSettingsRenewalParamsReader.cs" />
+    <Compile Include="AppSettings\IAppSettingsRenewalParamsReader.cs" />
+    <Compile Include="CLI\CliRenewer.cs" />
+    <Compile Include="CLI\CommandlineRenewalParamsReader.cs" />
+    <Compile Include="CLI\ICommandlineRenewalParamsReader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

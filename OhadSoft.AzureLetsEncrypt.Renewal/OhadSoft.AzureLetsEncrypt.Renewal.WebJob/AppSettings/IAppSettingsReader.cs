@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Configuration
+namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 {
     public interface IAppSettingsReader
     {

@@ -2,15 +2,26 @@
 using System.Linq;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 
-namespace OhadSoft.AzureLetsEncrypt.Renewal.CLI
+namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.CLI
 {
     internal class CommandlineRenewalParamsReader : ICommandlineRenewalParamsReader
     {
         public RenewalParameters Read(string[] args)
         {
-            if (args == null) throw new ArgumentNullException(nameof(args));
-            if (args.Any(String.IsNullOrWhiteSpace)) throw new ArgumentException("Null or whitespace parameters detected", nameof(args));
-            if (args.Length < 8 || args.Length > 11) throw new ArgumentException("Invalid parameter count");
+            if (args == null)
+            {
+                throw new ArgumentNullException(nameof(args));
+            }
+
+            if (args.Any(String.IsNullOrWhiteSpace))
+            {
+                throw new ArgumentException("Null or whitespace parameters detected", nameof(args));
+            }
+
+            if (args.Length < 8 || args.Length > 11)
+            {
+                throw new ArgumentException("Invalid parameter count");
+            }
 
             if (!Guid.TryParse(args[0], out Guid subscriptionId))
             {

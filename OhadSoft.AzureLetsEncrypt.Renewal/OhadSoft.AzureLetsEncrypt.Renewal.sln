@@ -12,8 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Rules", "Rules", "{0905F60B
 		OhadSoft.AzureLetsEncrypt.Renewal.ruleset = OhadSoft.AzureLetsEncrypt.Renewal.ruleset
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OhadSoft.AzureLetsEncrypt.Renewal.CLI", "OhadSoft.AzureLetsEncrypt.Renewal.CLI\OhadSoft.AzureLetsEncrypt.Renewal.CLI.csproj", "{B8D69696-8B00-40C3-99D9-48F7584D91B2}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,10 +26,6 @@ Global
 		{B8C64DE4-15EC-4935-8891-85245E97E48B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8C64DE4-15EC-4935-8891-85245E97E48B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8C64DE4-15EC-4935-8891-85245E97E48B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B8D69696-8B00-40C3-99D9-48F7584D91B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B8D69696-8B00-40C3-99D9-48F7584D91B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B8D69696-8B00-40C3-99D9-48F7584D91B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B8D69696-8B00-40C3-99D9-48F7584D91B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

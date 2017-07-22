@@ -5,9 +5,9 @@ using System.Diagnostics;
 using System.Linq;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 
-namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Configuration
+namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 {
-    internal class AppSettingsRenewalParamsReader
+    internal class AppSettingsRenewalParamsReader : IAppSettingsRenewalParamsReader
     {
         private readonly IAppSettingsReader m_appSettings;
 

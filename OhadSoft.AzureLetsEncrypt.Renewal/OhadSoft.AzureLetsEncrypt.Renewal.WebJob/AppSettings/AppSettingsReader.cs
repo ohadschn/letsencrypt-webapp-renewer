@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 
-namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Configuration
+namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 {
     public class AppSettingsReader : IAppSettingsReader
     {

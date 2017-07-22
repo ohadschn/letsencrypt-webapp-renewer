@@ -1,6 +1,6 @@
 ﻿using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 
-namespace OhadSoft.AzureLetsEncrypt.Renewal.CLI
+namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.CLI
 {
     internal interface ICommandlineRenewalParamsReader
     {
