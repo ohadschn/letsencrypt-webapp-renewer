@@ -19,7 +19,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
 
         private static int WebJobMain(string webjobName)
         {
-            Trace.TraceInformation("Web App SSL renewal job ({0}) started", webjobName);
+            Console.WriteLine("Web App SSL renewal job ({0}) started", webjobName);
             var renewr = new AppSettingsRenewer(new CertRenewer(new RenewalManager()), new AppSettingsRenewalParamsReader(new AppSettingsReader()));
             try
             {
@@ -27,7 +27,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             }
             catch (Exception e)
             {
-                Trace.TraceError("Unexpected exception: {0}", e);
+                Console.WriteLine("***ERROR*** Unexpected exception: {0}", e);
                 throw; // we want the webjob to fail
             }
 
@@ -36,22 +36,23 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
 
         private static int CliMain(string[] args)
         {
-            Trace.TraceInformation("Web App SSL renewal CLI started, parameters: {0}", string.Join(", ", args));
+            Trace.Listeners.Add(new ConsoleTraceListener());
+            Console.WriteLine("Web App SSL renewal CLI started, parameters: {0}", string.Join(", ", args));
             var renewer = new CliRenewer(new CertRenewer(new RenewalManager()), new CommandlineRenewalParamsReader());
 
             try
             {
                 renewer.Renew(args);
             }
-            catch (ArgumentException e)
+            catch (ArgumentException e) // TODO replace with custom ArgumenException so e.Message is the only thing we need for sure
             {
-                Trace.TraceError("Error parsing arguments: {0}", e);
+                Console.WriteLine("***ERROR*** Could not parse arguments: {0}", e.Message);
                 PrintUsage();
                 return ArgumentError;
             }
             catch (Exception e)
             {
-                Trace.TraceError("Unexpected exception: {0}", e);
+                Console.WriteLine("***ERROR*** Unexpected exception: {0}", e);
                 throw;
             }
 
@@ -60,15 +61,15 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
 
         private static void PrintUsage()
         {
-            Trace.TraceInformation(
+            Console.WriteLine(
                 "Usage: {0}.exe SubscriptionId TenantId ResourceGroup WebApp Hosts Email ClientId ClientSecret [UseIpBasedSsl] [RsaKeyLength] [AcmeBasedUri]",
                 typeof(Program).Assembly.GetName().Name);
-            Trace.TraceInformation("'Hosts' is a semicolon-delimited list of host names");
-            Trace.TraceInformation("'UseIpBasedSsl' is optional and defaults to false");
-            Trace.TraceInformation("'RsaKeyLength' is optional and defaults to 2048");
-            Trace.TraceInformation("'AcmeBasedUri' is optional and defaults to https://acme-v01.api.letsencrypt.org/");
-            Trace.TraceInformation("Consult the Let's Encrypt documentation for rate limits: https://letsencrypt.org/docs/rate-limits/");
-            Trace.TraceInformation("Exit codes: {0} = success, {1} = argument error (any other error will crash the process)", Success, ArgumentError);
+            Console.WriteLine("'Hosts' is a semicolon-delimited list of host names");
+            Console.WriteLine("'UseIpBasedSsl' is optional and defaults to false");
+            Console.WriteLine("'RsaKeyLength' is optional and defaults to 2048");
+            Console.WriteLine("'AcmeBasedUri' is optional and defaults to https://acme-v01.api.letsencrypt.org/");
+            Console.WriteLine("Consult the Let's Encrypt documentation for rate limits: https://letsencrypt.org/docs/rate-limits/");
+            Console.WriteLine("Exit codes: {0} = success, {1} = argument error (any other error will crash the process)", Success, ArgumentError);
         }
     }
 }

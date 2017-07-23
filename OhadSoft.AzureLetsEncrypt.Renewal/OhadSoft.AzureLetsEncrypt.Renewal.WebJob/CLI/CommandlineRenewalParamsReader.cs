@@ -31,7 +31,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.CLI
             var tenantId = args[1];
             var resourceGroup = args[2];
             var webApp = args[3];
-            var hosts = args[4].Split(';');
+            var hosts = args[4].Split(';').Select(s => s.Trim()).ToArray();
             var email = args[5];
 
             if (!Guid.TryParse(args[6], out Guid clientId))
