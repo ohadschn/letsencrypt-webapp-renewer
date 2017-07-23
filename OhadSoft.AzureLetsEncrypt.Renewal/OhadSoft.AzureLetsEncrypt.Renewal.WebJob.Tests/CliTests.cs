@@ -142,20 +142,20 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         [TestMethod]
         public void MinimalProperParametersShouldSucceed()
         {
-            var expectedRenewalParams = new RenewalParameters(FooSubscription, FooTenant, FooResourceGroup, FooWebapp, Hosts, FooEmail, FooClient, FooSecret);
-
-            new CliRenewer(m_certRenewer.Object, new CommandlineRenewalParamsReader()).Renew(GetMinimalValidArgs());
-            m_certRenewer.Verify(cn => cn.Renew(It.Is<IReadOnlyCollection<RenewalParameters>>(l => l.Count == 1 && l.First().Equals(expectedRenewalParams))));
+            TestSuccessfulRenewal(GetMinimalValidArgs(), new RenewalParameters(FooSubscription, FooTenant, FooResourceGroup, FooWebapp, Hosts, FooEmail, FooClient, FooSecret));
         }
 
         [TestMethod]
         public void MaximalProperParametersShouldSucceed()
         {
-            var expectedRenewalParams = 
-                new RenewalParameters(FooSubscription, FooTenant, FooResourceGroup, FooWebapp, Hosts, FooEmail,FooClient, FooSecret, UseIpBasedSsl, RsaKeyLength, AcmeBaseUrl);
+            TestSuccessfulRenewal(GetMaximalValidArgs(),
+                new RenewalParameters(FooSubscription, FooTenant, FooResourceGroup, FooWebapp, Hosts, FooEmail, FooClient, FooSecret, UseIpBasedSsl, RsaKeyLength, AcmeBaseUrl));
+        }
 
-            new CliRenewer(m_certRenewer.Object, new CommandlineRenewalParamsReader()).Renew(GetMaximalValidArgs());
-            m_certRenewer.Verify(cn => cn.Renew(It.Is<IReadOnlyCollection<RenewalParameters>>(l => l.Count == 1 && l.First().Equals(expectedRenewalParams))));
+        private void TestSuccessfulRenewal(string[] args, RenewalParameters renewalParameters)
+        {
+            new CliRenewer(m_certRenewer.Object, new CommandlineRenewalParamsReader()).Renew(args);
+            m_certRenewer.Verify(cn => cn.Renew(It.Is<IReadOnlyCollection<RenewalParameters>>(l => l.Count == 1 && l.First().Equals(renewalParameters))));
         }
     }
 }
