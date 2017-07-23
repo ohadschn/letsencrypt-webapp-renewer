@@ -10,6 +10,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
     {
         private const int Success = 0;
         private const int ArgumentError = 1;
+        private const string TraceSourceName = "OhadSoft.AzureLetsEncrypt.Renewal.WebJob";
 
         private static int Main(string[] args)
         {
@@ -44,9 +45,15 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             {
                 renewer.Renew(args);
             }
-            catch (ArgumentException e) // TODO replace with custom ArgumenException so e.Message is the only thing we need for sure
+            catch (ArgumentException e)
             {
-                Console.WriteLine("***ERROR*** Could not parse arguments: {0}", e.Message);
+                Console.WriteLine(
+                    "***ERROR*** Could not parse arguments: {0}{1}(To see the full exception enable the {2} trace source in app.config)",
+                    e.Message,
+                    Environment.NewLine,
+                    TraceSourceName);
+
+                new TraceSource(TraceSourceName).TraceEvent(TraceEventType.Error, 1, e.ToString());
                 PrintUsage();
                 return ArgumentError;
             }
