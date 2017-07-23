@@ -32,177 +32,130 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         private static string[] GetMaximalValidArgs() => FullValidArgs.ToArray();
         private static string[] GetMinimalValidArgs() => FullValidArgs.Take(8).ToArray();
 
+        private readonly Mock<ICertRenewer> m_certRenewer;
+        private readonly CliRenewer m_renewer;
+
+        public CliTests()
+        {
+            m_certRenewer = new Mock<ICertRenewer>();
+            m_renewer = new CliRenewer(m_certRenewer.Object, new CommandlineRenewalParamsReader());
+        }
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void TooFewParameters()
         {
-            var certRenewer = new Mock<ICertRenewer>();
-            var renewer = new CliRenewer(certRenewer.Object, new CommandlineRenewalParamsReader());
-
-            renewer.Renew(FullValidArgs.Take(7).ToArray());
+            m_renewer.Renew(FullValidArgs.Take(7).ToArray());
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void TooManyParameters()
         {
-            var certRenewer = new Mock<ICertRenewer>();
-            var renewer = new CliRenewer(certRenewer.Object, new CommandlineRenewalParamsReader());
-
-            renewer.Renew(FullValidArgs.Concat(new []{"foo"}).ToArray());
+            m_renewer.Renew(FullValidArgs.Concat(new []{"foo"}).ToArray());
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void InvalidSubscriptionId()
         {
-            var certRenewer = new Mock<ICertRenewer>();
-            var renewer = new CliRenewer(certRenewer.Object, new CommandlineRenewalParamsReader());
-
-            var args = GetMaximalValidArgs();
-            args[0] = "e004af7e-50be-41af-ac1a-hello";
-            renewer.Renew(args);
+            TestInvalidParameter(0, "e004af7e-50be-41af-ac1a-hello");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void InvalidTenant()
         {
-            var certRenewer = new Mock<ICertRenewer>();
-            var renewer = new CliRenewer(certRenewer.Object, new CommandlineRenewalParamsReader());
-
-            var args = GetMinimalValidArgs();
-            args[1] = "";
-            renewer.Renew(args);
+            TestInvalidParameter(1, "");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void InvalidResourceGroup()
         {
-            var certRenewer = new Mock<ICertRenewer>();
-            var renewer = new CliRenewer(certRenewer.Object, new CommandlineRenewalParamsReader());
-
-            var args = GetMaximalValidArgs();
-            args[2] = " ";
-            renewer.Renew(args);
+            TestInvalidParameter(2, " ");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void InvalidWebApp()
         {
-            var certRenewer = new Mock<ICertRenewer>();
-            var renewer = new CliRenewer(certRenewer.Object, new CommandlineRenewalParamsReader());
-
-            var args = GetMaximalValidArgs();
-            args[3] = "     ";
-            renewer.Renew(args);
+            TestInvalidParameter(3, "     ");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void InvalidHosts()
         {
-            var certRenewer = new Mock<ICertRenewer>();
-            var renewer = new CliRenewer(certRenewer.Object, new CommandlineRenewalParamsReader());
-
-            var args = GetMinimalValidArgs();
-            args[4] = "     ";
-            renewer.Renew(args);
+            TestInvalidParameter(4, "     ");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void InvalidEmail()
         {
-            var certRenewer = new Mock<ICertRenewer>();
-            var renewer = new CliRenewer(certRenewer.Object, new CommandlineRenewalParamsReader());
-
-            var args = GetMaximalValidArgs();
-            args[5] = "@notAnEmail";
-            renewer.Renew(args);
+            TestInvalidParameter(5, "@notAnEmail");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void InvalidClientId()
         {
-            var certRenewer = new Mock<ICertRenewer>();
-            var renewer = new CliRenewer(certRenewer.Object, new CommandlineRenewalParamsReader());
-
-            var args = GetMinimalValidArgs();
-            args[6] = Guid.Empty.ToString();
-            renewer.Renew(args);
+            TestInvalidParameter(6, Guid.Empty.ToString());
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void InvalidSecret()
         {
-            var certRenewer = new Mock<ICertRenewer>();
-            var renewer = new CliRenewer(certRenewer.Object, new CommandlineRenewalParamsReader());
-
-            var args = GetMaximalValidArgs();
-            args[7] = "";
-            renewer.Renew(args);
+            TestInvalidParameter(7, "");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void InvalidUseIpBasedSsl()
         {
-            var certRenewer = new Mock<ICertRenewer>();
-            var renewer = new CliRenewer(certRenewer.Object, new CommandlineRenewalParamsReader());
-
-            var args = GetMaximalValidArgs();
-            args[8] = "notTrueOrFalse";
-            renewer.Renew(args);
+            TestInvalidParameter(8, "notTrueOrFalse");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void InvalidRsaKeyLength()
         {
-            var certRenewer = new Mock<ICertRenewer>();
-            var renewer = new CliRenewer(certRenewer.Object, new CommandlineRenewalParamsReader());
-
-            var args = GetMaximalValidArgs();
-            args[9] = "-1";
-            renewer.Renew(args);
+            TestInvalidParameter(9, "-1");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void InvalidAcmeBasedUrl()
         {
-            var certRenewer = new Mock<ICertRenewer>();
-            var renewer = new CliRenewer(certRenewer.Object, new CommandlineRenewalParamsReader());
+            TestInvalidParameter(10, "/not/absolute");
+        }
 
-            var args = GetMaximalValidArgs();
-            args[10] = "/not/absolute";
-            renewer.Renew(args);
+        private void TestInvalidParameter(int index, string value)
+        {
+            var args = index <= 7 ? GetMinimalValidArgs() : GetMaximalValidArgs();
+            args[index] = value;
+            m_renewer.Renew(args);
         }
 
         [TestMethod]
         public void MinimalProperParametersShouldSucceed()
         {
-            var certRenewer = new Mock<ICertRenewer>();
             var expectedRenewalParams = new RenewalParameters(FooSubscription, FooTenant, FooResourceGroup, FooWebapp, Hosts, FooEmail, FooClient, FooSecret);
 
-            new CliRenewer(certRenewer.Object, new CommandlineRenewalParamsReader()).Renew(GetMinimalValidArgs());
-            certRenewer.Verify(cn => cn.Renew(It.Is<IReadOnlyCollection<RenewalParameters>>(l => l.Count == 1 && l.First().Equals(expectedRenewalParams))));
+            new CliRenewer(m_certRenewer.Object, new CommandlineRenewalParamsReader()).Renew(GetMinimalValidArgs());
+            m_certRenewer.Verify(cn => cn.Renew(It.Is<IReadOnlyCollection<RenewalParameters>>(l => l.Count == 1 && l.First().Equals(expectedRenewalParams))));
         }
 
         [TestMethod]
         public void MaximalProperParametersShouldSucceed()
         {
-            var certRenewer = new Mock<ICertRenewer>();
             var expectedRenewalParams = 
                 new RenewalParameters(FooSubscription, FooTenant, FooResourceGroup, FooWebapp, Hosts, FooEmail,FooClient, FooSecret, UseIpBasedSsl, RsaKeyLength, AcmeBaseUrl);
 
-            new CliRenewer(certRenewer.Object, new CommandlineRenewalParamsReader()).Renew(GetMaximalValidArgs());
-            certRenewer.Verify(cn => cn.Renew(It.Is<IReadOnlyCollection<RenewalParameters>>(l => l.Count == 1 && l.First().Equals(expectedRenewalParams))));
+            new CliRenewer(m_certRenewer.Object, new CommandlineRenewalParamsReader()).Renew(GetMaximalValidArgs());
+            m_certRenewer.Verify(cn => cn.Renew(It.Is<IReadOnlyCollection<RenewalParameters>>(l => l.Count == 1 && l.First().Equals(expectedRenewalParams))));
         }
     }
 }
