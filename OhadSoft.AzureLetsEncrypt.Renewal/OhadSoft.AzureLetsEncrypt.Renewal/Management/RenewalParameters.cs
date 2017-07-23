@@ -5,7 +5,7 @@ using static System.FormattableString;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 {
-    public sealed class RenewalParameters
+    public sealed class RenewalParameters : IEquatable<RenewalParameters>
     {
         public Guid SubscriptionId { get; }
         public string TenantId { get; }
@@ -79,6 +79,59 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public override string ToString()
         {
             return Invariant($"{nameof(TenantId)}: {TenantId}, {nameof(SubscriptionId)}: {SubscriptionId}, {nameof(ClientId)}: {ClientId}, {nameof(ResourceGroup)}: {ResourceGroup}, {nameof(WebApp)}: {WebApp}, {nameof(Email)}: {Email}, {nameof(Hosts)}: {Hosts}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBasedUri)}: {AcmeBasedUri}, {nameof(ClientSecret)}: [SCRUBBED]");
+        }
+
+        public bool Equals(RenewalParameters other)
+        {
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return SubscriptionId.Equals(other.SubscriptionId) && string.Equals(TenantId, other.TenantId) &&
+                   string.Equals(ResourceGroup, other.ResourceGroup) && string.Equals(WebApp, other.WebApp) && Hosts.SequenceEqual(other.Hosts) &&
+                   string.Equals(Email, other.Email) && ClientId.Equals(other.ClientId) && string.Equals(ClientSecret, other.ClientSecret) &&
+                   UseIpBasedSsl == other.UseIpBasedSsl && RsaKeyLength == other.RsaKeyLength && Equals(AcmeBasedUri, other.AcmeBasedUri);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            var a = obj as RenewalParameters;
+            return a != null && Equals(a);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = SubscriptionId.GetHashCode();
+                hashCode = (hashCode * 397) ^ (TenantId != null ? TenantId.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (ResourceGroup != null ? ResourceGroup.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (WebApp != null ? WebApp.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Hosts != null ? Hosts.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Email != null ? Email.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ ClientId.GetHashCode();
+                hashCode = (hashCode * 397) ^ (ClientSecret != null ? ClientSecret.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ UseIpBasedSsl.GetHashCode();
+                hashCode = (hashCode * 397) ^ RsaKeyLength;
+                hashCode = (hashCode * 397) ^ (AcmeBasedUri != null ? AcmeBasedUri.GetHashCode() : 0);
+                return hashCode;
+            }
         }
     }
 }
