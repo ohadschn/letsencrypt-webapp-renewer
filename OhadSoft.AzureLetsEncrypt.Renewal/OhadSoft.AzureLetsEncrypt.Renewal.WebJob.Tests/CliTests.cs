@@ -42,91 +42,80 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void TooFewParameters()
         {
-            m_renewer.Renew(FullValidArgs.Take(7).ToArray());
+            var strings = FullValidArgs.Take(7).ToArray();
+            AssertExtensions.Throws<ArgumentException>(() => m_renewer.Renew(strings));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void TooManyParameters()
         {
-            m_renewer.Renew(FullValidArgs.Concat(new []{"foo"}).ToArray());
+            var strings = FullValidArgs.Concat(new []{"foo"}).ToArray();
+            AssertExtensions.Throws<ArgumentException>(() => m_renewer.Renew(strings));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void InvalidSubscriptionId()
         {
             TestInvalidParameter(0, "e004af7e-50be-41af-ac1a-hello");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void InvalidTenant()
         {
             TestInvalidParameter(1, "");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void InvalidResourceGroup()
         {
             TestInvalidParameter(2, " ");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void InvalidWebApp()
         {
             TestInvalidParameter(3, "     ");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void InvalidHosts()
         {
             TestInvalidParameter(4, "     ");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void InvalidEmail()
         {
             TestInvalidParameter(5, "@notAnEmail");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void InvalidClientId()
         {
             TestInvalidParameter(6, Guid.Empty.ToString());
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void InvalidSecret()
         {
             TestInvalidParameter(7, "");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void InvalidUseIpBasedSsl()
         {
             TestInvalidParameter(8, "notTrueOrFalse");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void InvalidRsaKeyLength()
         {
             TestInvalidParameter(9, "-1");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void InvalidAcmeBasedUrl()
         {
             TestInvalidParameter(10, "/not/absolute");
@@ -136,7 +125,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         {
             var args = index <= 7 ? GetMinimalValidArgs() : GetMaximalValidArgs();
             args[index] = value;
-            m_renewer.Renew(args);
+            AssertExtensions.Throws<ArgumentException>(() => m_renewer.Renew(args));
         }
 
         [TestMethod]
