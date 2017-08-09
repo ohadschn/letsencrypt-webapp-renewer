@@ -2,43 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.CLI;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
 {
     [TestClass]
-    public class CliTests
+    public class CliTests : RenewalTestBase
     {
-        private static readonly Guid FooSubscription = Guid.Parse("a0c04c9b-a1ca-4455-9f10-d1945175c1df");
-        private const string FooTenant = "foo-tenant";
-        private const string FooResourceGroup = "foo-resource-group";
-        private const string FooWebapp = "foo-webapp";
-        private static readonly IReadOnlyList<string> Hosts = new[] {"foo.com", "www.bar.com"};
-        private const string FooEmail = "foo@gmail.com";
-        private static readonly Guid FooClient = Guid.Parse("2442cca0-0145-419b-8747-259e815fa011");
-        private const string FooSecret = "foo-secret123";
-        private const bool UseIpBasedSsl = true;
-        private const int RsaKeyLength = 1024;
-        private static readonly Uri AcmeBaseUrl = new Uri("http://foo.com");
-
         private static readonly IReadOnlyCollection<string> FullValidArgs = new[]
         {
-            FooSubscription.ToString(), FooTenant, FooResourceGroup, FooWebapp, String.Join(";", Hosts),
-            FooEmail, FooClient.ToString(), FooSecret, UseIpBasedSsl.ToString(), RsaKeyLength.ToString(), AcmeBaseUrl.ToString()
+            Subscription1.ToString(), Tenant1, ResourceGroup1, Webapp1, String.Join(";", Hosts1),
+            Email1, ClientId1.ToString(), ClientSecret1, UseIpBasedSsl1.ToString(), RsaKeyLength1.ToString(), AcmeBaseUrl1.ToString()
         };
 
         private static string[] GetMaximalValidArgs() => FullValidArgs.ToArray();
         private static string[] GetMinimalValidArgs() => FullValidArgs.Take(8).ToArray();
 
-        private readonly Mock<ICertRenewer> m_certRenewer;
         private readonly CliRenewer m_renewer;
 
         public CliTests()
         {
-            m_certRenewer = new Mock<ICertRenewer>();
-            m_renewer = new CliRenewer(m_certRenewer.Object, new CommandlineRenewalParamsReader());
+            m_renewer = new CliRenewer(CertRenewer, new CommandlineRenewalParamsReader());
         }
 
         [TestMethod]
@@ -131,20 +115,15 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         [TestMethod]
         public void MinimalProperParametersShouldSucceed()
         {
-            TestSuccessfulRenewal(GetMinimalValidArgs(), new RenewalParameters(FooSubscription, FooTenant, FooResourceGroup, FooWebapp, Hosts, FooEmail, FooClient, FooSecret));
+            m_renewer.Renew(GetMinimalValidArgs());
+            VerifySuccessfulRenewal(ExpectedPartialRenewalParameters1);
         }
 
         [TestMethod]
         public void MaximalProperParametersShouldSucceed()
         {
-            TestSuccessfulRenewal(GetMaximalValidArgs(),
-                new RenewalParameters(FooSubscription, FooTenant, FooResourceGroup, FooWebapp, Hosts, FooEmail, FooClient, FooSecret, UseIpBasedSsl, RsaKeyLength, AcmeBaseUrl));
-        }
-
-        private void TestSuccessfulRenewal(string[] args, RenewalParameters renewalParameters)
-        {
-            new CliRenewer(m_certRenewer.Object, new CommandlineRenewalParamsReader()).Renew(args);
-            m_certRenewer.Verify(cn => cn.Renew(It.Is<IReadOnlyCollection<RenewalParameters>>(l => l.Count == 1 && l.First().Equals(renewalParameters))));
+            m_renewer.Renew(GetMaximalValidArgs());
+            VerifySuccessfulRenewal(ExpectedFullRenewalParameters1);
         }
     }
 }
