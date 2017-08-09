@@ -74,9 +74,11 @@
       <HintPath>..\packages\Moq.4.7.99\lib\net45\Moq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppSettingsTests.cs" />
     <Compile Include="AssertExtensions.cs" />
     <Compile Include="CliTests.cs" />
     <Compile Include="RenewalTestBase.cs" />

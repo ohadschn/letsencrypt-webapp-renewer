@@ -80,9 +80,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         private readonly Mock<ICertRenewer> m_certRenewerMock = new Mock<ICertRenewer>();
         protected ICertRenewer CertRenewer => m_certRenewerMock.Object;
 
-        protected void VerifySuccessfulRenewal(RenewalParameters renewalParameters)
+        protected void VerifySuccessfulRenewal(params RenewalParameters[] renewalParameters)
         {
-            m_certRenewerMock.Verify(cn => cn.Renew(It.Is<IReadOnlyCollection<RenewalParameters>>(l => l.Count == 1 && l.First().Equals(renewalParameters))));
+            m_certRenewerMock.Verify(cn => cn.Renew(It.Is<IReadOnlyCollection<RenewalParameters>>(l => l.SequenceEqual(renewalParameters))));
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.Linq;
 
@@ -7,6 +8,15 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 {
     public class AppSettingsReader : IAppSettingsReader
     {
+        private readonly NameValueCollection m_appSettings;
+        private readonly ConnectionStringSettingsCollection m_connectionStrings;
+
+        public AppSettingsReader(NameValueCollection appSettings, ConnectionStringSettingsCollection connectionStrings)
+        {
+            m_appSettings = appSettings;
+            m_connectionStrings = connectionStrings;
+        }
+
         public string GetStringOrDefault(string key, string defaultValue = null)
         {
             if (key == null)
@@ -14,7 +24,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return ConfigurationManager.AppSettings[key] ?? defaultValue;
+            return m_appSettings[key] ?? defaultValue;
         }
 
         public string GetString(string key)
@@ -142,7 +152,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return ConfigurationManager.ConnectionStrings[key]?.ConnectionString ?? defaultValue;
+            return m_connectionStrings[key]?.ConnectionString ?? defaultValue;
         }
 
         public string GetConnectionString(string key)
