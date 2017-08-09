@@ -17,7 +17,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public string ClientSecret { get; }
         public bool UseIpBasedSsl { get; }
         public int RsaKeyLength { get; }
-        public Uri AcmeBasedUri { get; }
+        public Uri AcmeBaseUri { get; }
 
         public RenewalParameters(
             Guid subscriptionId,
@@ -30,7 +30,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             string clientSecret,
             bool useIpBasedSsl = false,
             int rsaKeyLength = 2048,
-            Uri acmeBasedUri = null)
+            Uri acmeBaseUri = null)
         {
             SubscriptionId = subscriptionId != Guid.Empty
                 ? subscriptionId
@@ -48,9 +48,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 ? webApp
                 : throw new ArgumentException("Web app name must not be null or whitespace", nameof(webApp));
 
-            Hosts = hosts != null && hosts.Count > 0 && !hosts.Any(String.IsNullOrWhiteSpace)
+            Hosts = hosts != null && hosts.Count > 0 && hosts.All(h => Uri.CheckHostName(h) != UriHostNameType.Unknown)
                 ? hosts
-                : throw new ArgumentException("Host collection must be non-null, contain at least one element, and contain no whitespace-only entries", nameof(hosts));
+                : throw new ArgumentException("Host collection must be non-null, contain at least one element, and contain valid host names", nameof(hosts));
 
             Email = !String.IsNullOrWhiteSpace(email) && email.Contains("@") && email.Length >= 3 && email.Length <= 254
                     && !email.StartsWith("@", StringComparison.OrdinalIgnoreCase) && !email.EndsWith("@", StringComparison.OrdinalIgnoreCase)
@@ -71,14 +71,14 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 ? rsaKeyLength
                 : throw new ArgumentException("RSA key length must be positive", nameof(rsaKeyLength));
 
-            AcmeBasedUri = acmeBasedUri == null || acmeBasedUri.IsAbsoluteUri
-                ? acmeBasedUri
-                : throw new ArgumentException("ACME base URI must be either null or absolute", nameof(acmeBasedUri));
+            AcmeBaseUri = acmeBaseUri == null || acmeBaseUri.IsAbsoluteUri
+                ? acmeBaseUri
+                : throw new ArgumentException("ACME base URI must be either null or absolute", nameof(acmeBaseUri));
         }
 
         public override string ToString()
         {
-            return Invariant($"{nameof(TenantId)}: {TenantId}, {nameof(SubscriptionId)}: {SubscriptionId}, {nameof(ClientId)}: {ClientId}, {nameof(ResourceGroup)}: {ResourceGroup}, {nameof(WebApp)}: {WebApp}, {nameof(Email)}: {Email}, {nameof(Hosts)}: {Hosts}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBasedUri)}: {AcmeBasedUri}, {nameof(ClientSecret)}: [SCRUBBED]");
+            return Invariant($"{nameof(TenantId)}: {TenantId}, {nameof(SubscriptionId)}: {SubscriptionId}, {nameof(ClientId)}: {ClientId}, {nameof(ResourceGroup)}: {ResourceGroup}, {nameof(WebApp)}: {WebApp}, {nameof(Email)}: {Email}, {nameof(Hosts)}: {Hosts}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBaseUri)}: {AcmeBaseUri}, {nameof(ClientSecret)}: [SCRUBBED]");
         }
 
         public bool Equals(RenewalParameters other)
@@ -96,7 +96,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             return SubscriptionId.Equals(other.SubscriptionId) && string.Equals(TenantId, other.TenantId) &&
                    string.Equals(ResourceGroup, other.ResourceGroup) && string.Equals(WebApp, other.WebApp) && Hosts.SequenceEqual(other.Hosts) &&
                    string.Equals(Email, other.Email) && ClientId.Equals(other.ClientId) && string.Equals(ClientSecret, other.ClientSecret) &&
-                   UseIpBasedSsl == other.UseIpBasedSsl && RsaKeyLength == other.RsaKeyLength && Equals(AcmeBasedUri, other.AcmeBasedUri);
+                   UseIpBasedSsl == other.UseIpBasedSsl && RsaKeyLength == other.RsaKeyLength && Equals(AcmeBaseUri, other.AcmeBaseUri);
         }
 
         public override bool Equals(object obj)
@@ -129,7 +129,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 hashCode = (hashCode * 397) ^ (ClientSecret != null ? ClientSecret.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ UseIpBasedSsl.GetHashCode();
                 hashCode = (hashCode * 397) ^ RsaKeyLength;
-                hashCode = (hashCode * 397) ^ (AcmeBasedUri != null ? AcmeBasedUri.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (AcmeBaseUri != null ? AcmeBaseUri.GetHashCode() : 0);
                 return hashCode;
             }
         }

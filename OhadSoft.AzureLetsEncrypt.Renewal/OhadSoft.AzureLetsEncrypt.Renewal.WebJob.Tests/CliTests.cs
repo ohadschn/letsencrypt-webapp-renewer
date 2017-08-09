@@ -12,7 +12,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         private static readonly IReadOnlyCollection<string> FullValidArgs = new[]
         {
             Subscription1.ToString(), Tenant1, ResourceGroup1, Webapp1, String.Join(";", Hosts1),
-            Email1, ClientId1.ToString(), ClientSecret1, UseIpBasedSsl1.ToString(), RsaKeyLength1.ToString(), AcmeBaseUrl1.ToString()
+            Email1, ClientId1.ToString(), ClientSecret1, UseIpBasedSsl1.ToString(), RsaKeyLength1.ToString(), AcmeBaseUri1.ToString()
         };
 
         private static string[] GetMaximalValidArgs() => FullValidArgs.ToArray();
@@ -66,7 +66,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         [TestMethod]
         public void InvalidHosts()
         {
-            TestInvalidParameter(4, "     ");
+            TestInvalidParameter(4, "/");
         }
 
         [TestMethod]
@@ -100,9 +100,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         }
 
         [TestMethod]
-        public void InvalidAcmeBasedUrl()
+        public void InvalidAcmeBaseUri()
         {
-            TestInvalidParameter(10, "/not/absolute");
+            TestInvalidParameter(10, "www.nohttp.com");
         }
 
         private void TestInvalidParameter(int index, string value)

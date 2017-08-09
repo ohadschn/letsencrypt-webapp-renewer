@@ -53,13 +53,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.CLI
                 throw new ArgumentException("Could not parse RSA key length as 32-bit integer");
             }
 
-            Uri acmeBasedUrl = null;
-            if (args.Length >= 11 && !Uri.TryCreate(args[10], UriKind.Absolute, out acmeBasedUrl))
+            Uri acmeBaseUri = null;
+            if (args.Length >= 11 && !Uri.TryCreate(args[10], UriKind.Absolute, out acmeBaseUri))
             {
-                throw new ArgumentException("Could not parse ACME Base URL");
+                throw new ArgumentException("Could not parse ACME Base URI (as absolute)");
             }
 
-            return new RenewalParameters(subscriptionId, tenantId, resourceGroup, webApp, hosts, email, clientId, clientSecret, useIpBasedSsl, rsaKeyLength, acmeBasedUrl);
+            return new RenewalParameters(subscriptionId, tenantId, resourceGroup, webApp, hosts, email, clientId, clientSecret, useIpBasedSsl, rsaKeyLength, acmeBaseUri);
         }
     }
 }

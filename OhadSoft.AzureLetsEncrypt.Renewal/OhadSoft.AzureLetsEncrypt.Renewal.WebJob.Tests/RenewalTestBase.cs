@@ -28,8 +28,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected const bool UseIpBasedSsl2 = false;
         protected const int RsaKeyLength1 = 1024;
         protected const int RsaKeyLength2 = 4096;
-        protected static readonly Uri AcmeBaseUrl1 = new Uri("http://foo.example.com");
-        protected static readonly Uri AcmeBaseUrl2 = new Uri("http://bar.example.com");
+        protected static readonly Uri AcmeBaseUri1 = new Uri("http://foo.example.com");
+        protected static readonly Uri AcmeBaseUri2 = new Uri("http://bar.example.com");
 
         protected static readonly RenewalParameters ExpectedFullRenewalParameters1 = new RenewalParameters(
             Subscription1, 
@@ -42,7 +42,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             ClientSecret1, 
             UseIpBasedSsl1, 
             RsaKeyLength1, 
-            AcmeBaseUrl1);
+            AcmeBaseUri1);
 
         protected static RenewalParameters ExpectedPartialRenewalParameters1 = new RenewalParameters(
             Subscription1, 
@@ -65,7 +65,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             ClientSecret2,
             UseIpBasedSsl2,
             RsaKeyLength2,
-            AcmeBaseUrl2);
+            AcmeBaseUri2);
 
         protected static RenewalParameters ExpectedPartialRenewalParameters2 = new RenewalParameters(
             Subscription2,

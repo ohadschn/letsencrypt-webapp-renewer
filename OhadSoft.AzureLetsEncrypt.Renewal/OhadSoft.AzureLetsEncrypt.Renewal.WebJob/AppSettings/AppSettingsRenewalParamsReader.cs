@@ -36,20 +36,33 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
         private RenewalParameters GetWebAppRenewalInfo(string webApp)
         {
             Trace.TraceInformation("Parsing SSL renewal parameters for web app '{0}'...", webApp);
+
+            var subscriptionIdKey = webApp + "-subscriptionId";
+            var tenantIdKey = webApp + "-tenantId";
+            var resourceGroupKey = webApp + "-resourceGroup";
+            var hostsKey = webApp + "-hosts";
+            var emailKey = webApp + "-email";
+            var clientIdKey = webApp + "-clientId";
+            var clientSecretKey = webApp + "-clientSecret";
+            var useIpBasedSslKey = webApp + "-useIpBasedSsl";
+            var rsaKeyLengthKey = webApp + "-rsaKeyLength";
+            var acmeBaseUri = webApp + "-acmeBaseUri";
+
             try
             {
+                // ReSharper disable once SimplifyConditionalTernaryExpression
                 return new RenewalParameters(
-                    m_appSettings.GetGuid(webApp + "-subscriptionId"),
-                    m_appSettings.GetString(webApp + "-tenantId"),
-                    m_appSettings.GetString(webApp + "-resourceGroup"),
+                    m_appSettings.GetGuid(subscriptionIdKey),
+                    m_appSettings.GetString(tenantIdKey),
+                    m_appSettings.GetString(resourceGroupKey),
                     webApp,
-                    m_appSettings.GetDelimitedList(webApp + "-hosts"),
-                    m_appSettings.GetString(webApp + "-email"),
-                    m_appSettings.GetGuid(webApp + "-clientId"),
-                    m_appSettings.GetConnectionString(webApp + "-clientSecret"),
-                    m_appSettings.GetBooleanOrDefault(webApp + "-useIpBasedSsl"),
-                    m_appSettings.GetInt32OrDefault(webApp + "-rsaKeyLength", 2048),
-                    m_appSettings.GetUriOrDefault(webApp + "-acmeBasedUri"));
+                    m_appSettings.GetDelimitedList(hostsKey),
+                    m_appSettings.GetString(emailKey),
+                    m_appSettings.GetGuid(clientIdKey),
+                    m_appSettings.GetConnectionString(clientSecretKey),
+                    m_appSettings.HasSetting(useIpBasedSslKey) ? m_appSettings.GetBoolean(useIpBasedSslKey) : false,
+                    m_appSettings.HasSetting(rsaKeyLengthKey) ? m_appSettings.GetInt32(rsaKeyLengthKey) : 2048,
+                    m_appSettings.HasSetting(acmeBaseUri) ? m_appSettings.GetUri(acmeBaseUri) : null);
             }
             catch (ArgumentException e)
             {

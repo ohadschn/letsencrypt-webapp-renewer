@@ -73,12 +73,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
         private static void PrintUsage()
         {
             Console.WriteLine(
-                "Usage: {0}.exe SubscriptionId TenantId ResourceGroup WebApp Hosts Email ClientId ClientSecret [UseIpBasedSsl] [RsaKeyLength] [AcmeBasedUri]",
+                "Usage: {0}.exe SubscriptionId TenantId ResourceGroup WebApp Hosts Email ClientId ClientSecret [UseIpBasedSsl] [RsaKeyLength] [AcmeBaseUri]",
                 typeof(Program).Assembly.GetName().Name);
             Console.WriteLine("'Hosts' is a semicolon-delimited list of host names");
             Console.WriteLine("'UseIpBasedSsl' is optional and defaults to false");
             Console.WriteLine("'RsaKeyLength' is optional and defaults to 2048");
-            Console.WriteLine("'AcmeBasedUri' is optional and defaults to https://acme-v01.api.letsencrypt.org/");
+            Console.WriteLine("'AcmeBaseUri' is optional and defaults to https://acme-v01.api.letsencrypt.org/");
             Console.WriteLine("Consult the Let's Encrypt documentation for rate limits: https://letsencrypt.org/docs/rate-limits/");
             Console.WriteLine("Exit codes: {0} = success, {1} = argument error (any other error will crash the process)", Success, ArgumentError);
         }
