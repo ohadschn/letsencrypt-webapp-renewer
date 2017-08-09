@@ -70,6 +70,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             return Success;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", Justification = "technical terms not in dictionary")]
         private static void PrintUsage()
         {
             Console.WriteLine(
