@@ -4,6 +4,7 @@ using System.Diagnostics;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.CLI;
+using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email;
 using AppSettingsReader = OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings.AppSettingsReader;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
@@ -25,7 +26,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             Console.WriteLine("Web App SSL renewal job ({0}) started", webjobName);
             var renewr = new AppSettingsRenewer(
                 new RenewalManager(),
-                new AppSettingsRenewalParamsReader(new AppSettingsReader(ConfigurationManager.AppSettings, ConfigurationManager.ConnectionStrings)));
+                new AppSettingsRenewalParamsReader(new AppSettingsReader(ConfigurationManager.AppSettings, ConfigurationManager.ConnectionStrings)),
+                new SendGridNotifier(ConfigurationManager.AppSettings["letsencrypt:SendGridApiKey"]));
             try
             {
                 renewr.Renew();

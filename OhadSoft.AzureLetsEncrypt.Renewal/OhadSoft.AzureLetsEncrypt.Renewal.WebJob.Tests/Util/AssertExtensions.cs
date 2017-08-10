@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
+namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Util
 {
     public static class AssertExtensions
     {

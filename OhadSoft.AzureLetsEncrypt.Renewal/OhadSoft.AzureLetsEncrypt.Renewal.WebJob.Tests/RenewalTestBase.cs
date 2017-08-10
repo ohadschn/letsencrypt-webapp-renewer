@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
+using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob;
 using static System.FormattableString;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
@@ -92,11 +93,16 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
 
         protected void VerifySuccessfulRenewal(params RenewalParameters[] renewalParameters)
         {
+            VerifySuccessfulRenewal(renewalParameters, m_renewalParameters);
+        }
+
+        protected static void VerifySuccessfulRenewal(IReadOnlyCollection<RenewalParameters> expectedRenewalParams, IReadOnlyCollection<RenewalParameters> actualRenewalParams)
+        {
             var nl = Environment.NewLine;
             var renewalParamsComparer = new RenewalParametersComparer();
             Assert.IsTrue(
-                m_renewalParameters.OrderBy(rp => rp, renewalParamsComparer).SequenceEqual(renewalParameters.OrderBy(rp => rp, renewalParamsComparer)),
-                Invariant($"Renewal parameter mismatch.{nl}Expected:{nl}{String.Join<RenewalParameters>(nl, renewalParameters)}{nl}Actual:{nl}{String.Join(nl, m_renewalParameters)}"));
+                actualRenewalParams.OrderBy(rp => rp, renewalParamsComparer).SequenceEqual(expectedRenewalParams.OrderBy(rp => rp, renewalParamsComparer)),
+                Invariant($"Renewal parameter mismatch.{nl}Expected:{nl}{String.Join(nl, expectedRenewalParams)}{nl}Actual:{nl}{String.Join(nl, actualRenewalParams)}"));
         }
     }
 }

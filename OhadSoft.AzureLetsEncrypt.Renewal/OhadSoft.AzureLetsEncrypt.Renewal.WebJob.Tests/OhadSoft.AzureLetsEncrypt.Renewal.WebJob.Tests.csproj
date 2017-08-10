@@ -79,10 +79,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppSettingsTests.cs" />
-    <Compile Include="AssertExtensions.cs" />
-    <Compile Include="CliTests.cs" />
-    <Compile Include="RenewalParametersComparer.cs" />
+    <Compile Include="WebJob\AppSettingsTests.cs" />
+    <Compile Include="Util\AssertExtensions.cs" />
+    <Compile Include="CLI\CliTests.cs" />
+    <Compile Include="WebJob\RenewalParametersComparer.cs" />
     <Compile Include="RenewalTestBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

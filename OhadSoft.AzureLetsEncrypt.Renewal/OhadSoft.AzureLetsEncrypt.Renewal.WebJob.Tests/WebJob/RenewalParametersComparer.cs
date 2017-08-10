@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 
-namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
+namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
 {
     public sealed class RenewalParametersComparer : Comparer<RenewalParameters>
     {
