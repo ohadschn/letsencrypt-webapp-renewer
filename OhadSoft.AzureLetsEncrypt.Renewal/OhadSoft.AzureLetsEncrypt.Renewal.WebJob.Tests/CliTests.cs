@@ -22,7 +22,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
 
         public CliTests()
         {
-            m_renewer = new CliRenewer(CertRenewer, new CommandlineRenewalParamsReader());
+            m_renewer = new CliRenewer(RenewalManager, new CommandlineRenewalParamsReader());
         }
 
         [TestMethod]

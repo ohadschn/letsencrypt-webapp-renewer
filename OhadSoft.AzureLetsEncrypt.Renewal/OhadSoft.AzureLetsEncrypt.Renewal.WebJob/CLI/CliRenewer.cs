@@ -4,19 +4,18 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.CLI
 {
     internal class CliRenewer
     {
-        private readonly ICertRenewer m_certRenewer;
+        private readonly IRenewalManager m_renewalManager;
         private readonly ICommandlineRenewalParamsReader m_renewalParamsReader;
 
-        public CliRenewer(ICertRenewer certRenewer, ICommandlineRenewalParamsReader renewalParamsReader)
+        public CliRenewer(IRenewalManager renewalManager, ICommandlineRenewalParamsReader renewalParamsReader)
         {
-            m_certRenewer = certRenewer;
+            m_renewalManager = renewalManager;
             m_renewalParamsReader = renewalParamsReader;
         }
 
         public void Renew(string[] args)
         {
-            var webAppRenewalInfos = m_renewalParamsReader.Read(args);
-            m_certRenewer.Renew(new[] { webAppRenewalInfos });
+            m_renewalManager.Renew(m_renewalParamsReader.Read(args));
         }
     }
 }

@@ -1,22 +1,26 @@
-﻿using OhadSoft.AzureLetsEncrypt.Renewal.Management;
+﻿using System;
+using System.Threading.Tasks;
+using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 {
     internal class AppSettingsRenewer
     {
-        private readonly ICertRenewer m_certRenewer;
+        private readonly IRenewalManager m_renewalManager;
         private readonly IAppSettingsRenewalParamsReader m_renewalParamsReader;
 
-        public AppSettingsRenewer(ICertRenewer certRenewer, IAppSettingsRenewalParamsReader renewalParamsReader)
+        public AppSettingsRenewer(IRenewalManager renewalManager, IAppSettingsRenewalParamsReader renewalParamsReader)
         {
-            m_certRenewer = certRenewer;
+            m_renewalManager = renewalManager;
             m_renewalParamsReader = renewalParamsReader;
         }
 
         public void Renew()
         {
-            var webAppRenewalInfos = m_renewalParamsReader.Read();
-            m_certRenewer.Renew(webAppRenewalInfos);
+            Parallel.ForEach(m_renewalParamsReader.Read(), webAppRenewalInfo =>
+            {
+                m_renewalManager.Renew(webAppRenewalInfo);
+            });
         }
     }
 }

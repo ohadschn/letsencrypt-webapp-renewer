@@ -52,7 +52,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
 
         public AppSettingsTests()
         {
-            m_renewer = new AppSettingsRenewer(CertRenewer, new AppSettingsRenewalParamsReader(new AppSettingsReader(m_appSettings, m_connectionStrings)));
+            m_renewer = new AppSettingsRenewer(RenewalManager, new AppSettingsRenewalParamsReader(new AppSettingsReader(m_appSettings, m_connectionStrings)));
         }
 
         [TestMethod]

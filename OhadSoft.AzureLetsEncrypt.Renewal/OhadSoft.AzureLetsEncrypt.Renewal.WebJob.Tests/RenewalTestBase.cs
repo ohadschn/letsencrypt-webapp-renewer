@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
+using static System.FormattableString;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
 {
@@ -77,12 +80,23 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             ClientId2,
             ClientSecret2);
 
-        private readonly Mock<ICertRenewer> m_certRenewerMock = new Mock<ICertRenewer>();
-        protected ICertRenewer CertRenewer => m_certRenewerMock.Object;
+        private readonly Mock<IRenewalManager> m_renewalManager = new Mock<IRenewalManager>();
+        private readonly ConcurrentQueue<RenewalParameters> m_renewalParameters = new ConcurrentQueue<RenewalParameters>();
+    
+        protected IRenewalManager RenewalManager => m_renewalManager.Object;
+
+        public RenewalTestBase()
+        {
+            m_renewalManager.Setup(rm => rm.Renew(It.IsAny<RenewalParameters>())).Callback<RenewalParameters>(m_renewalParameters.Enqueue);
+        }
 
         protected void VerifySuccessfulRenewal(params RenewalParameters[] renewalParameters)
         {
-            m_certRenewerMock.Verify(cn => cn.Renew(It.Is<IReadOnlyCollection<RenewalParameters>>(l => l.SequenceEqual(renewalParameters))));
+            var nl = Environment.NewLine;
+            var renewalParamsComparer = new RenewalParametersComparer();
+            Assert.IsTrue(
+                m_renewalParameters.OrderBy(rp => rp, renewalParamsComparer).SequenceEqual(renewalParameters.OrderBy(rp => rp, renewalParamsComparer)),
+                Invariant($"Renewal parameter mismatch.{nl}Expected:{nl}{String.Join<RenewalParameters>(nl, renewalParameters)}{nl}Actual:{nl}{String.Join(nl, m_renewalParameters)}"));
         }
     }
 }

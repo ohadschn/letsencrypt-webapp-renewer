@@ -8,6 +8,8 @@
       <Word>webApp</Word>
       <Word>Params</Word>
       <Word>Cli</Word>
+      <Word>Notifier</Word>
+      <Word>Api</Word>
     </Recognized>
     <Compound>
       <Term CompoundAlternate="WebApp">webApp</Term>

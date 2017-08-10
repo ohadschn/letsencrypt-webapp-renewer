@@ -24,7 +24,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
         {
             Console.WriteLine("Web App SSL renewal job ({0}) started", webjobName);
             var renewr = new AppSettingsRenewer(
-                new CertRenewer(new RenewalManager()),
+                new RenewalManager(),
                 new AppSettingsRenewalParamsReader(new AppSettingsReader(ConfigurationManager.AppSettings, ConfigurationManager.ConnectionStrings)));
             try
             {
@@ -43,7 +43,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
         {
             Trace.Listeners.Add(new ConsoleTraceListener());
             Console.WriteLine("Web App SSL renewal CLI started, parameters: {0}", string.Join(", ", args));
-            var renewer = new CliRenewer(new CertRenewer(new RenewalManager()), new CommandlineRenewalParamsReader());
+            var renewer = new CliRenewer(new RenewalManager(), new CommandlineRenewalParamsReader());
 
             try
             {
