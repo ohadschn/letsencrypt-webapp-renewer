@@ -9,6 +9,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 {
     internal class AppSettingsRenewalParamsReader : IAppSettingsRenewalParamsReader
     {
+        private const string KeyPrefix = "letsencrypt:";
         private readonly IAppSettingsReader m_appSettings;
 
         public AppSettingsRenewalParamsReader(IAppSettingsReader appSettings)
@@ -19,7 +20,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
         public IReadOnlyCollection<RenewalParameters> Read()
         {
             Trace.TraceInformation("Parsing Web Apps for SSL renewal from webjob/site configuration...");
-            var webApps = m_appSettings.GetDelimitedList("webApps");
+            var webApps = m_appSettings.GetDelimitedList(KeyPrefix + "webApps");
             if (webApps.Any(String.IsNullOrWhiteSpace))
             {
                 throw new ConfigurationErrorsException("webApp list contains a whitespace-only entry");
@@ -37,16 +38,16 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
         {
             Trace.TraceInformation("Parsing SSL renewal parameters for web app '{0}'...", webApp);
 
-            var subscriptionIdKey = webApp + "-subscriptionId";
-            var tenantIdKey = webApp + "-tenantId";
-            var resourceGroupKey = webApp + "-resourceGroup";
-            var hostsKey = webApp + "-hosts";
-            var emailKey = webApp + "-email";
-            var clientIdKey = webApp + "-clientId";
-            var clientSecretKey = webApp + "-clientSecret";
-            var useIpBasedSslKey = webApp + "-useIpBasedSsl";
-            var rsaKeyLengthKey = webApp + "-rsaKeyLength";
-            var acmeBaseUri = webApp + "-acmeBaseUri";
+            var subscriptionIdKey = KeyPrefix + webApp + "-subscriptionId";
+            var tenantIdKey = KeyPrefix + webApp + "-tenantId";
+            var resourceGroupKey = KeyPrefix + webApp + "-resourceGroup";
+            var hostsKey = KeyPrefix + webApp + "-hosts";
+            var emailKey = KeyPrefix + webApp + "-email";
+            var clientIdKey = KeyPrefix + webApp + "-clientId";
+            var clientSecretKey = KeyPrefix + webApp + "-clientSecret";
+            var useIpBasedSslKey = KeyPrefix + webApp + "-useIpBasedSsl";
+            var rsaKeyLengthKey = KeyPrefix + webApp + "-rsaKeyLength";
+            var acmeBaseUri = KeyPrefix + webApp + "-acmeBaseUri";
 
             try
             {
