@@ -48,7 +48,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             RsaKeyLength1, 
             AcmeBaseUri1);
 
-        protected static RenewalParameters ExpectedPartialRenewalParameters1 = new RenewalParameters(
+        protected static readonly RenewalParameters ExpectedPartialRenewalParameters1 = new RenewalParameters(
             Subscription1, 
             Tenant1, 
             ResourceGroup1, 
@@ -71,7 +71,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             RsaKeyLength2,
             AcmeBaseUri2);
 
-        protected static RenewalParameters ExpectedPartialRenewalParameters2 = new RenewalParameters(
+        protected static readonly RenewalParameters ExpectedPartialRenewalParameters2 = new RenewalParameters(
             Subscription2,
             Tenant2,
             ResourceGroup2,
@@ -96,13 +96,17 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             VerifySuccessfulRenewal(renewalParameters, m_renewalParameters);
         }
 
+#pragma warning disable S3242
         protected static void VerifySuccessfulRenewal(IReadOnlyCollection<RenewalParameters> expectedRenewalParams, IReadOnlyCollection<RenewalParameters> actualRenewalParams)
+#pragma warning restore S3242
         {
-            var nl = Environment.NewLine;
+        var nl = Environment.NewLine;
             var renewalParamsComparer = new RenewalParametersComparer();
+            var actualSorted = actualRenewalParams.OrderBy(rp => rp, renewalParamsComparer);
+            var expectedSorted = expectedRenewalParams.OrderBy(rp => rp, renewalParamsComparer);
             Assert.IsTrue(
-                actualRenewalParams.OrderBy(rp => rp, renewalParamsComparer).SequenceEqual(expectedRenewalParams.OrderBy(rp => rp, renewalParamsComparer)),
-                Invariant($"Renewal parameter mismatch.{nl}Expected:{nl}{String.Join(nl, expectedRenewalParams)}{nl}Actual:{nl}{String.Join(nl, actualRenewalParams)}"));
+                actualSorted.SequenceEqual(expectedSorted),
+                Invariant($"Renewal parameter mismatch.{nl}Expected:{nl}{String.Join(nl, expectedSorted)}{nl}Actual:{nl}{String.Join(nl, actualSorted)}"));
         }
     }
 }
