@@ -90,7 +90,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry
                     new Dictionary<string, string>
                     {
                         { "subscriptionId", renewalParams.SubscriptionId.ToString() },
-                        { "tenantId", renewalParams.TenantId },
+                        { "tenantId", TelemetryHelper.Hash(renewalParams.TenantId) },
                         { "resourceGroup", TelemetryHelper.Hash(renewalParams.ResourceGroup) },
                         { "webApp", TelemetryHelper.Hash(renewalParams.WebApp) },
                         { "host", TelemetryHelper.Hash(host) },
