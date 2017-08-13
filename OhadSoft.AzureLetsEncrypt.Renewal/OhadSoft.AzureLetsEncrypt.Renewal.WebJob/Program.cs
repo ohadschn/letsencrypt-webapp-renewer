@@ -5,6 +5,8 @@ using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.CLI;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email;
+using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry;
+using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Util;
 using AppSettingsReader = OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings.AppSettingsReader;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
@@ -17,8 +19,30 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
 
         private static int Main(string[] args)
         {
-            var webjobName = Environment.GetEnvironmentVariable("WEBJOBS_NAME");
-            return webjobName != null ? WebJobMain(webjobName) : CliMain(args);
+            var telemetryEnvironmentVariable = AppSettingsRenewalParamsReader.KeyPrefix + "DISABLE_TELEMETRY";
+            if (Environment.GetEnvironmentVariable(telemetryEnvironmentVariable) == null)
+            {
+                TelemetryManager.Setup("32cf968e-40d4-42d3-a2de-037140fd4371");
+            }
+            else
+            {
+                Console.WriteLine("'{0}' environment variable detected - telemetry disabled", telemetryEnvironmentVariable);
+            }
+
+            try
+            {
+                var webjobName = Environment.GetEnvironmentVariable("WEBJOBS_NAME");
+                return webjobName != null ? WebJobMain(webjobName) : CliMain(args);
+            }
+            catch (Exception e) when (!ExceptionHelper.IsCriticalException(e))
+            {
+                TelemetryManager.Client.TrackException(e);
+                throw;
+            }
+            finally
+            {
+                TelemetryManager.Client.Flush();
+            }
         }
 
         private static int WebJobMain(string webjobName)
@@ -27,12 +51,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             var renewr = new AppSettingsRenewer(
                 new RenewalManager(),
                 new AppSettingsRenewalParamsReader(new AppSettingsReader(ConfigurationManager.AppSettings, ConfigurationManager.ConnectionStrings)),
-                new SendGridNotifier(ConfigurationManager.AppSettings["letsencrypt:SendGridApiKey"]));
+                new SendGridNotifier(ConfigurationManager.AppSettings[AppSettingsRenewalParamsReader.KeyPrefix + "SendGridApiKey"]));
             try
             {
                 renewr.Renew();
             }
-            catch (Exception e)
+            catch (Exception e) when (!ExceptionHelper.IsCriticalException(e))
             {
                 Console.WriteLine("***ERROR*** Unexpected exception: {0}", e);
                 throw; // we want the webjob to fail
@@ -63,7 +87,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
                 PrintUsage();
                 return ArgumentError;
             }
-            catch (Exception e)
+            catch (Exception e) when (!ExceptionHelper.IsCriticalException(e))
             {
                 Console.WriteLine("***ERROR*** Unexpected exception: {0}", e);
                 throw;
@@ -72,7 +96,6 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             return Success;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", Justification = "technical terms not in dictionary")]
         private static void PrintUsage()
         {
             Console.WriteLine(

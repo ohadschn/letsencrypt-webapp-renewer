@@ -10,6 +10,7 @@
       <Word>Cli</Word>
       <Word>Notifier</Word>
       <Word>Api</Word>
+      <Word>Util</Word>
     </Recognized>
     <Compound>
       <Term CompoundAlternate="WebApp">webApp</Term>

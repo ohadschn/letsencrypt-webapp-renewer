@@ -9,7 +9,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 {
     internal class AppSettingsRenewalParamsReader : IAppSettingsRenewalParamsReader
     {
-        private const string KeyPrefix = "letsencrypt:";
+        public const string KeyPrefix = "letsencrypt:";
         private readonly IAppSettingsReader m_appSettings;
 
         public AppSettingsRenewalParamsReader(IAppSettingsReader appSettings)
