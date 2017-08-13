@@ -22,7 +22,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             var telemetryEnvironmentVariable = AppSettingsRenewalParamsReader.KeyPrefix + "DISABLE_TELEMETRY";
             if (Environment.GetEnvironmentVariable(telemetryEnvironmentVariable) == null)
             {
-                TelemetryHelper.Setup("32cf968e-40d4-42d3-a2de-037140fd4371");
+                TelemetryHelper.Setup();
             }
             else
             {
