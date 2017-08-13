@@ -13,7 +13,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email
 
         public SendGridNotifier(string apiKey)
         {
-            if (apiKey != null && apiKey.All(char.IsWhiteSpace))
+            if (apiKey != null && apiKey.All(Char.IsWhiteSpace))
             {
                 throw new ArgumentException("SendGrid API key cannot be whitespace", nameof(apiKey));
             }

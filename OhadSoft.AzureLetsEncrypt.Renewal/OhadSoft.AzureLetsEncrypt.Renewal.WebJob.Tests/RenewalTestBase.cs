@@ -28,6 +28,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected static readonly Guid ClientId2 = Guid.Parse("618a929b-d9c9-4ec1-b8dc-66f55d949d52");
         protected const string ClientSecret1 = "foo-secret123";
         protected const string ClientSecret2 = "bar-verySecret321";
+        protected const string ServicePlanResourceGroup1 = "foo-service-plan-resource-group";
+        protected const string ServicePlanResourceGroup2 = "bar-service-plan-resource-group";
+        protected const string SiteSlotName1 = "foo-slot";
+        protected const string SiteSlotName2 = "bar-slot";
         protected const bool UseIpBasedSsl1 = true;
         protected const bool UseIpBasedSsl2 = false;
         protected const int RsaKeyLength1 = 1024;
@@ -43,7 +47,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             Hosts1, 
             Email1, 
             ClientId1, 
-            ClientSecret1, 
+            ClientSecret1,
+            ServicePlanResourceGroup1,
+            SiteSlotName1,
             UseIpBasedSsl1, 
             RsaKeyLength1, 
             AcmeBaseUri1);
@@ -67,6 +73,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             Email2,
             ClientId2,
             ClientSecret2,
+            ServicePlanResourceGroup2,
+            SiteSlotName2,
             UseIpBasedSsl2,
             RsaKeyLength2,
             AcmeBaseUri2);

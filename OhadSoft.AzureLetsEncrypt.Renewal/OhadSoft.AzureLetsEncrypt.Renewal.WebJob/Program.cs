@@ -110,8 +110,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
         private static void PrintUsage()
         {
             Console.WriteLine(
-                "Usage: {0}.exe SubscriptionId TenantId ResourceGroup WebApp Hosts Email ClientId ClientSecret [UseIpBasedSsl] [RsaKeyLength] [AcmeBaseUri]",
+                "Usage: {0}.exe SubscriptionId TenantId ResourceGroup WebApp Hosts Email ClientId ClientSecret [ServicePlanResourceGroupName] [SiteSlotName] [UseIpBasedSsl] [RsaKeyLength] [AcmeBaseUri]",
                 typeof(Program).Assembly.GetName().Name);
+            Console.WriteLine("'ServicePlanResourceGroupName' can be empty (\"\"), in which case the web app resource group will be used");
+            Console.WriteLine("'SiteSlotName' can be empty if site deployment slots are not to be used");
             Console.WriteLine("'Hosts' is a semicolon-delimited list of host names");
             Console.WriteLine("'UseIpBasedSsl' is optional and defaults to false");
             Console.WriteLine("'RsaKeyLength' is optional and defaults to 2048");

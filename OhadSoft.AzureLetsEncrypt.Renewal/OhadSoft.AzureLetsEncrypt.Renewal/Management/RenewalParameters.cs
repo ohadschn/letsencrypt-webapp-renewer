@@ -15,6 +15,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public string Email { get; }
         public Guid ClientId { get; }
         public string ClientSecret { get; }
+        public string ServicePlanResourceGroup { get; }
+        public string SiteSlotName { get; }
         public bool UseIpBasedSsl { get; }
         public int RsaKeyLength { get; }
         public Uri AcmeBaseUri { get; }
@@ -28,6 +30,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             string email,
             Guid clientId,
             string clientSecret,
+            string servicePlanResourceGroup = null,
+            string siteSlotName = null,
             bool useIpBasedSsl = false,
             int rsaKeyLength = 2048,
             Uri acmeBaseUri = null)
@@ -42,7 +46,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
             ResourceGroup = !String.IsNullOrWhiteSpace(resourceGroup)
                 ? resourceGroup
-                : throw new ArgumentException("Resource group name must not be null or whitespace", nameof(resourceGroup));
+                : throw new ArgumentException("Resource group must not be null or whitespace", nameof(resourceGroup));
 
             WebApp = !String.IsNullOrWhiteSpace(webApp)
                 ? webApp
@@ -65,6 +69,14 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 ? clientSecret
                 : throw new ArgumentException("Client secret must not be null or whitespace", nameof(clientSecret));
 
+            ServicePlanResourceGroup = servicePlanResourceGroup == null || !servicePlanResourceGroup.All(Char.IsWhiteSpace)
+                ? servicePlanResourceGroup
+                : throw new ArgumentException("Service plan resource name must be either null or non-whitespace", nameof(servicePlanResourceGroup));
+
+            SiteSlotName = siteSlotName == null || !siteSlotName.All(Char.IsWhiteSpace)
+                ? siteSlotName
+                : throw new ArgumentException("Site slot name must be either null or non-whitespace", nameof(siteSlotName));
+
             UseIpBasedSsl = useIpBasedSsl;
 
             RsaKeyLength = rsaKeyLength > 0
@@ -78,7 +90,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
         public override string ToString()
         {
-            return Invariant($"{nameof(TenantId)}: {TenantId}, {nameof(SubscriptionId)}: {SubscriptionId}, {nameof(ClientId)}: {ClientId}, {nameof(ResourceGroup)}: {ResourceGroup}, {nameof(WebApp)}: {WebApp}, {nameof(Email)}: {Email}, {nameof(Hosts)}: {Hosts}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBaseUri)}: {AcmeBaseUri}, {nameof(ClientSecret)}: [SCRUBBED]");
+            return Invariant($"{nameof(SubscriptionId)}: {SubscriptionId}, {nameof(TenantId)}: {TenantId}, {nameof(ClientId)}: {ClientId}, {nameof(ClientSecret)}: [SCRUBBED], {nameof(ResourceGroup)}: {ResourceGroup}, {nameof(ServicePlanResourceGroup)}: {ServicePlanResourceGroup}, {nameof(WebApp)}: {WebApp}, {nameof(SiteSlotName)}: {SiteSlotName}, {nameof(Email)}: {Email}, {nameof(Hosts)}: {String.Join(", ", Hosts)}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBaseUri)}: {AcmeBaseUri}");
         }
 
         public bool Equals(RenewalParameters other)
@@ -93,10 +105,19 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 return true;
             }
 
-            return SubscriptionId.Equals(other.SubscriptionId) && string.Equals(TenantId, other.TenantId) &&
-                   string.Equals(ResourceGroup, other.ResourceGroup) && string.Equals(WebApp, other.WebApp) && Hosts.SequenceEqual(other.Hosts) &&
-                   string.Equals(Email, other.Email) && ClientId.Equals(other.ClientId) && string.Equals(ClientSecret, other.ClientSecret) &&
-                   UseIpBasedSsl == other.UseIpBasedSsl && RsaKeyLength == other.RsaKeyLength && Equals(AcmeBaseUri, other.AcmeBaseUri);
+            return SubscriptionId.Equals(other.SubscriptionId)
+                && string.Equals(TenantId, other.TenantId)
+                && string.Equals(ResourceGroup, other.ResourceGroup)
+                && string.Equals(WebApp, other.WebApp)
+                && Hosts.SequenceEqual(other.Hosts)
+                && string.Equals(Email, other.Email)
+                && ClientId.Equals(other.ClientId)
+                && string.Equals(ClientSecret, other.ClientSecret)
+                && string.Equals(ServicePlanResourceGroup, other.ServicePlanResourceGroup)
+                && string.Equals(SiteSlotName, other.SiteSlotName)
+                && UseIpBasedSsl == other.UseIpBasedSsl
+                && RsaKeyLength == other.RsaKeyLength
+                && Equals(AcmeBaseUri, other.AcmeBaseUri);
         }
 
         public override bool Equals(object obj)

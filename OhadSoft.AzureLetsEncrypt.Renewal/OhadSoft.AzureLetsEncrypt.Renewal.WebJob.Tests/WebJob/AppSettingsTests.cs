@@ -25,6 +25,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         public const string EmailKeySuffix = "-email";
         public const string ClientIdKeySuffix = "-clientId";
         public const string ClientSecretKeySuffix = "-clientSecret";
+        public const string ServicePlanResourceGroupKeySuffix = "-servicePlanResourceGroup";
+        public const string SiteSlotNameSuffix = "-siteSlotName";
         public const string UseIpBasedSslKeySuffix = "-useIpBasedSsl";
         public const string RsaKeyLengthKeySuffix = "-rsaKeyLength";
         public const string AcmeBaseUriKeySuffix = "-acmeBaseUri";
@@ -46,6 +48,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             {KeyPrefix + Webapp2 + EmailKeySuffix, Email2},
             {KeyPrefix + Webapp1 + ClientIdKeySuffix, ClientId1.ToString()},
             {KeyPrefix + Webapp2 + ClientIdKeySuffix, ClientId2.ToString()},
+            {KeyPrefix + Webapp1 + ServicePlanResourceGroupKeySuffix, ServicePlanResourceGroup1 },
+            {KeyPrefix + Webapp1 + SiteSlotNameSuffix, SiteSlotName1 },
             {KeyPrefix + Webapp1 + UseIpBasedSslKeySuffix, UseIpBasedSsl1.ToString()},
             {KeyPrefix + Webapp1 + RsaKeyLengthKeySuffix, RsaKeyLength1.ToString()},
             {KeyPrefix + Webapp1 + AcmeBaseUriKeySuffix, AcmeBaseUri1.ToString()}
@@ -136,6 +140,18 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         public void TestInvalidClientId()
         {
             AssertInvalidConfig(Webapp2 + ClientIdKeySuffix, " ");
+        }
+
+        [TestMethod]
+        public void TestInvalidServicePlanResourceGroup()
+        {
+            AssertInvalidConfig(Webapp1 + ServicePlanResourceGroupKeySuffix, "");
+        }
+
+        [TestMethod]
+        public void TestInvalidSiteSlotName()
+        {
+            AssertInvalidConfig(Webapp2 + SiteSlotNameSuffix, " ");
         }
 
         [TestMethod]

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.CLI;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Util;
 
@@ -13,7 +14,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.CLI
         private static readonly IReadOnlyCollection<string> FullValidArgs = new[]
         {
             Subscription1.ToString(), Tenant1, ResourceGroup1, Webapp1, String.Join(";", Hosts1),
-            Email1, ClientId1.ToString(), ClientSecret1, UseIpBasedSsl1.ToString(), RsaKeyLength1.ToString(), AcmeBaseUri1.ToString()
+            Email1, ClientId1.ToString(), ClientSecret1, ServicePlanResourceGroup1, SiteSlotName1, UseIpBasedSsl1.ToString(), RsaKeyLength1.ToString(), AcmeBaseUri1.ToString()
         };
 
         private static string[] GetMaximalValidArgs() => FullValidArgs.ToArray();
@@ -91,19 +92,19 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.CLI
         [TestMethod]
         public void InvalidUseIpBasedSsl()
         {
-            TestInvalidParameter(8, "notTrueOrFalse");
+            TestInvalidParameter(10, "notTrueOrFalse");
         }
 
         [TestMethod]
         public void InvalidRsaKeyLength()
         {
-            TestInvalidParameter(9, "-1");
+            TestInvalidParameter(11, "-1");
         }
 
         [TestMethod]
         public void InvalidAcmeBaseUri()
         {
-            TestInvalidParameter(10, "www.nohttp.com");
+            TestInvalidParameter(12, "www.nohttp.com");
         }
 
         private void TestInvalidParameter(int index, string value)
@@ -125,6 +126,21 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.CLI
         {
             m_renewer.Renew(GetMaximalValidArgs());
             VerifySuccessfulRenewal(ExpectedFullRenewalParameters1);
+        }
+
+        [TestMethod]
+        public void EmptyMiddleParameter()
+        {
+            m_renewer.Renew(GetMinimalValidArgs().Concat(new[] { "", SiteSlotName1, "true" }).ToArray());
+            VerifySuccessfulRenewal(
+                new RenewalParameters(Subscription1, Tenant1, ResourceGroup1, Webapp1, Hosts1, Email1, ClientId1, ClientSecret1, null, SiteSlotName1, true));
+        }
+
+        [TestMethod]
+        public void EmptyParameters()
+        {
+            m_renewer.Renew(GetMinimalValidArgs().Concat(new [] {"  ", " "}).ToArray());
+            VerifySuccessfulRenewal(ExpectedPartialRenewalParameters1);
         }
     }
 }

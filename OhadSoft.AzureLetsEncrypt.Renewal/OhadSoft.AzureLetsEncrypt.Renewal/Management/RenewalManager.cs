@@ -33,7 +33,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                     renewParams.ClientId,
                     renewParams.ClientSecret,
                     renewParams.ResourceGroup,
-                    renewParams.WebApp),
+                    renewParams.WebApp,
+                    renewParams.ServicePlanResourceGroup,
+                    renewParams.SiteSlotName),
                 new AcmeConfig
                 {
                     Host = renewParams.Hosts[0],

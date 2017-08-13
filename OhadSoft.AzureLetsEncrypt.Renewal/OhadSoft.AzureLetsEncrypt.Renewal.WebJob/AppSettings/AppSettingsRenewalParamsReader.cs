@@ -45,6 +45,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
             var emailKey = KeyPrefix + webApp + "-email";
             var clientIdKey = KeyPrefix + webApp + "-clientId";
             var clientSecretKey = KeyPrefix + webApp + "-clientSecret";
+            var servicePlanResourceGroupKey = KeyPrefix + webApp + "-servicePlanResourceGroup";
+            var siteSlotNameKey = KeyPrefix + webApp + "-siteSlotName";
             var useIpBasedSslKey = KeyPrefix + webApp + "-useIpBasedSsl";
             var rsaKeyLengthKey = KeyPrefix + webApp + "-rsaKeyLength";
             var acmeBaseUri = KeyPrefix + webApp + "-acmeBaseUri";
@@ -61,6 +63,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                     m_appSettings.GetString(emailKey),
                     m_appSettings.GetGuid(clientIdKey),
                     m_appSettings.GetConnectionString(clientSecretKey),
+                    m_appSettings.HasSetting(servicePlanResourceGroupKey) ? m_appSettings.GetString(servicePlanResourceGroupKey) : null,
+                    m_appSettings.HasSetting(siteSlotNameKey) ? m_appSettings.GetString(siteSlotNameKey) : null,
                     m_appSettings.HasSetting(useIpBasedSslKey) ? m_appSettings.GetBoolean(useIpBasedSslKey) : false,
                     m_appSettings.HasSetting(rsaKeyLengthKey) ? m_appSettings.GetInt32(rsaKeyLengthKey) : 2048,
                     m_appSettings.HasSetting(acmeBaseUri) ? m_appSettings.GetUri(acmeBaseUri) : null);
