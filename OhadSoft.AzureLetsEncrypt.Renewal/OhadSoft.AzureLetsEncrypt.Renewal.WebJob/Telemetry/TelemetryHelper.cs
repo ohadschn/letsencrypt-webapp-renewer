@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DependencyCollector;
@@ -11,9 +12,11 @@ using Microsoft.ApplicationInsights.WindowsServer;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry
 {
-    internal static class TelemetryManager
+    internal static class TelemetryHelper
     {
         public static readonly TelemetryClient Client = new TelemetryClient();
+
+        public static bool TelemetryInitialized => Client.InstrumentationKey != null;
 
         [SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope", Justification = "Lifetime is managed by Application Insights")]
         public static void Setup(string instrumentationKey)
@@ -75,6 +78,36 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry
             module.Initialize(TelemetryConfiguration.Active);
             TelemetryModules.Instance.Modules.Add(module);
             return module;
+        }
+
+        private static readonly byte[] Pepper = Guid.Parse("3a7d41f4-e0cd-4a00-a42a-61de1700bc6b").ToByteArray();
+        public static string Hash(string str)
+        {
+            if (str == null)
+            {
+                TrackInternalError(new ArgumentNullException(nameof(str)));
+                return string.Empty;
+            }
+
+            // https://security.stackexchange.com/questions/17994/with-pbkdf2-what-is-an-optimal-hash-size-in-bytes-what-about-the-size-of-the-s
+            using (var rfc2898DeriveBytes = new Rfc2898DeriveBytes(str, Pepper, 10000))
+            {
+                return Convert.ToBase64String(rfc2898DeriveBytes.GetBytes(20));
+            }
+        }
+
+        public static void TrackInternalError(Exception exception)
+        {
+            exception = exception ?? new InternalErrorException("internal error tracked with null exception", null);
+            try
+            {
+                // we're throwing to get a full exception with stack trace in the catch clause below
+                throw new InternalErrorException(exception.Message, exception);
+            }
+            catch (InternalErrorException e)
+            {
+                Client.TrackException(e);
+            }
         }
     }
 }

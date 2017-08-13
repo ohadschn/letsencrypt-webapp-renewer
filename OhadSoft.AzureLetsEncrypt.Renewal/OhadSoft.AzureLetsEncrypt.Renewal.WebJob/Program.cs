@@ -22,7 +22,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             var telemetryEnvironmentVariable = AppSettingsRenewalParamsReader.KeyPrefix + "DISABLE_TELEMETRY";
             if (Environment.GetEnvironmentVariable(telemetryEnvironmentVariable) == null)
             {
-                TelemetryManager.Setup("32cf968e-40d4-42d3-a2de-037140fd4371");
+                TelemetryHelper.Setup("32cf968e-40d4-42d3-a2de-037140fd4371");
             }
             else
             {
@@ -36,17 +36,20 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             }
             catch (Exception e) when (!ExceptionHelper.IsCriticalException(e))
             {
-                TelemetryManager.Client.TrackException(e);
+                TelemetryHelper.Client.TrackException(e);
                 throw;
             }
             finally
             {
-                TelemetryManager.Client.Flush();
+                TelemetryHelper.Client.Flush();
             }
         }
 
         private static int WebJobMain(string webjobName)
         {
+            var startTicks = Environment.TickCount;
+            Events.WebJobRenewalStarted(webjobName);
+
             Console.WriteLine("Web App SSL renewal job ({0}) started", webjobName);
             var renewr = new AppSettingsRenewer(
                 new RenewalManager(),
@@ -62,11 +65,15 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
                 throw; // we want the webjob to fail
             }
 
+            Events.WebjobRenewalCompleted(webjobName, startTicks);
             return Success;
         }
 
         private static int CliMain(string[] args)
         {
+            var startTicks = Environment.TickCount;
+            Events.CliRenewalStarted(args);
+
             Trace.Listeners.Add(new ConsoleTraceListener());
             Console.WriteLine("Web App SSL renewal CLI started, parameters: {0}", string.Join(", ", args));
             var renewer = new CliRenewer(new RenewalManager(), new CommandlineRenewalParamsReader());
@@ -83,6 +90,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
                     Environment.NewLine,
                     TraceSourceName);
 
+                TelemetryHelper.Client.TrackException(e);
+
                 new TraceSource(TraceSourceName).TraceEvent(TraceEventType.Error, 1, e.ToString());
                 PrintUsage();
                 return ArgumentError;
@@ -93,9 +102,11 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
                 throw;
             }
 
+            Events.CliRenewalCompleted(startTicks);
             return Success;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", Justification = "technical terms not in dictionary")]
         private static void PrintUsage()
         {
             Console.WriteLine(

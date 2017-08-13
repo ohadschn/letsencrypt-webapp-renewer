@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email;
@@ -27,6 +26,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
             var exceptions = new ConcurrentQueue<Exception>();
             Parallel.ForEach(m_renewalParamsReader.Read(), renewalParams =>
             {
+                Events.RenewalInProgress(renewalParams);
                 try
                 {
                     m_renewalManager.Renew(renewalParams);

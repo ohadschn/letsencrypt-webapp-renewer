@@ -1,4 +1,5 @@
 ﻿using OhadSoft.AzureLetsEncrypt.Renewal.Management;
+using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.CLI
 {
@@ -15,7 +16,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.CLI
 
         public void Renew(string[] args)
         {
-            m_renewalManager.Renew(m_renewalParamsReader.Read(args));
+            var renewalParameters = m_renewalParamsReader.Read(args);
+            Events.RenewalInProgress(renewalParameters);
+            m_renewalManager.Renew(renewalParameters);
         }
     }
 }
