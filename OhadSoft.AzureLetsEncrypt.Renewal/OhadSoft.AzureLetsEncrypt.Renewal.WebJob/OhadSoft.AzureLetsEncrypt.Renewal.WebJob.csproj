@@ -142,6 +142,11 @@
     </AdditionalFiles>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\ohadsoft-ssl-renewer - Web Deploy.pubxml" />
+    <None Include="Properties\webjob-publish-settings.json" />
+    <None Include="settings.job">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OhadSoft.AzureLetsEncrypt.Renewal\OhadSoft.AzureLetsEncrypt.Renewal.csproj">
@@ -170,4 +175,5 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Microsoft.Web.WebJobs.Publish.1.0.12\tools\webjobs.targets" Condition="Exists('..\packages\Microsoft.Web.WebJobs.Publish.1.0.12\tools\webjobs.targets')" />
 </Project>
