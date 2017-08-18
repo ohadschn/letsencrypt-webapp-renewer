@@ -76,7 +76,7 @@
       <HintPath>..\packages\AWSSDK.Route53.3.3.6.3\lib\net45\AWSSDK.Route53.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.S3, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.S3.3.3.9\lib\net45\AWSSDK.S3.dll</HintPath>
+      <HintPath>..\packages\AWSSDK.S3.3.3.10.1\lib\net45\AWSSDK.S3.dll</HintPath>
     </Reference>
     <Reference Include="LetsEncrypt.Azure.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\letsencrypt.azure.core.0.6.20-prerelease\lib\net46\LetsEncrypt.Azure.Core.dll</HintPath>
@@ -149,7 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\AWSSDK.Route53.3.3.6.3\analyzers\dotnet\cs\AWSSDK.Route53.CodeAnalysis.dll" />
-    <Analyzer Include="..\packages\AWSSDK.S3.3.3.9\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
+    <Analyzer Include="..\packages\AWSSDK.S3.3.3.10.1\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
     <Analyzer Include="..\packages\SonarAnalyzer.CSharp.6.3.0.2862\analyzers\Google.Protobuf.dll" />
     <Analyzer Include="..\packages\SonarAnalyzer.CSharp.6.3.0.2862\analyzers\SonarAnalyzer.CSharp.dll" />
     <Analyzer Include="..\packages\SonarAnalyzer.CSharp.6.3.0.2862\analyzers\SonarAnalyzer.dll" />
