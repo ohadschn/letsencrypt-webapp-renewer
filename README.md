@@ -33,7 +33,24 @@ Enter [Let's Encrypt](https://letsencrypt.org/) - a free, automated, and open Ce
 1. Create an AAD service principal with the proper permissions, as explained [here](https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install) and [here](https://www.troyhunt.com/everything-you-need-to-know-about-loading-a-free-lets-encrypt-certificate-into-an-azure-website/) (you can skip the parts about configuring the Azure Storage account and the site extension, but while you're there note down the parameters you'll need for the WebJob configuration below: `SubscriptionId`, `TenantId`, `ResourceGroup`,  `WebApp`, `ClientId`, and `ClientSecret`).
 
 ## Configuration
+The `letsencrypt-webapp-renewer` WebJob is configured via [Web App Settings](https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-configure#application-settings).
+1. Set `letsencrypt:webApps` to a semicolon-delimited list of Azure Web App names for which certificate renewal should take place
+1. For each Web App specified in `letsencrypt:webApps`, set the following app setting with the proper values as noted down in the last preparation step above (replacing `webAppName` with the actual Web App name):
+   1. `letsencrypt:webAppName-subscriptionId`
+   1. `letsencrypt:webAppName-tenantId`
+   1. `letsencrypt:webAppName-resourceGroup`
+   1. `letsencrypt:webAppName-hosts` (semicolon-delimited)
+   1. `letsencrypt:webAppName-email` (will be used for both Let's Encrypt registration and e-mail notifications)
+   1. `letsencrypt:webAppName-clientId`
+   1. `letsencrypt:webAppName-clientSecret` (should be set as a **connection string**)
+   1. (optional) `letsencrypt:webAppName-servicePlanResourceGroup`
+   1. (optional) `letsencrypt:webAppName-siteSlotName`
+   1. (optional) `letsencrypt:webAppName-useIpBasedSsl`
+   1. (optional) `letsencrypt:webAppName-rsaKeyLength`
+   1. (optional) `letsencrypt:webAppName-acmeBaseUri`
+1. If you would like to receive e-mail notificaitons on successful renewals, set `letsencrypt:webAppName-SendGridApiKey` to your [SendGrid API key](https://sendgrid.com/docs/Classroom/Send/How_Emails_Are_Sent/api_keys.html). At the time of writing, SendGrid offer a free plan in the [Azure Marketplace](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/SendGrid.SendGrid) which should easily suffice for any reasonable SSL renewal notification needs.
 
+Configuration sample
 
 ## Installation
 1. Deploy and schedule the WebJob zip file you prepared above (per the scheduling method you selected above). **It is highly recommended to deploy the `letsencrypt-webapp-renewer` WebJob to a dedicated Web App created solely for this purpose**, in order to prevent accidental deletion of the webjob (e.g. upon deployment of a different app using _Delete Existing files_).
@@ -41,7 +58,7 @@ Enter [Let's Encrypt](https://letsencrypt.org/) - a free, automated, and open Ce
 - (optional but highly recommended) Set up [Zapier](https://zapier.com/help/windows-azure-web-sites/) to send you notifications on `letsencrypt-webapp-renewer` WebJob runs. While e-mail notifications are supported as described above, **they will only be fired when the webjob has failed** (this is intentional - a webjob cannot reliably handle any possible failure it might encounter). By contrast, Zapier operates externally to the WebJob and should be able to report any error that might have caused the WebJob to fail. At the time of writing, Zapier offer a free account which should easily suffice for any reasonable SSL renewal notification needs.
   
 ## Command Line usage
-The webjob executable (`AzureLetsEncryptRenewer.exe`) can be used as a standalone command-line tool:
+Wen executed outside of a WebJob context (as determined by the [WEBJOBS_NAME](https://github.com/projectkudu/kudu/wiki/WebJobs#environment-settings) environment variable), the webjob executable (`AzureLetsEncryptRenewer.exe`) functions as a standalone command-line tool:
 
 > AzureLetsEncryptRenewer.exe SubscriptionId TenantId ResourceGroup WebApp Hosts Email ClientId ClientSecret [ServicePlanResourceGroupName] [SiteSlotName] [UseIpBasedSsl] [RsaKeyLength] [AcmeBaseUri]
 
@@ -58,6 +75,9 @@ Exit codes:
 - 2 = Unexpected error
 
 Consult the Let's Encrypt documentation for rate limits: https://letsencrypt.org/docs/rate-limits/
+
+## Telemetry
+`letsencrypt-webapp-renewer` gathers anonymous telemetry for usage analysis and error reporting. You can disable it by setting the `LETSENCRYPT_DISABLE_TELEMETRY` to any non-empty value.
 
 ## Disclaimer 
 Since this project relies on https://github.com/sjkp/letsencrypt-siteextension, some of its limitations apply as well:
