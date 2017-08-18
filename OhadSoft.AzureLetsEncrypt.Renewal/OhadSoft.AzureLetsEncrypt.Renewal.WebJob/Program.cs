@@ -7,6 +7,7 @@ using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.CLI;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Util;
+using static System.FormattableString;
 using AppSettingsReader = OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings.AppSettingsReader;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
@@ -15,29 +16,25 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
     {
         private const int Success = 0;
         private const int ArgumentError = 1;
-        private const string TraceSourceName = "OhadSoft.AzureLetsEncrypt.Renewal.WebJob";
+        private const int UnexpectedException = 2;
+        private const string DisableTelemetryEnvVarNAme = "LETSENCRYPT_DISABLE_TELEMETRY";
+        private const string VerboseOutputEnvVarName = "LETSENCRYPT_VERBOSE";
 
         private static int Main(string[] args)
         {
-            var telemetryEnvironmentVariable = AppSettingsRenewalParamsReader.KeyPrefix + "DISABLE_TELEMETRY";
-            if (Environment.GetEnvironmentVariable(telemetryEnvironmentVariable) == null)
+            if (Environment.GetEnvironmentVariable(DisableTelemetryEnvVarNAme) == null)
             {
                 TelemetryHelper.Setup();
             }
             else
             {
-                Console.WriteLine("'{0}' environment variable detected - telemetry disabled", telemetryEnvironmentVariable);
+                Console.WriteLine("{0} environment variable detected - telemetry disabled", DisableTelemetryEnvVarNAme);
             }
 
             try
             {
                 var webjobName = Environment.GetEnvironmentVariable("WEBJOBS_NAME");
                 return webjobName != null ? WebJobMain(webjobName) : CliMain(args);
-            }
-            catch (Exception e) when (!ExceptionHelper.IsCriticalException(e))
-            {
-                TelemetryHelper.Client.TrackException(e);
-                throw;
             }
             finally
             {
@@ -85,21 +82,23 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             catch (ArgumentException e)
             {
                 Console.WriteLine(
-                    "***ERROR*** Could not parse arguments: {0}{1}(To see the full exception enable the {2} trace source in app.config)",
+                    "***ERROR*** Could not parse arguments: {0}{1}{2}",
                     e.Message,
                     Environment.NewLine,
-                    TraceSourceName);
+                    Environment.GetEnvironmentVariable(VerboseOutputEnvVarName) != null
+                        ? e.ToString()
+                        : Invariant($"(To see the full exception set the {VerboseOutputEnvVarName} environment variable to any non-empty value)"));
 
                 TelemetryHelper.Client.TrackException(e);
 
-                new TraceSource(TraceSourceName).TraceEvent(TraceEventType.Error, 1, e.ToString());
                 PrintUsage();
                 return ArgumentError;
             }
             catch (Exception e) when (!ExceptionHelper.IsCriticalException(e))
             {
                 Console.WriteLine("***ERROR*** Unexpected exception: {0}", e);
-                throw;
+                TelemetryHelper.Client.TrackException(e);
+                return UnexpectedException;
             }
 
             Events.CliRenewalCompleted(startTicks);
