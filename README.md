@@ -50,7 +50,15 @@ The `letsencrypt-webapp-renewer` WebJob is configured via [Web App Settings](htt
    1. (optional) `letsencrypt:webAppName-acmeBaseUri`
 1. If you would like to receive e-mail notificaitons on successful renewals, set `letsencrypt:webAppName-SendGridApiKey` to your [SendGrid API key](https://sendgrid.com/docs/Classroom/Send/How_Emails_Are_Sent/api_keys.html). At the time of writing, SendGrid offer a free plan in the [Azure Marketplace](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/SendGrid.SendGrid) which should easily suffice for any reasonable SSL renewal notification needs.
 
-Configuration sample
+### Sample configuration
+- `letsencrypt:webApps`: `ohadsoft;howlongtobeatsteam`
+- `letsencrypt:ohadsoft-subscriptionId`: `e432f869-4777-4380-a654-3440216992a2`
+- `letsencrypt:ohadsoft-tenantId`: `ohadsoft.onmicrosoft.com`
+- `letsencrypt:ohadsoft-resourceGroup`: `ohadsoft-rg`
+- `letsencrypt:ohadsoft-hosts`: `www.ohadsoft.com;ohadsoft.com`
+- `letsencrypt:ohadsoft-email`: `renewal@ohadsoft.com`
+- `letsencrypt:ohadsoft-clientId`: `5e1346b6-7db5-4eae-b9fa-7b3d5e42e6c7`
+- `letsencrypt:ohadsoft-clientSecret`: `MySecretPassword123` (**connection string**)
 
 ## Installation
 1. Deploy and schedule the WebJob zip file you prepared above (per the scheduling method you selected above). **It is highly recommended to deploy the `letsencrypt-webapp-renewer` WebJob to a dedicated Web App created solely for this purpose**, in order to prevent accidental deletion of the webjob (e.g. upon deployment of a different app using _Delete Existing files_).
