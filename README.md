@@ -59,6 +59,13 @@ The `letsencrypt-webapp-renewer` WebJob is configured via [Web App Settings](htt
 - `letsencrypt:ohadsoft-email`: `renewal@ohadsoft.com`
 - `letsencrypt:ohadsoft-clientId`: `5e1346b6-7db5-4eae-b9fa-7b3d5e42e6c7`
 - `letsencrypt:ohadsoft-clientSecret`: `MySecretPassword123` (**connection string**)
+- `letsencrypt:howlongtobeatsteam-subscriptionId`: `e432f869-4777-4380-a654-3440216992a2`
+- `letsencrypt:howlongtobeatsteam-tenantId`: `ohadsoft.onmicrosoft.com`
+- `letsencrypt:howlongtobeatsteam-resourceGroup`: `hltbs-rg`
+- `letsencrypt:howlongtobeatsteam-hosts`: `www.howlongtobeatsteam.com;howlongtobeatsteam.com`
+- `letsencrypt:howlongtobeatsteam-email`: `renewal@howlongtobeatsteam.com`
+- `letsencrypt:howlongtobeatsteam-clientId`: `5e1346b6-7db5-4eae-b9fa-7b3d5e42e6c7`
+- `letsencrypt:howlongtobeatsteam-clientSecret`: `MySecretPassword123` (**connection string**)
 
 ## Installation
 1. Deploy and schedule the WebJob zip file you prepared above (per the scheduling method you selected above). **It is highly recommended to deploy the `letsencrypt-webapp-renewer` WebJob to a dedicated Web App created solely for this purpose**, in order to prevent accidental deletion of the webjob (e.g. upon deployment of a different app using _Delete Existing files_).
