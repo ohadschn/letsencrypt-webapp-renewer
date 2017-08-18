@@ -15,17 +15,17 @@ Enter [Let's Encrypt](https://letsencrypt.org/) - a free, automated, and open Ce
 - The extension can only be run in the context of a web app. You might want to run it as a command-line tool (e.g. from your CI system).
 
 ## Solution
-`letsencrypt-webapp-renewer` is a WebJob-ready commandline that offers the following features:
-- Install on any Web App (doesn't have to be the same web app for which you want to manage SSL certs)
-  - Multiple Web App management is supported
+`letsencrypt-webapp-renewer` is a WebJob-ready commandline that builds upon [letsencrypt-siteextension](https://github.com/sjkp/letsencrypt-siteextension) to provide the following features:
+- Install on any Web App (doesn't have to be the same web app for which you want to manage SSL certs).
+  - Multiple Web App management is supported.
   - Publishing with "Delete Existing files" has no effect then the webjob is deployed to a different (preferably dedicated) Web App.
-- E-mail notifications are build it (via SendGrid)
-- No external dependencies other than Let's Encrypt
-- Can be executed as a plain command-line tool from any environment
+- E-mail notifications are build it (via SendGrid).
+- No external dependencies other than Let's Encrypt.
+- Can be executed as a plain command-line tool from any environment.
 
 ## Preparation
 1. Download the latest [`letsencrypt-webapp-renewer` WebJob zip file](https://github.com/ohadschn/letsencrypt-webapp-renewer/releases).
-1. Decide on the WebJob scheduling option that works for you
+1. Decide on the WebJob scheduling option that works for you.
    1. [CRON based](https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-create-web-jobs#CreateScheduledCRON) is simple to set up but **REQUIRES YOUR WEB APP TO BE CONFIGURED AS "ALWAYS ON"**.
       1. If that is acceptable, all you have to do is edit the `settings.job` file in the `letsencrypt-webapp-renewer` WebJob zip file and edit the schedule to your liking. The default schedule follows the [recommended Let's Encrypt renewal period of 60 days](https://letsencrypt.org/docs/faq/) (once every two months).
       1. If that is not acceptible (for example, your tier might not support the _Always On_ feature), use Azure Scheduler as described below.
@@ -34,7 +34,7 @@ Enter [Let's Encrypt](https://letsencrypt.org/) - a free, automated, and open Ce
 
 ## Configuration
 The `letsencrypt-webapp-renewer` WebJob is configured via [Web App Settings](https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-configure#application-settings).
-1. Set `letsencrypt:webApps` to a semicolon-delimited list of Azure Web App names for which certificate renewal should take place
+1. Set `letsencrypt:webApps` to a semicolon-delimited list of Azure Web App names for which certificate renewal should take place.
 1. For each Web App specified in `letsencrypt:webApps`, set the following app setting with the proper values as noted down in the last preparation step above (replacing `webAppName` with the actual Web App name):
    1. `letsencrypt:webAppName-subscriptionId`
    1. `letsencrypt:webAppName-tenantId`
