@@ -111,14 +111,14 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             Console.WriteLine(
                 "Usage: {0}.exe SubscriptionId TenantId ResourceGroup WebApp Hosts Email ClientId ClientSecret [ServicePlanResourceGroupName] [SiteSlotName] [UseIpBasedSsl] [RsaKeyLength] [AcmeBaseUri]",
                 typeof(Program).Assembly.GetName().Name);
-            Console.WriteLine("'ServicePlanResourceGroupName' can be empty (\"\"), in which case the web app resource group will be used");
-            Console.WriteLine("'SiteSlotName' can be empty if site deployment slots are not to be used");
             Console.WriteLine("'Hosts' is a semicolon-delimited list of host names");
+            Console.WriteLine("'ServicePlanResourceGroupName' is optional and can be empty (\"\"), in which case the web app resource group will be used");
+            Console.WriteLine("'SiteSlotName' is optional and can be empty (\"\") if site deployment slots are not to be used");
             Console.WriteLine("'UseIpBasedSsl' is optional and defaults to false");
             Console.WriteLine("'RsaKeyLength' is optional and defaults to 2048");
             Console.WriteLine("'AcmeBaseUri' is optional and defaults to https://acme-v01.api.letsencrypt.org/");
             Console.WriteLine("Consult the Let's Encrypt documentation for rate limits: https://letsencrypt.org/docs/rate-limits/");
-            Console.WriteLine("Exit codes: {0} = success, {1} = argument error (any other error will crash the process)", Success, ArgumentError);
+            Console.WriteLine("Exit codes: {0} = success, {1} = argument error, {2} = unexpected error", Success, ArgumentError, UnexpectedException);
         }
     }
 }
