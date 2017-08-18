@@ -35,12 +35,10 @@ Enter [Let's Encrypt](https://letsencrypt.org/) - a free, automated, and open Ce
 
 
 ## Installation
-1. [Deploy](https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-create-web-jobs) the latest  as to the Web App in which you want certificate renewal to execute (preferably a dedicated Web App created solely for this purpose) as **triggered (AKA on-demand)**. 
-  1. Note that by default,  is used. .
-  1.
-You have several options for webjob deployment:
-  1. Upload the  directly [to your Web App].
-  1. Clone the reposi
+Once you have prepared the WebJob zip file and configured your Web App as described above, all you have left is to deploy it according to the scheduling method you selected above. However, it is **highly recommended to perform the following steps after you have deployed the webjob** 
+- Test the WebJob by [triggering it manually](https://pragmaticdevs.wordpress.com/2016/10/24/triggering-azure-web-jobs-manually/). You should see a new certificate served when you visit your site.
+- Set up [Zapier] to send you notifications on `letsencrypt-webapp-renewer` WebJob runs. While e-mail notifications are supported as described above, **they will only be fired when the webjob has failed** (this is intentional - a webjob cannot reliably handle any possible failure it might encounter). By contrast, Zapier operate externally and should be able to report on any error that might have caused the WebJob to fail. At the time of writing Zapier have a free account easily supporting any reasonable SSL renewal needs.
+  
 ## Command Line usage
 The webjob executable (`AzureLetsEncryptRenewer.exe`) can be used as a standalone command-line tool:
 
@@ -60,3 +58,12 @@ Exit codes:
 
 Consult the Let's Encrypt documentation for rate limits: https://letsencrypt.org/docs/rate-limits/
 
+## Disclaimer 
+Since this project relies on https://github.com/sjkp/letsencrypt-siteextension, some of its limitations apply as well:
+> This site-extension is NOT supported by Microsoft it is my own work based on https://github.com/ebekker/ACMESharp and https://github.com/Lone-Coder/letsencrypt-win-simple - this means don't expect 24x7 support, I use it for several of my own smaller sites, but if you are running sites that are important you should consider spending the few $ on a certificate and go with a Microsoft supported way of enabling SSL, so you have someone to blame :)
+> Note that Let's Encrypt works by providing automated certificates of a short (currently three month) duration. This extension is BETA SOFTWARE. You will need to keep this extension updated or risk losing SSL access when your certificate expires.
+> Due to rate limiting of Let's Encrypt servers, you can only request five certificates per domain name per week. Configuration errors or errors in this site extension may render you unable to retrieve a new certificate for seven days. If up-time is critical, have a plan for deploying a SSL certificate from another source in place.
+> No support for multi-region web apps, so if you use traffic mananger or some other load balancer to route traffic between web apps in different regions please dont use this extension.
+> The site-extension will not work with Azure App Service Local Cache
+> Please take note that this Site-Extension is beta-software, so use at your own risk.
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYLEFT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
