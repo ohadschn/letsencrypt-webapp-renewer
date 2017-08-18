@@ -89,8 +89,6 @@ Exit codes:
 - 1 = Argument error
 - 2 = Unexpected error
 
-Consult the Let's Encrypt documentation for rate limits: https://letsencrypt.org/docs/rate-limits/
-
 ## Telemetry
 `letsencrypt-webapp-renewer` gathers anonymous telemetry for usage analysis and error reporting. You can disable it by setting the `LETSENCRYPT_DISABLE_TELEMETRY` to any non-empty value.
 
@@ -109,3 +107,5 @@ Since this project relies on https://github.com/sjkp/letsencrypt-siteextension, 
 > Please take note that this Site-Extension is beta-software, so use at your own risk.
 
 > THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYLEFT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Consult the Let's Encrypt documentation for rate limits: https://letsencrypt.org/docs/rate-limits/
