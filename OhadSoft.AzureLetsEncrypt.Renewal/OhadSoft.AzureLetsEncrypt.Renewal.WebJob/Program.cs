@@ -71,7 +71,6 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             var startTicks = Environment.TickCount;
             Events.CliRenewalStarted(args);
 
-            Trace.Listeners.Add(new ConsoleTraceListener());
             Console.WriteLine("Web App SSL renewal CLI started, parameters: {0}", string.Join(", ", args));
             var renewer = new CliRenewer(new RenewalManager(), new CommandlineRenewalParamsReader());
 
