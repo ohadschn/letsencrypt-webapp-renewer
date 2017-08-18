@@ -41,4 +41,22 @@ Enter [Let's Encrypt](https://letsencrypt.org/) - a free, automated, and open Ce
 You have several options for webjob deployment:
   1. Upload the  directly [to your Web App].
   1. Clone the reposi
-## Command
+## Command Line usage
+The webjob executable (`AzureLetsEncryptRenewer.exe`) can be used as a standalone command-line tool:
+
+> AzureLetsEncryptRenewer.exe SubscriptionId TenantId ResourceGroup WebApp Hosts Email ClientId ClientSecret [ServicePlanResourceGroupName] [SiteSlotName] [UseIpBasedSsl] [RsaKeyLength] [AcmeBaseUri]
+
+- `Hosts` is a semicolon-delimited list of host names
+- `ServicePlanResourceGroupName` is optional and can be empty (`""`) if it is the same as the Web App resource group
+- `SiteSlotName` is optional and can be empty (`""`) if site deployment slots are not to be used
+- `UseIpBasedSsl` is optional and defaults to false
+- `RsaKeyLength` is optional and defaults to 2048
+- `AcmeBaseUri` is optional and defaults to https://acme-v01.api.letsencrypt.org/
+
+Exit codes: 
+- 0 = Success
+- 1 = Argument error
+- 2 = Unexpected error
+
+Consult the Let's Encrypt documentation for rate limits: https://letsencrypt.org/docs/rate-limits/
+
