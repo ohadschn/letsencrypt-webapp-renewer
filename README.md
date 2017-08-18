@@ -1,5 +1,5 @@
 # letsencrypt-webapp-renewer
-A simple WebJob-ready console application for renewing Azure Web App TLS/SSL certificates (based on letsencrypt-siteextension)
+A simple WebJob-ready console application for renewing Azure Web App TLS/SSL certificates (based on [letsencrypt-siteextension](https://github.com/sjkp/letsencrypt-siteextension))
 ## Motivation
 HTTPS is the pervasibe standard for all websites, regardless of size or field. 
 The Mozilla foundation has gone so far as to [announce their intent to completely phase out HTTP](https://blog.mozilla.org/security/2015/04/30/deprecating-non-secure-http/). 
