@@ -30,11 +30,10 @@ Enter [Let's Encrypt](https://letsencrypt.org/) - a free, automated, and open Ce
       1. If that is acceptable, all you have to do is edit the `settings.job` file in the `letsencrypt-webapp-renewer` WebJob zip file and edit the schedule to your liking. The default schedule follows the [recommended Let's Encrypt renewal period of 60 days](https://letsencrypt.org/docs/faq/) (once every two months).
       1. If that is not acceptible (for example, your tier might not support the _Always On_ feature), use Azure Scheduler as described below.
    1. [Azure Scheduler based](https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-create-web-jobs#CreateScheduled) is slightly more complex to set up but does not require your site to be configured as _Always On_. Make sure to delete the `settings.job` file from the `letsencrypt-webapp-renewer` WebJob zip file if you use this option, as to prevent needless executions.
+1. Create an AAD service principal with the proper permissions, as explained [here](https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install) and [here](https://www.troyhunt.com/everything-you-need-to-know-about-loading-a-free-lets-encrypt-certificate-into-an-azure-website/) (you can skip the parts about configuring the Azure Storage account and the site extension, but while you're there note down the parameters you'll need for the WebJob configuration below: `SubscriptionId`, `TenantId`, `ResourceGroup`,  `WebApp`, `ClientId`, and `ClientSecret`).
 
 ## Configuration
-First, you need to create an AAD service principal with the proper permissions as well as gather some key parameters required for WebJob renewal. These are explained in great detail [here](https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install) and [here](https://www.troyhunt.com/everything-you-need-to-know-about-loading-a-free-lets-encrypt-certificate-into-an-azure-website/) (you can skip the parts about configuring the Azure Storage account and the site extension, you only need the service principal with the proper permissions and the values for the parameters below).
 
-Armed with the required parameters, simply set them as 
 
 ## Installation
 1. Deploy and schedule the WebJob zip file you prepared above (per the scheduling method you selected above). **It is highly recommended to deploy the `letsencrypt-webapp-renewer` WebJob to a dedicated Web App created solely for this purpose**, in order to prevent accidental deletion of the webjob (e.g. upon deployment of a different app using _Delete Existing files_).
