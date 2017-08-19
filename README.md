@@ -24,16 +24,10 @@ Enter [Let's Encrypt](https://letsencrypt.org/) - a free, automated, and open Ce
 - Can be executed as a plain command-line tool from any environment.
 
 ## Preparation
-1. Download the latest [`letsencrypt-webapp-renewer` WebJob zip file](https://github.com/ohadschn/letsencrypt-webapp-renewer/releases).
-1. Decide on the WebJob scheduling option that works for you.
-   1. [CRON based](https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-create-web-jobs#CreateScheduledCRON) is simple to set up but **REQUIRES YOUR WEB APP TO BE CONFIGURED AS "ALWAYS ON"**.
-      1. If that is acceptable, all you have to do is edit the `settings.job` file in the `letsencrypt-webapp-renewer` WebJob zip file and edit the schedule to your liking. The default schedule follows the [recommended Let's Encrypt renewal period of 60 days](https://letsencrypt.org/docs/faq/) (once every two months).
-      1. If that is not acceptible (for example, your tier might not support the _Always On_ feature), use Azure Scheduler as described below.
-   1. [Azure Scheduler based](https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-create-web-jobs#CreateScheduled) is slightly more complex to set up but does not require your site to be configured as _Always On_. Make sure to delete the `settings.job` file from the `letsencrypt-webapp-renewer` WebJob zip file if you use this option, as to prevent needless executions.
-1. Create an AAD service principal with the proper permissions, as explained [here](https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install) and [here](https://www.troyhunt.com/everything-you-need-to-know-about-loading-a-free-lets-encrypt-certificate-into-an-azure-website/) (you can skip the parts about configuring the Azure Storage account and the site extension, but while you're there note down the parameters you'll need for the WebJob configuration below: `SubscriptionId`, `TenantId`, `ResourceGroup`,  `WebApp`, `ClientId`, and `ClientSecret`).
+1. Create an AAD service principal with the proper permissions, as explained [here](https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install) and [here](https://www.troyhunt.com/everything-you-need-to-know-about-loading-a-free-lets-encrypt-certificate-into-an-azure-website/). You can skip the parts about configuring the Azure Storage account and the site extension, but while you're there note down the parameters you'll need for the WebJob configuration below: `SubscriptionId`, `TenantId`, `ResourceGroup`,  `WebApp`, `ClientId`, and `ClientSecret`.
 
 ## Configuration
-The `letsencrypt-webapp-renewer` WebJob is configured via [Web App Settings](https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-configure#application-settings).
+The `letsencrypt-webapp-renewer` WebJob is configured via [Web App Settings](https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-configure#application-settings). You might as well configure it before installing so that it doesn't run with no/partial configuration by mistake.
 1. Set `letsencrypt:webApps` to a semicolon-delimited list of Azure Web App names for which certificate renewal should take place.
 1. For each Web App specified in `letsencrypt:webApps`, set the following app setting with the proper values as noted down in the last preparation step above (replacing `webAppName` with the actual Web App name):
    1. `letsencrypt:webAppName-subscriptionId`
@@ -68,10 +62,16 @@ The `letsencrypt-webapp-renewer` WebJob is configured via [Web App Settings](htt
 - `letsencrypt:howlongtobeatsteam-clientSecret`: `MySecretPassword123` (**connection string**)
 
 ## Installation
-1. Deploy and schedule the WebJob zip file you prepared above (per the scheduling method you selected above). **It is highly recommended to deploy the `letsencrypt-webapp-renewer` WebJob to a dedicated Web App created solely for this purpose**, in order to prevent accidental deletion of the webjob (e.g. upon deployment of a different app using _Delete Existing files_).
+1. (**optional but highly recommended**) Create a new dedicated Web App for cert renewal, to which you will deploy the `letsencrypt-webapp-renewer` WebJob. This will drastically decrease the likelihood of accidental deletion of the renewal WebJob  (e.g. upon deployment of a different app to the same Web App using _Delete Existing files_)
+1. Download the latest [`letsencrypt-webapp-renewer` WebJob zip file](https://github.com/ohadschn/letsencrypt-webapp-renewer/releases).
+1. Deploy the WebJob zip file you downloaded above to the Web App where you want cert renewal to execute using one of the following scheduling methods:
+   1. [CRON based](https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-create-web-jobs#CreateScheduledCRON) is simple to set up but **REQUIRES YOUR CERT RENEWAL WEB APP (THE ONE WHERE THE `letsencrypt-webapp-renewer` WEBJOB WILL BE RUNNING) TO BE CONFIGURED AS "ALWAYS ON"** (if that is not acceptible, for example if your plan tier does not support the _Always On_ feature, use Azure Scheduler as described below). When you upload the WebJob in the portal select **Triggered** in the _Type_ field and **Scheduled** in the _Triggers_ field. The [recommended Let's Encrypt renewal period is 60 days](https://letsencrypt.org/docs/faq/), so you could use a CRON expression that fires once every two months, for example: `0 0 0 1 1,3,5,7,9,11 *`.
+   1. [Azure Scheduler based](https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-create-web-jobs#CreateScheduled) is slightly more complex to set up but does not require your site to be configured as _Always On_ (so it can work with the Free plan, for example).
+
+## Verification
 1. Test the WebJob by [triggering it manually](https://pragmaticdevs.wordpress.com/2016/10/24/triggering-azure-web-jobs-manually/). **You should see a new certificate served when you visit your site**.
-- (optional but highly recommended) Set up [Zapier](https://zapier.com/help/windows-azure-web-sites/) to send you notifications on `letsencrypt-webapp-renewer` WebJob runs. While e-mail notifications are supported as described above, **they will only be fired when the webjob has failed** (this is intentional - a webjob cannot reliably handle any possible failure it might encounter). By contrast, Zapier operates externally to the WebJob and should be able to report any error that might have caused the WebJob to fail. At the time of writing, Zapier offer a free account which should easily suffice for any reasonable SSL renewal notification needs.
-  
+1. (optional but highly recommended) Set up [Zapier](https://zapier.com/help/windows-azure-web-sites/) to send you notifications on `letsencrypt-webapp-renewer` WebJob runs. While e-mail notifications are supported as described above, **they will only be fired when the webjob has failed** (this is intentional - a webjob cannot reliably handle any possible failure it might encounter). By contrast, Zapier operates externally to the WebJob and should be able to report any error that might have caused the WebJob to fail. At the time of writing, Zapier offer a free account which should easily suffice for any reasonable SSL renewal notification needs.
+
 ## Command Line usage
 Wen executed outside of a WebJob context (as determined by the [WEBJOBS_NAME](https://github.com/projectkudu/kudu/wiki/WebJobs#environment-settings) environment variable), the webjob executable (`AzureLetsEncryptRenewer.exe`) functions as a standalone command-line tool:
 
