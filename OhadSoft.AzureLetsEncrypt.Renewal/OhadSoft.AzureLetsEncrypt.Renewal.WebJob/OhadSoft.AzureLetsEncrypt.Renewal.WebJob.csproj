@@ -124,9 +124,9 @@
     <Compile Include="AppSettings\IAppSettingsReader.cs" />
     <Compile Include="AppSettings\AppSettingsRenewalParamsReader.cs" />
     <Compile Include="AppSettings\IAppSettingsRenewalParamsReader.cs" />
-    <Compile Include="CLI\CliRenewer.cs" />
-    <Compile Include="CLI\CommandlineRenewalParamsReader.cs" />
-    <Compile Include="CLI\ICommandlineRenewalParamsReader.cs" />
+    <Compile Include="Cli\CliRenewer.cs" />
+    <Compile Include="Cli\CommandlineRenewalParamsReader.cs" />
+    <Compile Include="Cli\ICommandlineRenewalParamsReader.cs" />
     <Compile Include="Email\IEmailNotifier.cs" />
     <Compile Include="Email\SendGridNotifier.cs" />
     <Compile Include="Program.cs" />

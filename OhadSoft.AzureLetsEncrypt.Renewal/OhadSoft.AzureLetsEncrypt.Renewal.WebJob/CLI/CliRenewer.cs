@@ -1,7 +1,7 @@
 ﻿using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry;
 
-namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.CLI
+namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
 {
     internal class CliRenewer
     {

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -35,39 +36,39 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
 
         private readonly NameValueCollection m_appSettings = new NameValueCollection
         {
-            {KeyPrefix + WebAppsKey, Webapp1 + ";" + Webapp2},
-            {KeyPrefix + Webapp1 + SubscriptionIdKeySuffix, Subscription1.ToString()},
-            {KeyPrefix + Webapp2 + SubscriptionIdKeySuffix, Subscription2.ToString()},
-            {KeyPrefix + Webapp1 + TenantIdKeySuffix, Tenant1},
-            {KeyPrefix + Webapp2 + TenantIdKeySuffix, Tenant2},
-            {KeyPrefix + Webapp1 + ResourceGroupKeySuffix, ResourceGroup1},
-            {KeyPrefix + Webapp2 + ResourceGroupKeySuffix, ResourceGroup2},
-            {KeyPrefix + Webapp1 + HostsKeySuffix, String.Join(";", Hosts1)},
-            {KeyPrefix + Webapp2 + HostsKeySuffix, String.Join(";", Hosts2)},
-            {KeyPrefix + Webapp1 + EmailKeySuffix, Email1},
-            {KeyPrefix + Webapp2 + EmailKeySuffix, Email2},
-            {KeyPrefix + Webapp1 + ClientIdKeySuffix, ClientId1.ToString()},
-            {KeyPrefix + Webapp2 + ClientIdKeySuffix, ClientId2.ToString()},
-            {KeyPrefix + Webapp1 + ServicePlanResourceGroupKeySuffix, ServicePlanResourceGroup1 },
-            {KeyPrefix + Webapp1 + SiteSlotNameSuffix, SiteSlotName1 },
-            {KeyPrefix + Webapp1 + UseIpBasedSslKeySuffix, UseIpBasedSsl1.ToString()},
-            {KeyPrefix + Webapp1 + RsaKeyLengthKeySuffix, RsaKeyLength1.ToString()},
-            {KeyPrefix + Webapp1 + AcmeBaseUriKeySuffix, AcmeBaseUri1.ToString()}
+            { KeyPrefix + WebAppsKey, WebApp1 + ";" + WebApp2 },
+            { KeyPrefix + WebApp1 + SubscriptionIdKeySuffix, Subscription1.ToString() },
+            { KeyPrefix + WebApp2 + SubscriptionIdKeySuffix, Subscription2.ToString() },
+            { KeyPrefix + WebApp1 + TenantIdKeySuffix, Tenant1 },
+            { KeyPrefix + WebApp2 + TenantIdKeySuffix, Tenant2 },
+            { KeyPrefix + WebApp1 + ResourceGroupKeySuffix, ResourceGroup1 },
+            { KeyPrefix + WebApp2 + ResourceGroupKeySuffix, ResourceGroup2 },
+            { KeyPrefix + WebApp1 + HostsKeySuffix, String.Join(";", Hosts1) },
+            { KeyPrefix + WebApp2 + HostsKeySuffix, String.Join(";", Hosts2) },
+            { KeyPrefix + WebApp1 + EmailKeySuffix, Email1 },
+            { KeyPrefix + WebApp2 + EmailKeySuffix, Email2 },
+            { KeyPrefix + WebApp1 + ClientIdKeySuffix, ClientId1.ToString() },
+            { KeyPrefix + WebApp2 + ClientIdKeySuffix, ClientId2.ToString() },
+            { KeyPrefix + WebApp1 + ServicePlanResourceGroupKeySuffix, ServicePlanResourceGroup1 },
+            { KeyPrefix + WebApp1 + SiteSlotNameSuffix, SiteSlotName1 },
+            { KeyPrefix + WebApp1 + UseIpBasedSslKeySuffix, UseIpBasedSsl1.ToString() },
+            { KeyPrefix + WebApp1 + RsaKeyLengthKeySuffix, RsaKeyLength1.ToString(CultureInfo.InvariantCulture) },
+            { KeyPrefix + WebApp1 + AcmeBaseUriKeySuffix, AcmeBaseUri1.ToString() }
         };
 
         private readonly ConnectionStringSettingsCollection m_connectionStrings = new ConnectionStringSettingsCollection
         {
-            new ConnectionStringSettings(KeyPrefix + Webapp1 + ClientSecretKeySuffix, ClientSecret1),
-            new ConnectionStringSettings(KeyPrefix + Webapp2 + ClientSecretKeySuffix, ClientSecret2)
+            new ConnectionStringSettings(KeyPrefix + WebApp1 + ClientSecretKeySuffix, ClientSecret1),
+            new ConnectionStringSettings(KeyPrefix + WebApp2 + ClientSecretKeySuffix, ClientSecret2)
         };
 
-        readonly Mock<IEmailNotifier> m_emailNotifier = new Mock<IEmailNotifier>();
-        readonly ConcurrentQueue<RenewalParameters> m_notificationRenewalParameterses = new ConcurrentQueue<RenewalParameters>();
+        private readonly Mock<IEmailNotifier> m_emailNotifier = new Mock<IEmailNotifier>();
+        private readonly ConcurrentQueue<RenewalParameters> m_notificationRenewalParameterses = new ConcurrentQueue<RenewalParameters>();
 
         public AppSettingsTests()
         {
             m_renewer = new AppSettingsRenewer(
-                RenewalManager, 
+                RenewalManager,
                 new AppSettingsRenewalParamsReader(new AppSettingsReader(m_appSettings, m_connectionStrings)),
                 m_emailNotifier.Object);
 
@@ -78,12 +79,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         }
 
         [TestMethod]
-        public void TestSingleWebAppconfig()
+        public void TestSingleWebAppConfig()
         {
-            m_appSettings[KeyPrefix + WebAppsKey] = Webapp1;
+            m_appSettings[KeyPrefix + WebAppsKey] = WebApp1;
             m_renewer.Renew();
             VerifySuccessfulRenewal(ExpectedFullRenewalParameters1);
-            VerifySuccessfulRenewal(new[] {ExpectedFullRenewalParameters1}, m_notificationRenewalParameterses);
+            VerifySuccessfulRenewal(new[] { ExpectedFullRenewalParameters1 }, m_notificationRenewalParameterses);
         }
 
         [TestMethod]
@@ -91,13 +92,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         {
             m_renewer.Renew();
             VerifySuccessfulRenewal(ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2);
-            VerifySuccessfulRenewal(new []{ ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2 }, m_notificationRenewalParameterses);
+            VerifySuccessfulRenewal(new[] { ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2 }, m_notificationRenewalParameterses);
         }
 
         [TestMethod]
         public void TestInvalidWebApps()
         {
-            AssertInvalidConfig(WebAppsKey, "");
+            AssertInvalidConfig(WebAppsKey, String.Empty);
         }
 
         [TestMethod]
@@ -109,55 +110,55 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         [TestMethod]
         public void TestInvalidSubscriptionId()
         {
-            AssertInvalidConfig(Webapp1 + SubscriptionIdKeySuffix, "not a GUID");
+            AssertInvalidConfig(WebApp1 + SubscriptionIdKeySuffix, "not a GUID");
         }
 
         [TestMethod]
         public void TestInvalidTenantId()
         {
-            AssertInvalidConfig(Webapp2 + TenantIdKeySuffix, "");
+            AssertInvalidConfig(WebApp2 + TenantIdKeySuffix, String.Empty);
         }
 
         [TestMethod]
         public void TestInvalidResourceGroup()
         {
-            AssertInvalidConfig(Webapp1 + ResourceGroupKeySuffix, "     ");
+            AssertInvalidConfig(WebApp1 + ResourceGroupKeySuffix, "     ");
         }
 
         [TestMethod]
         public void TestInvalidHosts()
         {
-            AssertInvalidConfig(Webapp2 + HostsKeySuffix, "www.foo.com;not/valid");
+            AssertInvalidConfig(WebApp2 + HostsKeySuffix, "www.foo.com;not/valid");
         }
 
         [TestMethod]
         public void TestInvalidEmail()
         {
-            AssertInvalidConfig(Webapp1 + EmailKeySuffix, "mail@");
+            AssertInvalidConfig(WebApp1 + EmailKeySuffix, "mail@");
         }
 
         [TestMethod]
         public void TestInvalidClientId()
         {
-            AssertInvalidConfig(Webapp2 + ClientIdKeySuffix, " ");
+            AssertInvalidConfig(WebApp2 + ClientIdKeySuffix, " ");
         }
 
         [TestMethod]
         public void TestInvalidServicePlanResourceGroup()
         {
-            AssertInvalidConfig(Webapp1 + ServicePlanResourceGroupKeySuffix, "");
+            AssertInvalidConfig(WebApp1 + ServicePlanResourceGroupKeySuffix, String.Empty);
         }
 
         [TestMethod]
         public void TestInvalidSiteSlotName()
         {
-            AssertInvalidConfig(Webapp2 + SiteSlotNameSuffix, " ");
+            AssertInvalidConfig(WebApp2 + SiteSlotNameSuffix, " ");
         }
 
         [TestMethod]
         public void TestInvalidClientSecret()
         {
-            var clientSecretKey = KeyPrefix + Webapp1 + ClientSecretKeySuffix;
+            var clientSecretKey = KeyPrefix + WebApp1 + ClientSecretKeySuffix;
             m_connectionStrings.Remove(clientSecretKey);
             m_connectionStrings.Add(new ConnectionStringSettings(clientSecretKey, " "));
             AssertExtensions.Throws<ConfigurationErrorsException>(() => m_renewer.Renew());
@@ -166,24 +167,24 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         [TestMethod]
         public void TestInvalidUseIpBasedSsl()
         {
-            AssertInvalidConfig(Webapp2 + UseIpBasedSslKeySuffix, "");
+            AssertInvalidConfig(WebApp2 + UseIpBasedSslKeySuffix, String.Empty);
         }
 
         [TestMethod]
         public void TestInvalidRsaKeyLength()
         {
-            AssertInvalidConfig(Webapp1 + RsaKeyLengthKeySuffix, "x");
+            AssertInvalidConfig(WebApp1 + RsaKeyLengthKeySuffix, "x");
         }
 
         [TestMethod]
         public void TestInvalidAcmeBaseUri()
         {
-            AssertInvalidConfig(Webapp2 + AcmeBaseUriKeySuffix, "http:/OnlyOneSlash.com");
+            AssertInvalidConfig(WebApp2 + AcmeBaseUriKeySuffix, "http:/OnlyOneSlash.com");
         }
 
         private void AssertInvalidConfig(string keyWithoutPrefix, string value)
         {
-            m_appSettings[KeyPrefix +  keyWithoutPrefix] = value;
+            m_appSettings[KeyPrefix + keyWithoutPrefix] = value;
             AssertExtensions.Throws<ConfigurationErrorsException>(() => m_renewer.Renew());
         }
     }

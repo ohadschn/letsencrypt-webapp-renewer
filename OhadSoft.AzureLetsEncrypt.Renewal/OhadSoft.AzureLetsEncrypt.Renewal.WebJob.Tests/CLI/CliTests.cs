@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
-using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.CLI;
+using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Util;
 
-namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.CLI
+namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
 {
     [TestClass]
     public class CliTests : RenewalTestBase
     {
         private static readonly IReadOnlyCollection<string> FullValidArgs = new[]
         {
-            Subscription1.ToString(), Tenant1, ResourceGroup1, Webapp1, String.Join(";", Hosts1),
-            Email1, ClientId1.ToString(), ClientSecret1, ServicePlanResourceGroup1, SiteSlotName1, UseIpBasedSsl1.ToString(), RsaKeyLength1.ToString(), AcmeBaseUri1.ToString()
+            Subscription1.ToString(), Tenant1, ResourceGroup1, WebApp1, String.Join(";", Hosts1),
+            Email1, ClientId1.ToString(), ClientSecret1, ServicePlanResourceGroup1, SiteSlotName1, UseIpBasedSsl1.ToString(), RsaKeyLength1.ToString(CultureInfo.InvariantCulture), AcmeBaseUri1.ToString()
         };
 
         private static string[] GetMaximalValidArgs() => FullValidArgs.ToArray();
@@ -37,7 +38,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.CLI
         [TestMethod]
         public void TooManyParameters()
         {
-            var strings = FullValidArgs.Concat(new []{"foo"}).ToArray();
+            var strings = FullValidArgs.Concat(new[] { "foo" }).ToArray();
             AssertExtensions.Throws<ArgumentException>(() => m_renewer.Renew(strings));
         }
 
@@ -50,7 +51,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.CLI
         [TestMethod]
         public void InvalidTenant()
         {
-            TestInvalidParameter(1, "");
+            TestInvalidParameter(1, String.Empty);
         }
 
         [TestMethod]
@@ -86,7 +87,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.CLI
         [TestMethod]
         public void InvalidSecret()
         {
-            TestInvalidParameter(7, "");
+            TestInvalidParameter(7, String.Empty);
         }
 
         [TestMethod]
@@ -131,15 +132,15 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.CLI
         [TestMethod]
         public void EmptyMiddleParameter()
         {
-            m_renewer.Renew(GetMinimalValidArgs().Concat(new[] { "", SiteSlotName1, "true" }).ToArray());
+            m_renewer.Renew(GetMinimalValidArgs().Concat(new[] { String.Empty, SiteSlotName1, "true" }).ToArray());
             VerifySuccessfulRenewal(
-                new RenewalParameters(Subscription1, Tenant1, ResourceGroup1, Webapp1, Hosts1, Email1, ClientId1, ClientSecret1, null, SiteSlotName1, true));
+                new RenewalParameters(Subscription1, Tenant1, ResourceGroup1, WebApp1, Hosts1, Email1, ClientId1, ClientSecret1, null, SiteSlotName1, true));
         }
 
         [TestMethod]
         public void EmptyParameters()
         {
-            m_renewer.Renew(GetMinimalValidArgs().Concat(new [] {"  ", " "}).ToArray());
+            m_renewer.Renew(GetMinimalValidArgs().Concat(new[] { "  ", " " }).ToArray());
             VerifySuccessfulRenewal(ExpectedPartialRenewalParameters1);
         }
     }

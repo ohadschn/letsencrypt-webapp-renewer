@@ -3,7 +3,7 @@ using System.Configuration;
 using System.Diagnostics;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings;
-using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.CLI;
+using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Util;
