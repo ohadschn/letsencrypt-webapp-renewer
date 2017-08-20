@@ -100,7 +100,7 @@ Exit codes:
 ## Telemetry
 `letsencrypt-webapp-renewer` gathers anonymous telemetry for usage analysis and error reporting. You can disable it by setting the `LETSENCRYPT_DISABLE_TELEMETRY` to any non-empty value.
 
-## Disclaimer 
+## Limitations & Disclaimer 
 Since this project relies on https://github.com/sjkp/letsencrypt-siteextension, some of its limitations apply as well:
 > This site-extension is NOT supported by Microsoft it is my own work based on https://github.com/ebekker/ACMESharp and https://github.com/Lone-Coder/letsencrypt-win-simple - this means don't expect 24x7 support, I use it for several of my own smaller sites, but if you are running sites that are important you should consider spending the few $ on a certificate and go with a Microsoft supported way of enabling SSL, so you have someone to blame :)
 
