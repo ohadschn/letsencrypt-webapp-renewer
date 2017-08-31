@@ -1,5 +1,4 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/3fwuiks1yq4oro4v/branch/master?svg=true)](https://ci.appveyor.com/project/ohadschn/letsencrypt-webapp-renewer/branch/master)
-[![Downloads](https://img.shields.io/github/downloads/ohadschn/letsencrypt-webapp-renewer/total.svg)](https://github.com/ohadschn/letsencrypt-webapp-renewer/releases)
 
 # letsencrypt-webapp-renewer
 A WebJob-ready console application for renewing Azure Web App TLS/SSL certificates (based on [letsencrypt-siteextension](https://github.com/sjkp/letsencrypt-siteextension))
