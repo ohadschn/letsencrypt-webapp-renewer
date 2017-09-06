@@ -21,7 +21,7 @@ Enter [Let's Encrypt](https://letsencrypt.org/) - a free, automated, and open Ce
 - Install on any Web App (doesn't have to be the same web app for which you want to manage SSL certs).
   - Multiple Web App management is supported.
   - Publishing with "Delete Existing files" has no effect then the WebJob is deployed to a different (preferably dedicated) Web App.
-- E-mail notifications are build it (via SendGrid).
+- E-mail notifications are built in (via SendGrid).
 - No external dependencies other than Let's Encrypt.
 - Can be executed as a plain command-line tool from any environment.
 
