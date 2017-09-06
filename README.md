@@ -20,7 +20,7 @@ Enter [Let's Encrypt](https://letsencrypt.org/) - a free, automated, and open Ce
 `letsencrypt-webapp-renewer` is a WebJob-ready command-line executable that builds upon [letsencrypt-siteextension](https://github.com/sjkp/letsencrypt-siteextension) to provide the following features:
 - Install on any Web App (doesn't have to be the same web app for which you want to manage SSL certs).
   - Multiple Web App management is supported.
-  - Publishing with "Delete Existing files" has no effect then the WebJob is deployed to a different (preferably dedicated) Web App.
+  - Publishing with "Delete Existing files" has no effect when the WebJob is deployed to a different (preferably dedicated) Web App.
 - E-mail notifications are built in (via SendGrid).
 - No external dependencies other than Let's Encrypt.
 - Can be executed as a plain command-line tool from any environment.
