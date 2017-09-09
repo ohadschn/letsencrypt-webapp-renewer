@@ -17,7 +17,7 @@ Enter [Let's Encrypt](https://letsencrypt.org/) - a free, automated, and open Ce
 - The extension can only be run in the context of a web app. You might want to run it as a command-line tool (e.g. from your CI system).
 
 ## Solution
-`letsencrypt-webapp-renewer` is a WebJob-ready command-line executable that builds upon [letsencrypt-siteextension](https://github.com/sjkp/letsencrypt-siteextension) to provide the following features:
+`letsencrypt-webapp-renewer` is a WebJob-ready command-line executable that builds upon [letsencrypt.azure.core](https://www.nuget.org/packages/letsencrypt.azure.core/) (the core component behind letsencrypt-siteextension) to provide the following features:
 - Install on any Web App (doesn't have to be the same web app for which you want to manage SSL certs).
   - Multiple Web App management is supported.
   - Publishing with "Delete Existing files" has no effect when the WebJob is deployed to a different (preferably dedicated) Web App.
