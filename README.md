@@ -116,3 +116,6 @@ Since this project relies on https://github.com/sjkp/letsencrypt-siteextension, 
 > THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYLEFT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Consult the Let's Encrypt documentation for rate limits: https://letsencrypt.org/docs/rate-limits/
+
+## Powered by Resharper 
+![Resharper](https://raw.githubusercontent.com/ohadschn/ET4W/master/docs/icon_ReSharper.png)
