@@ -194,6 +194,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             AssertInvalidConfig(BuildConfigKey(AcmeBaseUriKeySuffix, WebApp2), "http:/OnlyOneSlash.com");
         }
 
+        [TestMethod]
+        public void TestInvalidSharedSetting()
+        {
+            AssertInvalidConfig(BuildConfigKey(UseIpBasedSslKeySuffix), "maybe false, maybe true - who knows?");
+        }
+
         private void AssertInvalidConfig(string key, string value)
         {
             m_appSettings[key] = value;
