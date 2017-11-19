@@ -109,7 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AuthProviderConfig.cs" />
-    <Compile Include="Management\AdminParameters.cs" />
+    <Compile Include="Management\SharedRenewalParameters.cs" />
     <Compile Include="Management\IRenewalManager.cs" />
     <Compile Include="Management\RenewalParameters.cs" />
     <Compile Include="Management\RenewalManager.cs" />

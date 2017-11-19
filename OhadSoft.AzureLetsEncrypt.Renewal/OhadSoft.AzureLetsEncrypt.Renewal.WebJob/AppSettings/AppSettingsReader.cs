@@ -43,7 +43,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
             return ParseGuid(key, GetString(key));
         }
 
-        public Guid GetGuidOrDefault(string key, Guid defaultValue = default)
+        public Guid? GetGuidOrDefault(string key, Guid? defaultValue = null)
         {
             if (key == null)
             {
@@ -83,7 +83,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
             return ParseBoolean(key, GetString(key));
         }
 
-        public bool GetBooleanOrDefault(string key, bool defaultValue = false)
+        public bool? GetBooleanOrDefault(string key, bool? defaultValue = null)
         {
             if (key == null)
             {
@@ -113,7 +113,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
             return ParseInt32(key, GetString(key));
         }
 
-        public int GetInt32OrDefault(string key, int defaultValue)
+        public int? GetInt32OrDefault(string key, int? defaultValue = null)
         {
             if (key == null)
             {

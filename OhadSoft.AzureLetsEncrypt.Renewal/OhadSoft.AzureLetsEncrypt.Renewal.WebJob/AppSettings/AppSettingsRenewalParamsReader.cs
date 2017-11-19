@@ -11,6 +11,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
     internal class AppSettingsRenewalParamsReader : IAppSettingsRenewalParamsReader
     {
         public const string KeyPrefix = "letsencrypt:";
+
         private const string SubscriptionIdKey = "subscriptionId";
         private const string TenantIdKey = "tenantId";
         private const string ResourceGroupKey = "resourceGroup";
@@ -42,7 +43,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 
             Trace.TraceInformation("Parsed web apps for SSL renewal: {0}", String.Join("; ", webApps));
 
-            var adminParams = GetAdminParams();
+            var adminParams = GetSharedParams();
             Trace.TraceInformation("Parsed common admin parameters: {0}", adminParams);
 
             var webAppRenewalInfos = webApps.Select(wa => GetWebAppRenewalInfo(wa, adminParams)).ToArray();
@@ -51,16 +52,19 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
             return webAppRenewalInfos;
         }
 
-        private AdminParameters GetAdminParams()
+        private SharedRenewalParameters GetSharedParams()
         {
-            return new AdminParameters(
+            return new SharedRenewalParameters(
                 GetCommonSetting(ResourceGroupKey),
                 GetCommonGuidSetting(SubscriptionIdKey),
                 GetCommonSetting(TenantIdKey),
                 GetCommonGuidSetting(ClientIdKey),
                 GetCommonConnectionString(ClientSecretKey),
                 GetCommonSetting(EmailKey),
-                GetCommonSetting(ServicePlanResourceGroupKey));
+                GetCommonSetting(ServicePlanResourceGroupKey),
+                GetCommonBooleanSetting(UseIpBasedSslKey),
+                GetCommonInt32Setting(RsaKeyLengthKey),
+                GetCommonUriSetting(AcmeBaseUriKey));
         }
 
         private string GetCommonSetting(string key)
@@ -68,9 +72,24 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
             return m_appSettings.GetStringOrDefault(BuildConfigKey(key));
         }
 
-        private Guid GetCommonGuidSetting(string key)
+        private Guid? GetCommonGuidSetting(string key)
         {
             return m_appSettings.GetGuidOrDefault(BuildConfigKey(key));
+        }
+
+        private bool? GetCommonBooleanSetting(string key)
+        {
+            return m_appSettings.GetBooleanOrDefault(BuildConfigKey(key));
+        }
+
+        private int? GetCommonInt32Setting(string key)
+        {
+            return m_appSettings.GetInt32OrDefault(key);
+        }
+
+        private Uri GetCommonUriSetting(string key)
+        {
+            return m_appSettings.GetUriOrDefault(key);
         }
 
         private string GetCommonConnectionString(string key)
@@ -78,27 +97,28 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
             return m_appSettings.GetConnectionStringOrDefault(BuildConfigKey(key));
         }
 
-        private RenewalParameters GetWebAppRenewalInfo(string webApp, AdminParameters adminParams)
+        private RenewalParameters GetWebAppRenewalInfo(string webApp, SharedRenewalParameters sharedRenewalParams)
         {
             Trace.TraceInformation("Parsing SSL renewal parameters for web app '{0}'...", webApp);
 
             try
             {
+              // ReSharper disable PossibleInvalidOperationException
                 return new RenewalParameters(
-                    ResolveGuidSetting(SubscriptionIdKey, webApp, adminParams.SubscriptionId),
-                    ResolveSetting(TenantIdKey, webApp, adminParams.TenantId),
-                    ResolveSetting(ResourceGroupKey, webApp, adminParams.ResourceGroup),
+                    ResolveGuidSetting(SubscriptionIdKey, webApp, sharedRenewalParams.SubscriptionId),
+                    ResolveSetting(TenantIdKey, webApp, sharedRenewalParams.TenantId),
+                    ResolveSetting(ResourceGroupKey, webApp, sharedRenewalParams.ResourceGroup),
                     webApp,
                     m_appSettings.GetDelimitedList(BuildConfigKey(HostsKey, webApp)),
-                    ResolveSetting(EmailKey, webApp, adminParams.Email),
-                    ResolveGuidSetting(ClientIdKey, webApp, adminParams.ClientId),
-                    ResolveConnectionString(ClientSecretKey, webApp, adminParams.ClientSecret),
-                    m_appSettings.GetStringOrDefault(BuildConfigKey(ServicePlanResourceGroupKey, webApp), adminParams.ServicePlanResourceGroup),
+                    ResolveSetting(EmailKey, webApp, sharedRenewalParams.Email),
+                    ResolveGuidSetting(ClientIdKey, webApp, sharedRenewalParams.ClientId),
+                    ResolveConnectionString(ClientSecretKey, webApp, sharedRenewalParams.ClientSecret),
+                    m_appSettings.GetStringOrDefault(BuildConfigKey(ServicePlanResourceGroupKey, webApp), sharedRenewalParams.ServicePlanResourceGroup),
                     m_appSettings.GetStringOrDefault(BuildConfigKey(SiteSlotNameKey, webApp)),
-                    m_appSettings.GetBooleanOrDefault(BuildConfigKey(UseIpBasedSslKey, webApp)),
-                    m_appSettings.GetInt32OrDefault(BuildConfigKey(RsaKeyLengthKey, webApp), 2048),
-                    m_appSettings.GetUriOrDefault(BuildConfigKey(AcmeBaseUriKey, webApp)));
-            }
+                    m_appSettings.GetBooleanOrDefault(BuildConfigKey(UseIpBasedSslKey, webApp), sharedRenewalParams.UseIpBasedSsl ?? false).Value,
+                    m_appSettings.GetInt32OrDefault(BuildConfigKey(RsaKeyLengthKey, webApp), sharedRenewalParams.RsaKeyLength ?? 2048).Value,
+                    m_appSettings.GetUriOrDefault(BuildConfigKey(AcmeBaseUriKey, webApp), UriKind.Absolute, sharedRenewalParams.AcmeBaseUri));
+            } // ReSharper restore PossibleInvalidOperationException
             catch (ArgumentException e)
             {
                 throw new ConfigurationErrorsException("Error parsing SSL renewal parameters for web app: " + webApp, e);
@@ -114,13 +134,14 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                 : m_appSettings.GetStringOrDefault(configKey, commonSetting);
         }
 
-        private Guid ResolveGuidSetting(string key, string webApp, Guid commonSetting)
+        private Guid ResolveGuidSetting(string key, string webApp, Guid? commonSetting)
         {
             var configKey = BuildConfigKey(key, webApp);
 
-            return commonSetting == default
+            // ReSharper disable once PossibleInvalidOperationException
+            return commonSetting == null
                 ? m_appSettings.GetGuid(configKey)
-                : m_appSettings.GetGuidOrDefault(configKey, commonSetting);
+                : m_appSettings.GetGuidOrDefault(configKey, commonSetting).Value;
         }
 
         private string ResolveConnectionString(string key, string webApp, string commonConnectionString)
