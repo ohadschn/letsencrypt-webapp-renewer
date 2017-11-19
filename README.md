@@ -64,6 +64,9 @@ For more information about the various renewal settings see: https://github.com/
 - `letsencrypt:howlongtobeatsteam-clientId`: `5e1346b6-7db5-4eae-b9fa-7b3d5e42e6c7`
 - (**connection string**) `letsencrypt:howlongtobeatsteam-clientSecret`: `MySecretPassword123`
 
+### Shared configuration
+It is sometimes useful to share configuraiton settings beween web apps. For example, you might be using the same client credentials, the same subscription ID, or the same resource group for multiple web apps. In order to share a configuration setting between web apps, simply omit the `webAppName-` component of the configuration key. For example, in order to configure shared client credentials, set the `letsencrypt:clientId` app setting and `letsencrypt:clientSecret` connection string. These values will now be used by default for all configured web apps, unless explicitly overriden by setting the fully WebApp-qualified key name (by including the `webAppName-` component, e.g. `letsencrypt:mySpecialSite-clientId`).
+
 ## Installation
 1. (**optional but highly recommended**) Create a new dedicated Web App for cert renewal, to which you will deploy the `letsencrypt-webapp-renewer` WebJob. This will drastically decrease the likelihood of accidental deletion of the renewal WebJob  (e.g. upon deployment of a different app to the same Web App using _Delete Existing files_)
 1. Download the latest [`letsencrypt-webapp-renewer` WebJob zip file](https://github.com/ohadschn/letsencrypt-webapp-renewer/releases).
