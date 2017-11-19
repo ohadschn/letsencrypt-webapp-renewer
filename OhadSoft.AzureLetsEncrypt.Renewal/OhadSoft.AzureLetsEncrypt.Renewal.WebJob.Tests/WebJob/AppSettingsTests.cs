@@ -38,29 +38,39 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
 
         private readonly NameValueCollection m_appSettings = new NameValueCollection
         {
+            // Web App collection declaration
             { BuildConfigKey(WebAppsKey), WebApp1 + ";" + WebApp2 },
+
+            // Shared
+            { BuildConfigKey(ClientIdKeySuffix), ClientId1.ToString() },
+
+            // WebApp1
             { BuildConfigKey(SubscriptionIdKeySuffix, WebApp1), Subscription1.ToString() },
-            { BuildConfigKey(SubscriptionIdKeySuffix, WebApp2), Subscription2.ToString() },
-            { BuildConfigKey(TenantIdKeySuffix, WebApp1), Tenant1 },
-            { BuildConfigKey(TenantIdKeySuffix, WebApp2), Tenant2 },
             { BuildConfigKey(ResourceGroupKeySuffix, WebApp1), ResourceGroup1 },
-            { BuildConfigKey(ResourceGroupKeySuffix, WebApp2), ResourceGroup2 },
+            { BuildConfigKey(TenantIdKeySuffix, WebApp1), Tenant1 },
             { BuildConfigKey(HostsKeySuffix, WebApp1), String.Join(";", Hosts1) },
-            { BuildConfigKey(HostsKeySuffix, WebApp2), String.Join(";", Hosts2) },
             { BuildConfigKey(EmailKeySuffix, WebApp1), Email1 },
-            { BuildConfigKey(EmailKeySuffix, WebApp2), Email2 },
-            { BuildConfigKey(ClientIdKeySuffix, WebApp1), ClientId1.ToString() },
-            { BuildConfigKey(ClientIdKeySuffix, WebApp2), ClientId2.ToString() },
-            { BuildConfigKey(ServicePlanResourceGroupKeySuffix, WebApp1), ServicePlanResourceGroup1 },
             { BuildConfigKey(SiteSlotNameSuffix, WebApp1), SiteSlotName1 },
             { BuildConfigKey(UseIpBasedSslKeySuffix, WebApp1), UseIpBasedSsl1.ToString() },
             { BuildConfigKey(RsaKeyLengthKeySuffix, WebApp1), RsaKeyLength1.ToString(CultureInfo.InvariantCulture) },
-            { BuildConfigKey(AcmeBaseUriKeySuffix, WebApp1), AcmeBaseUri1.ToString() }
+            { BuildConfigKey(AcmeBaseUriKeySuffix, WebApp1), AcmeBaseUri1.ToString() },
+            { BuildConfigKey(ServicePlanResourceGroupKeySuffix, WebApp1), ServicePlanResourceGroup1 },
+
+            // WebApp2
+            { BuildConfigKey(SubscriptionIdKeySuffix, WebApp2), Subscription2.ToString() },
+            { BuildConfigKey(TenantIdKeySuffix, WebApp2), Tenant2 },
+            { BuildConfigKey(ResourceGroupKeySuffix, WebApp2), ResourceGroup2 },
+            { BuildConfigKey(HostsKeySuffix, WebApp2), String.Join(";", Hosts2) },
+            { BuildConfigKey(EmailKeySuffix, WebApp2), Email2 },
+            { BuildConfigKey(ClientIdKeySuffix, WebApp2), ClientId2.ToString() }
         };
 
         private readonly ConnectionStringSettingsCollection m_connectionStrings = new ConnectionStringSettingsCollection
         {
-            new ConnectionStringSettings(BuildConfigKey(ClientSecretKeySuffix, WebApp1), ClientSecret1),
+            // Shared
+            new ConnectionStringSettings(BuildConfigKey(ClientSecretKeySuffix), ClientSecret1),
+
+            // WebApp2 override
             new ConnectionStringSettings(BuildConfigKey(ClientSecretKeySuffix, WebApp2), ClientSecret2)
         };
 
