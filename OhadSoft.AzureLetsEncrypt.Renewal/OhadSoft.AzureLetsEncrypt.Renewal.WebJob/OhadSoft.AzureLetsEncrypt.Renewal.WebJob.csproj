@@ -24,6 +24,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <CodeAnalysisRuleSet>..\OhadSoft.AzureLetsEncrypt.Renewal.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -35,6 +36,7 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>..\OhadSoft.AzureLetsEncrypt.Renewal.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -59,6 +61,7 @@
     <CodeAnalysisRuleSet>..\OhadSoft.AzureLetsEncrypt.Renewal.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
     <RunCodeAnalysis>true</RunCodeAnalysis>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ACMESharp.PKI.Providers.OpenSslLib32, Version=0.8.1.0, Culture=neutral, processorArchitecture=MSIL">

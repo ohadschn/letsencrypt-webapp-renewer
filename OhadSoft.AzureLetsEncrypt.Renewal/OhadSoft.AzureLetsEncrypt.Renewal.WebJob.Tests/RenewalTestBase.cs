@@ -109,11 +109,11 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         {
         var nl = Environment.NewLine;
             var renewalParamsComparer = new RenewalParametersComparer();
-            var actualSorted = actualRenewalParams.OrderBy(rp => rp, renewalParamsComparer);
-            var expectedSorted = expectedRenewalParams.OrderBy(rp => rp, renewalParamsComparer);
+            var actualSorted = actualRenewalParams.OrderBy(rp => rp, renewalParamsComparer).ToArray();
+            var expectedSorted = expectedRenewalParams.OrderBy(rp => rp, renewalParamsComparer).ToArray();
             Assert.IsTrue(
                 actualSorted.SequenceEqual(expectedSorted),
-                Invariant($"Renewal parameter mismatch.{nl}Expected:{nl}{String.Join(nl, expectedSorted)}{nl}Actual:{nl}{String.Join(nl, actualSorted)}"));
+                Invariant($"Renewal parameter mismatch.{nl}Expected:{nl}{String.Join<RenewalParameters>(nl, expectedSorted)}{nl}Actual:{nl}{String.Join<RenewalParameters>(nl, actualSorted)}"));
         }
     }
 }

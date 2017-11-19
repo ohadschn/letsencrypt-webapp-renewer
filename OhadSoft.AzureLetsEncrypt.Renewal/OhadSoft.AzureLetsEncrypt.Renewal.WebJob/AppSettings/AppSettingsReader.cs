@@ -18,34 +18,19 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
             m_connectionStrings = connectionStrings;
         }
 
-        public bool HasSetting(string key)
-        {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            return m_appSettings[key] != null;
-        }
-
-        public bool HasConnectionString(string key)
-        {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            return m_connectionStrings[key] != null;
-        }
-
         public string GetString(string key)
         {
+            return GetStringOrDefault(key) ?? throw new ConfigurationErrorsException(Invariant($"Missing configuration '{key}'"));
+        }
+
+        public string GetStringOrDefault(string key, string defaultValue = null)
+        {
             if (key == null)
             {
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return m_appSettings[key] ?? throw new ConfigurationErrorsException(Invariant($"Missing configuration '{key}'"));
+            return m_appSettings[key] ?? defaultValue;
         }
 
         public Guid GetGuid(string key)
@@ -55,7 +40,25 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return Guid.TryParse(GetString(key), out Guid guid)
+            return ParseGuid(key, GetString(key));
+        }
+
+        public Guid GetGuidOrDefault(string key, Guid defaultValue = default)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            var guidString = GetStringOrDefault(key);
+            return guidString == null
+                ? defaultValue
+                : ParseGuid(key, guidString);
+        }
+
+        private static Guid ParseGuid(string key, string guidString)
+        {
+            return Guid.TryParse(guidString, out Guid guid)
                 ? guid
                 : throw new ConfigurationErrorsException(Invariant($"Configuration value for key '{key}' could not be parsed as GUID"));
         }
@@ -77,7 +80,25 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return Boolean.TryParse(GetString(key), out bool b)
+            return ParseBoolean(key, GetString(key));
+        }
+
+        public bool GetBooleanOrDefault(string key, bool defaultValue = false)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            var boolString = GetStringOrDefault(key);
+            return boolString == null ?
+                defaultValue :
+                ParseBoolean(key, boolString);
+        }
+
+        private static bool ParseBoolean(string key, string boolString)
+        {
+            return Boolean.TryParse(boolString, out bool b)
                 ? b
                 : throw new ConfigurationErrorsException(Invariant($"Configuration value for key '{key}' could not be parsed as boolean"));
         }
@@ -89,7 +110,25 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return Int32.TryParse(GetString(key), out int i)
+            return ParseInt32(key, GetString(key));
+        }
+
+        public int GetInt32OrDefault(string key, int defaultValue)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            var intString = GetStringOrDefault(key);
+            return intString == null
+                ? defaultValue
+                : ParseInt32(key, intString);
+        }
+
+        private static int ParseInt32(string key, string intString)
+        {
+            return Int32.TryParse(intString, out int i)
                 ? i
                 : throw new ConfigurationErrorsException(Invariant($"Configuration value for key '{key}' could not be parsed as int32"));
         }
@@ -101,19 +140,42 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return Uri.TryCreate(GetString(key), uriKind, out Uri uri)
-                ? uri
-                : throw new ConfigurationErrorsException(Invariant($"Configuration value for key '{key}' could not be parsed as Uri ({uriKind})"));
+            return ParseUri(key, GetString(key), uriKind);
         }
 
-        public string GetConnectionString(string key)
+        public Uri GetUriOrDefault(string key, UriKind uriKind = UriKind.Absolute, Uri defaultValue = null)
         {
             if (key == null)
             {
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return m_connectionStrings[key]?.ConnectionString ?? throw new ConfigurationErrorsException(Invariant($"Missing connection string '{key}'"));
+            var uriString = GetStringOrDefault(key);
+            return uriString == null
+                ? defaultValue :
+                ParseUri(key, uriString, uriKind);
+        }
+
+        private static Uri ParseUri(string key, string uriString, UriKind uriKind)
+        {
+            return Uri.TryCreate(uriString, uriKind, out Uri uri)
+                ? uri
+                : throw new ConfigurationErrorsException(Invariant($"Configuration value for key '{key}' could not be parsed as Uri ({uriKind})"));
+        }
+
+        public string GetConnectionString(string key)
+        {
+            return GetConnectionStringOrDefault(key) ?? throw new ConfigurationErrorsException(Invariant($"Missing connection string '{key}'"));
+        }
+
+        public string GetConnectionStringOrDefault(string key, string defaultValue = null)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            return m_connectionStrings[key]?.ConnectionString ?? defaultValue;
         }
     }
 }

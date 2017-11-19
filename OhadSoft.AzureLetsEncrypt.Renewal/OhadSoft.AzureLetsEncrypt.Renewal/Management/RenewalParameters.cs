@@ -36,7 +36,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             int rsaKeyLength = 2048,
             Uri acmeBaseUri = null)
         {
-            SubscriptionId = subscriptionId != Guid.Empty
+            SubscriptionId = subscriptionId != default
                 ? subscriptionId
                 : throw new ArgumentException("Subscription ID must not be an empty GUID", nameof(subscriptionId));
 
@@ -61,9 +61,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 ? email
                 : throw new ArgumentException("E-mail address must not be null and must be valid", nameof(email));
 
-            ClientId = clientId != Guid.Empty ?
-                clientId :
-                throw new ArgumentException("Client ID must not be an empty GUID", nameof(clientId));
+            ClientId = clientId != default
+                ? clientId
+                : throw new ArgumentException("Client ID must not be an empty GUID", nameof(clientId));
 
             ClientSecret = !String.IsNullOrWhiteSpace(clientSecret)
                 ? clientSecret

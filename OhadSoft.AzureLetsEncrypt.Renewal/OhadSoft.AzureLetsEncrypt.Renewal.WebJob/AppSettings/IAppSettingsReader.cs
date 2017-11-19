@@ -5,14 +5,18 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 {
     public interface IAppSettingsReader
     {
-        bool HasSetting(string key);
-        bool HasConnectionString(string key);
         string GetString(string key);
+        string GetStringOrDefault(string key, string defaultValue = null);
         Guid GetGuid(string key);
+        Guid GetGuidOrDefault(string key, Guid defaultValue = default);
         IReadOnlyList<string> GetDelimitedList(string key, char delimiter = ';');
         bool GetBoolean(string key);
+        bool GetBooleanOrDefault(string key, bool defaultValue = false);
         int GetInt32(string key);
+        int GetInt32OrDefault(string key, int defaultValue);
         Uri GetUri(string key, UriKind uriKind = UriKind.Absolute);
+        Uri GetUriOrDefault(string key, UriKind uriKind = UriKind.Absolute, Uri defaultValue = null);
         string GetConnectionString(string key);
+        string GetConnectionStringOrDefault(string key, string defaultValue = null);
     }
 }
