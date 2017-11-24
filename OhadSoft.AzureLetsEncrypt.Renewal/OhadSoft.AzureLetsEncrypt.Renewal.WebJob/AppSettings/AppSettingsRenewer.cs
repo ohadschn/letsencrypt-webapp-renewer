@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email;
@@ -36,7 +37,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                 }
                 catch (Exception e) when (!ExceptionHelper.IsCriticalException(e))
                 {
-                    Console.WriteLine("ERROR: Encountered exception: " + e);
+                    Trace.TraceError("Encountered exception: {0}", e);
                     exceptions.Enqueue(e);
                 }
             }
