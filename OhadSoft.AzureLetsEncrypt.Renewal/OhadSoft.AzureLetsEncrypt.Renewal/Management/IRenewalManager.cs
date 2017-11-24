@@ -4,6 +4,6 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 {
     public interface IRenewalManager
     {
-        Task Renew(RenewalParameters renewParams);
+        Task Renew(RenewalParameters renewalParams);
     }
 }
