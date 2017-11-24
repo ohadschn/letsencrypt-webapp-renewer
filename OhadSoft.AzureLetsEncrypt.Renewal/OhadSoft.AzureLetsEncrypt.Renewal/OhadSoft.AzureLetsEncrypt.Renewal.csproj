@@ -62,16 +62,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ACMESharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\letsencrypt.azure.core.0.7.2-prerelease\lib\net46\ACMESharp.dll</HintPath>
+      <HintPath>..\packages\letsencrypt.azure.core.0.8.5-prerelease\lib\net46\ACMESharp.dll</HintPath>
     </Reference>
     <Reference Include="ACMESharp.PKI.Providers.BouncyCastle, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\letsencrypt.azure.core.0.7.2-prerelease\lib\net46\ACMESharp.PKI.Providers.BouncyCastle.dll</HintPath>
+      <HintPath>..\packages\letsencrypt.azure.core.0.8.5-prerelease\lib\net46\ACMESharp.PKI.Providers.BouncyCastle.dll</HintPath>
     </Reference>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
       <HintPath>..\packages\BouncyCastle.1.8.1\lib\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
     <Reference Include="LetsEncrypt.Azure.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\letsencrypt.azure.core.0.7.2-prerelease\lib\net46\LetsEncrypt.Azure.Core.dll</HintPath>
+      <HintPath>..\packages\letsencrypt.azure.core.0.8.5-prerelease\lib\net46\LetsEncrypt.Azure.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Azure.Management.Dns, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.Management.Dns.1.9.0-preview\lib\net452\Microsoft.Azure.Management.Dns.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Azure.Management.Websites, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.Management.Websites.1.6.0-preview\lib\net45\Microsoft.Azure.Management.Websites.dll</HintPath>

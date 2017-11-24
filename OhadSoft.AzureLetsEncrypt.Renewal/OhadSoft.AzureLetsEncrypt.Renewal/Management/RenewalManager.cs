@@ -2,8 +2,10 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using LetsEncrypt.Azure.Core;
 using LetsEncrypt.Azure.Core.Models;
+using LetsEncrypt.Azure.Core.Services;
 using OhadSoft.AzureLetsEncrypt.Renewal.Configuration;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
@@ -12,7 +14,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
     {
         private static readonly RNGCryptoServiceProvider s_randomGenerator = new RNGCryptoServiceProvider(); // thread-safe
 
-        public void Renew(RenewalParameters renewParams)
+        public async Task Renew(RenewalParameters renewParams)
         {
             if (renewParams == null)
             {
@@ -26,16 +28,18 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             s_randomGenerator.GetBytes(pfxPassData);
 
             Trace.TraceInformation("Adding SSL cert for '{0}'...", renewParams.WebApp);
+            var azureWebAppEnvironment = new AzureWebAppEnvironment(
+                renewParams.TenantId,
+                renewParams.SubscriptionId,
+                renewParams.ClientId,
+                renewParams.ClientSecret,
+                renewParams.ResourceGroup,
+                renewParams.WebApp,
+                renewParams.ServicePlanResourceGroup,
+                renewParams.SiteSlotName);
+
             var manager = new CertificateManager(
-                new AzureEnvironment(
-                    renewParams.TenantId,
-                    renewParams.SubscriptionId,
-                    renewParams.ClientId,
-                    renewParams.ClientSecret,
-                    renewParams.ResourceGroup,
-                    renewParams.WebApp,
-                    renewParams.ServicePlanResourceGroup,
-                    renewParams.SiteSlotName),
+                azureWebAppEnvironment,
                 new AcmeConfig
                 {
                     Host = renewParams.Hosts[0],
@@ -47,10 +51,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                     BaseUri = (renewParams.AcmeBaseUri ?? new Uri("https://acme-v01.api.letsencrypt.org/")).ToString()
 #pragma warning restore S1075
                 },
-                new CertificateServiceSettings { UseIPBasedSSL = renewParams.UseIpBasedSsl },
-                new AuthProviderConfig());
+                new WebAppCertificateService(azureWebAppEnvironment, new CertificateServiceSettings { UseIPBasedSSL = renewParams.UseIpBasedSsl }),
+                new KuduFileSystemAuthorizationChallengeProvider(azureWebAppEnvironment, new AuthProviderConfig()));
 
-            manager.AddCertificate();
+            await manager.AddCertificate();
 
             Trace.TraceInformation("SSL cert added successfully to '{0}'", renewParams.WebApp);
         }

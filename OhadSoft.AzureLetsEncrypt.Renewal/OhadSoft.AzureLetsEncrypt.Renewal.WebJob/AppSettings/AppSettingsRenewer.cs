@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry;
@@ -20,16 +21,18 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
             m_notifier = notifier;
         }
 
-        public void Renew()
+        public async Task Renew()
         {
             var exceptions = new ConcurrentQueue<Exception>();
+
+            // TODO use ForeachAsync when concurrent renewals are supported: https://github.com/sjkp/letsencrypt-siteextension/issues/161
             foreach (var renewalParams in m_renewalParamsReader.Read())
             {
                 Events.RenewalInProgress(renewalParams);
                 try
                 {
-                    m_renewalManager.Renew(renewalParams);
-                    m_notifier.NotifyAsync(renewalParams).Wait(); // TODO use ForeachAsync when renewal manager supports it
+                    await m_renewalManager.Renew(renewalParams);
+                    await m_notifier.NotifyAsync(renewalParams);
                 }
                 catch (Exception e) when (!ExceptionHelper.IsCriticalException(e))
                 {

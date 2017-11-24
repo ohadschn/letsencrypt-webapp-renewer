@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Configuration;
-using System.Diagnostics;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli;
@@ -54,7 +53,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
                 new SendGridNotifier(ConfigurationManager.ConnectionStrings[AppSettingsRenewalParamsReader.KeyPrefix + "SendGridApiKey"]?.ConnectionString));
             try
             {
-                renewr.Renew();
+                renewr.Renew().GetAwaiter().GetResult();
             }
             catch (Exception e) when (!ExceptionHelper.IsCriticalException(e))
             {
