@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
@@ -95,7 +96,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
 
         public RenewalTestBase()
         {
-            m_renewalManager.Setup(rm => rm.Renew(It.IsAny<RenewalParameters>())).Callback<RenewalParameters>(m_renewalParameters.Enqueue);
+            m_renewalManager.Setup(rm => rm.Renew(It.IsAny<RenewalParameters>()))
+                .Returns(Task.CompletedTask)
+                .Callback<RenewalParameters>(m_renewalParameters.Enqueue);
         }
 
         protected void VerifySuccessfulRenewal(params RenewalParameters[] renewalParameters)

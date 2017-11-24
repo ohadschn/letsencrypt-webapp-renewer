@@ -91,18 +91,18 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         }
 
         [TestMethod]
-        public void TestSingleWebAppConfig()
+        public async Task TestSingleWebAppConfig()
         {
             m_appSettings[KeyPrefix + WebAppsKey] = WebApp1;
-            m_renewer.Renew();
+            await m_renewer.Renew();
             VerifySuccessfulRenewal(ExpectedFullRenewalParameters1);
             VerifySuccessfulRenewal(new[] { ExpectedFullRenewalParameters1 }, m_notificationRenewalParameterses);
         }
 
         [TestMethod]
-        public void TestDoubleWebAppConfig()
+        public async Task TestDoubleWebAppConfig()
         {
-            m_renewer.Renew();
+            await m_renewer.Renew();
             VerifySuccessfulRenewal(ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2);
             VerifySuccessfulRenewal(new[] { ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2 }, m_notificationRenewalParameterses);
         }
@@ -173,7 +173,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             var clientSecretKey = BuildConfigKey(ClientSecretKeySuffix, WebApp1);
             m_connectionStrings.Remove(clientSecretKey);
             m_connectionStrings.Add(new ConnectionStringSettings(clientSecretKey, " "));
-            AssertExtensions.Throws<ConfigurationErrorsException>(() => m_renewer.Renew());
+            AssertExtensions.Throws<ConfigurationErrorsException>(() => m_renewer.Renew().GetAwaiter().GetResult());
         }
 
         [TestMethod]
@@ -203,7 +203,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         private void AssertInvalidConfig(string key, string value)
         {
             m_appSettings[key] = value;
-            AssertExtensions.Throws<ConfigurationErrorsException>(() => m_renewer.Renew());
+            AssertExtensions.Throws<ConfigurationErrorsException>(() => m_renewer.Renew().GetAwaiter().GetResult());
         }
 
         private static string BuildConfigKey(string key, string webApp = null)
