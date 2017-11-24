@@ -19,7 +19,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry
                 return;
             }
 
-            TelemetryHelper.Client.TrackEvent("WebJobRenewalStarted", new Dictionary<string, string> { { "webjobName", TelemetryHelper.Hash(webjobName) } });
+            TelemetryHelper.Client.TrackEvent("WebJobRenewalStarted", new Dictionary<string, string> { { "webjobName", webjobName } });
         }
 
         public static void WebjobRenewalCompleted(string webjobName, int startTickCount)
@@ -39,7 +39,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry
 
             TelemetryHelper.Client.TrackEvent(
                 "WebJobRenewalCompleted",
-                new Dictionary<string, string> { { "webjobName", TelemetryHelper.Hash(webjobName) } },
+                new Dictionary<string, string> { { "webjobName", webjobName } },
                 new Dictionary<string, double> { { "durationMs", durationMs } });
         }
 
@@ -90,14 +90,14 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry
                     new Dictionary<string, string>
                     {
                         { "subscriptionId", renewalParams.SubscriptionId.ToString() },
-                        { "tenantId", TelemetryHelper.Hash(renewalParams.TenantId) },
-                        { "resourceGroup", TelemetryHelper.Hash(renewalParams.ResourceGroup) },
-                        { "webApp", TelemetryHelper.Hash(renewalParams.WebApp) },
-                        { "host", TelemetryHelper.Hash(host) },
+                        { "tenantId", renewalParams.TenantId },
+                        { "resourceGroup", renewalParams.ResourceGroup },
+                        { "webApp", renewalParams.WebApp },
+                        { "host", host },
                         { "email", TelemetryHelper.Hash(renewalParams.Email) },
                         { "clientId", renewalParams.ClientId.ToString() },
                         { "useIpBasedSsl", renewalParams.UseIpBasedSsl.ToString() },
-                        { "acmeBaseUri", renewalParams.AcmeBaseUri == null ? "[DEFAULT]" : TelemetryHelper.Hash(renewalParams.AcmeBaseUri.ToString()) }
+                        { "acmeBaseUri", renewalParams.AcmeBaseUri == null ? "[DEFAULT]" : renewalParams.AcmeBaseUri.ToString() }
                     },
                     new Dictionary<string, double>
                     {
