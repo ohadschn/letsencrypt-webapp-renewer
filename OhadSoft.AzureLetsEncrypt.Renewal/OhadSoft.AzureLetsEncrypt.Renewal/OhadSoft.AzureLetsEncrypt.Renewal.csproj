@@ -47,6 +47,7 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>..\OhadSoft.AzureLetsEncrypt.Renewal.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -62,16 +63,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ACMESharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\letsencrypt.azure.core.0.7.2-prerelease\lib\net46\ACMESharp.dll</HintPath>
+      <HintPath>..\packages\letsencrypt.azure.core.0.8.5-prerelease\lib\net46\ACMESharp.dll</HintPath>
     </Reference>
     <Reference Include="ACMESharp.PKI.Providers.BouncyCastle, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\letsencrypt.azure.core.0.7.2-prerelease\lib\net46\ACMESharp.PKI.Providers.BouncyCastle.dll</HintPath>
+      <HintPath>..\packages\letsencrypt.azure.core.0.8.5-prerelease\lib\net46\ACMESharp.PKI.Providers.BouncyCastle.dll</HintPath>
     </Reference>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
       <HintPath>..\packages\BouncyCastle.1.8.1\lib\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
     <Reference Include="LetsEncrypt.Azure.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\letsencrypt.azure.core.0.7.2-prerelease\lib\net46\LetsEncrypt.Azure.Core.dll</HintPath>
+      <HintPath>..\packages\letsencrypt.azure.core.0.8.5-prerelease\lib\net46\LetsEncrypt.Azure.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Azure.Management.Dns, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.Management.Dns.1.9.0-preview\lib\net452\Microsoft.Azure.Management.Dns.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Azure.Management.Websites, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.Management.Websites.1.6.0-preview\lib\net45\Microsoft.Azure.Management.Websites.dll</HintPath>
@@ -83,10 +87,10 @@
       <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.2.28.3\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Rest.ClientRuntime, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.2.3.9\lib\net452\Microsoft.Rest.ClientRuntime.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.2.3.10\lib\net452\Microsoft.Rest.ClientRuntime.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Rest.ClientRuntime.Azure, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.Azure.3.3.9\lib\net452\Microsoft.Rest.ClientRuntime.Azure.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.Azure.3.3.10\lib\net452\Microsoft.Rest.ClientRuntime.Azure.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Rest.ClientRuntime.Azure.Authentication, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Rest.ClientRuntime.Azure.Authentication.2.3.1\lib\net452\Microsoft.Rest.ClientRuntime.Azure.Authentication.dll</HintPath>
@@ -128,9 +132,9 @@
     </CodeAnalysisDictionary>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\packages\SonarAnalyzer.CSharp.6.3.0.2862\analyzers\Google.Protobuf.dll" />
-    <Analyzer Include="..\packages\SonarAnalyzer.CSharp.6.3.0.2862\analyzers\SonarAnalyzer.CSharp.dll" />
-    <Analyzer Include="..\packages\SonarAnalyzer.CSharp.6.3.0.2862\analyzers\SonarAnalyzer.dll" />
+    <Analyzer Include="..\packages\SonarAnalyzer.CSharp.6.6.0.3969\analyzers\Google.Protobuf.dll" />
+    <Analyzer Include="..\packages\SonarAnalyzer.CSharp.6.6.0.3969\analyzers\SonarAnalyzer.CSharp.dll" />
+    <Analyzer Include="..\packages\SonarAnalyzer.CSharp.6.6.0.3969\analyzers\SonarAnalyzer.dll" />
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>

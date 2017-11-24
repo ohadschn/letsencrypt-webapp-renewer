@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
@@ -30,7 +31,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email
 
             if (m_apiKey == null)
             {
-                Console.WriteLine("E-mail notification for web app {0} skipped because SendGrid API key is not configured", renewalParams.WebApp);
+                Trace.TraceWarning("E-mail notification for web app {0} skipped because SendGrid API key is not configured", renewalParams.WebApp);
                 return;
             }
 
@@ -41,9 +42,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email
                 "Renewal parameters:" + Environment.NewLine + renewalParams,
                 null);
 
-            Console.WriteLine("Sending e-mail notification for {0}... ", renewalParams.WebApp);
+            Trace.TraceInformation("Sending e-mail notification for {0}... ", renewalParams.WebApp);
             await new SendGridClient(m_apiKey).SendEmailAsync(message);
-            Console.WriteLine("Finished sending e-mail notification for: {0}", renewalParams.WebApp);
+            Trace.TraceInformation("Finished sending e-mail notification for: {0}", renewalParams.WebApp);
         }
     }
 }

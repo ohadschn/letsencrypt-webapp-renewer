@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings;
-using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email;
+using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Mocks;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Util;
 using AppSettingsReader = OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings.AppSettingsReader;
 
@@ -74,37 +71,31 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             new ConnectionStringSettings(BuildConfigKey(ClientSecretKeySuffix, WebApp2), ClientSecret2)
         };
 
-        private readonly Mock<IEmailNotifier> m_emailNotifier = new Mock<IEmailNotifier>();
-        private readonly ConcurrentQueue<RenewalParameters> m_notificationRenewalParameterses = new ConcurrentQueue<RenewalParameters>();
+        private readonly EmailNotifierMock m_emailNotifier = new EmailNotifierMock();
 
         public AppSettingsTests()
         {
             m_renewer = new AppSettingsRenewer(
                 RenewalManager,
                 new AppSettingsRenewalParamsReader(new AppSettingsReader(m_appSettings, m_connectionStrings)),
-                m_emailNotifier.Object);
-
-            m_emailNotifier
-                .Setup(n => n.NotifyAsync(It.IsAny<RenewalParameters>()))
-                .Returns(() => Task.CompletedTask)
-                .Callback<RenewalParameters>(m_notificationRenewalParameterses.Enqueue);
+                m_emailNotifier);
         }
 
         [TestMethod]
-        public void TestSingleWebAppConfig()
+        public async Task TestSingleWebAppConfig()
         {
             m_appSettings[KeyPrefix + WebAppsKey] = WebApp1;
-            m_renewer.Renew();
+            await m_renewer.Renew();
             VerifySuccessfulRenewal(ExpectedFullRenewalParameters1);
-            VerifySuccessfulRenewal(new[] { ExpectedFullRenewalParameters1 }, m_notificationRenewalParameterses);
+            VerifySuccessfulRenewal(new[] { ExpectedFullRenewalParameters1 }, m_emailNotifier.RenewalParameters);
         }
 
         [TestMethod]
-        public void TestDoubleWebAppConfig()
+        public async Task TestDoubleWebAppConfig()
         {
-            m_renewer.Renew();
+            await m_renewer.Renew();
             VerifySuccessfulRenewal(ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2);
-            VerifySuccessfulRenewal(new[] { ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2 }, m_notificationRenewalParameterses);
+            VerifySuccessfulRenewal(new[] { ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2 }, m_emailNotifier.RenewalParameters);
         }
 
         [TestMethod]
@@ -173,7 +164,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             var clientSecretKey = BuildConfigKey(ClientSecretKeySuffix, WebApp1);
             m_connectionStrings.Remove(clientSecretKey);
             m_connectionStrings.Add(new ConnectionStringSettings(clientSecretKey, " "));
-            AssertExtensions.Throws<ConfigurationErrorsException>(() => m_renewer.Renew());
+            AssertExtensions.Throws<ConfigurationErrorsException>(() => m_renewer.Renew().GetAwaiter().GetResult());
         }
 
         [TestMethod]
@@ -203,7 +194,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         private void AssertInvalidConfig(string key, string value)
         {
             m_appSettings[key] = value;
-            AssertExtensions.Throws<ConfigurationErrorsException>(() => m_renewer.Renew());
+            AssertExtensions.Throws<ConfigurationErrorsException>(() => m_renewer.Renew().GetAwaiter().GetResult());
         }
 
         private static string BuildConfigKey(string key, string webApp = null)

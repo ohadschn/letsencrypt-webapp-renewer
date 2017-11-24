@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
+using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Mocks;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob;
 using static System.FormattableString;
 
@@ -89,18 +88,11 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             ClientId2,
             ClientSecret2);
 
-        private readonly Mock<IRenewalManager> m_renewalManager = new Mock<IRenewalManager>();
-        private readonly ConcurrentQueue<RenewalParameters> m_renewalParameters = new ConcurrentQueue<RenewalParameters>();
-        protected IRenewalManager RenewalManager => m_renewalManager.Object;
-
-        public RenewalTestBase()
-        {
-            m_renewalManager.Setup(rm => rm.Renew(It.IsAny<RenewalParameters>())).Callback<RenewalParameters>(m_renewalParameters.Enqueue);
-        }
+        protected RenewalManagerMock RenewalManager { get; } = new RenewalManagerMock();
 
         protected void VerifySuccessfulRenewal(params RenewalParameters[] renewalParameters)
         {
-            VerifySuccessfulRenewal(renewalParameters, m_renewalParameters);
+            VerifySuccessfulRenewal(renewalParameters, RenewalManager.RenewalParameters);
         }
 
 #pragma warning disable S3242

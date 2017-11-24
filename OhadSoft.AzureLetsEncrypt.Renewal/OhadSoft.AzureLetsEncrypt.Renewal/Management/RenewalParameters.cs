@@ -132,8 +132,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 return true;
             }
 
-            var a = obj as RenewalParameters;
-            return a != null && Equals(a);
+            return obj is RenewalParameters a && Equals(a);
         }
 
         public override int GetHashCode()
