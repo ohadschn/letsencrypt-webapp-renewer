@@ -24,7 +24,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             Trace.TraceInformation("Generating SSL certificate with parameters: {0}", renewalParams);
 
             Trace.TraceInformation("Generating secure PFX password for '{0}'...", renewalParams.WebApp);
-            byte[] pfxPassData = new byte[32];
+            var pfxPassData = new byte[32];
             s_randomGenerator.GetBytes(pfxPassData);
 
             Trace.TraceInformation("Adding SSL cert for '{0}'...", renewalParams.WebApp);
