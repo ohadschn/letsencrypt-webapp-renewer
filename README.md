@@ -121,4 +121,4 @@ Since this project relies on https://github.com/sjkp/letsencrypt-siteextension, 
 Consult the Let's Encrypt documentation for rate limits: https://letsencrypt.org/docs/rate-limits/
 
 ## Powered by Resharper 
-![Resharper](https://raw.githubusercontent.com/ohadschn/ET4W/master/docs/icon_ReSharper.png)
+[![Resharper](https://raw.githubusercontent.com/ohadschn/ET4W/master/docs/icon_ReSharper.png)](https://www.jetbrains.com/resharper/)
