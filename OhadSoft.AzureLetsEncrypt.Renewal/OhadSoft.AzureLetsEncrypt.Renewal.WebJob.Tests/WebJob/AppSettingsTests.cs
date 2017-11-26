@@ -101,7 +101,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         [TestMethod]
         public void TestInvalidWebApps()
         {
-            AssertInvalidConfig(BuildConfigKey(WebAppsKey), String.Empty);
+            AssertInvalidConfig(BuildConfigKey(WebAppsKey), String.Empty, "webApp");
         }
 
         [TestMethod]
@@ -113,49 +113,49 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         [TestMethod]
         public void TestInvalidSubscriptionId()
         {
-            AssertInvalidConfig(BuildConfigKey(SubscriptionIdKeySuffix, WebApp1), "not a GUID");
+            AssertInvalidConfig(BuildConfigKey(SubscriptionIdKeySuffix, WebApp1), "not a GUID", "subscriptionId");
         }
 
         [TestMethod]
         public void TestInvalidTenantId()
         {
-            AssertInvalidConfig(BuildConfigKey(TenantIdKeySuffix, WebApp2), String.Empty);
+            AssertInvalidConfig(BuildConfigKey(TenantIdKeySuffix, WebApp2), String.Empty, "tenantId");
         }
 
         [TestMethod]
         public void TestInvalidResourceGroup()
         {
-            AssertInvalidConfig(BuildConfigKey(ResourceGroupKeySuffix, WebApp1), "     ");
+            AssertInvalidConfig(BuildConfigKey(ResourceGroupKeySuffix, WebApp1), "     ", "resourceGroup");
         }
 
         [TestMethod]
         public void TestInvalidHosts()
         {
-            AssertInvalidConfig(BuildConfigKey(HostsKeySuffix, WebApp2), "www.foo.com;not/valid");
+            AssertInvalidConfig(BuildConfigKey(HostsKeySuffix, WebApp2), "www.foo.com;not/valid", "hosts");
         }
 
         [TestMethod]
         public void TestInvalidEmail()
         {
-            AssertInvalidConfig(BuildConfigKey(EmailKeySuffix, WebApp1), "mail@");
+            AssertInvalidConfig(BuildConfigKey(EmailKeySuffix, WebApp1), "mail@", "email");
         }
 
         [TestMethod]
         public void TestInvalidClientId()
         {
-            AssertInvalidConfig(BuildConfigKey(ClientIdKeySuffix, WebApp2), " ");
+            AssertInvalidConfig(BuildConfigKey(ClientIdKeySuffix, WebApp2), " ", "clientId");
         }
 
         [TestMethod]
         public void TestInvalidServicePlanResourceGroup()
         {
-            AssertInvalidConfig(BuildConfigKey(ServicePlanResourceGroupKeySuffix, WebApp1), String.Empty);
+            AssertInvalidConfig(BuildConfigKey(ServicePlanResourceGroupKeySuffix, WebApp1), String.Empty, "servicePlanResourceGroup");
         }
 
         [TestMethod]
         public void TestInvalidSiteSlotName()
         {
-            AssertInvalidConfig(BuildConfigKey(SiteSlotNameSuffix, WebApp2), " ");
+            AssertInvalidConfig(BuildConfigKey(SiteSlotNameSuffix, WebApp2), " ", "siteSlotName");
         }
 
         [TestMethod]
@@ -164,37 +164,39 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             var clientSecretKey = BuildConfigKey(ClientSecretKeySuffix, WebApp1);
             m_connectionStrings.Remove(clientSecretKey);
             m_connectionStrings.Add(new ConnectionStringSettings(clientSecretKey, " "));
-            AssertExtensions.Throws<ConfigurationErrorsException>(() => m_renewer.Renew().GetAwaiter().GetResult());
+            AssertExtensions.Throws<ConfigurationErrorsException>(() => m_renewer.Renew().GetAwaiter().GetResult(), e => e.ToString().Contains("clientSecret"));
         }
 
         [TestMethod]
         public void TestInvalidUseIpBasedSsl()
         {
-            AssertInvalidConfig(BuildConfigKey(UseIpBasedSslKeySuffix, WebApp2), String.Empty);
+            AssertInvalidConfig(BuildConfigKey(UseIpBasedSslKeySuffix, WebApp2), String.Empty, "useIpBasedSsl");
         }
 
         [TestMethod]
         public void TestInvalidRsaKeyLength()
         {
-            AssertInvalidConfig(BuildConfigKey(RsaKeyLengthKeySuffix, WebApp1), "x");
+            AssertInvalidConfig(BuildConfigKey(RsaKeyLengthKeySuffix, WebApp1), "x", "rsaKeyLength");
         }
 
         [TestMethod]
         public void TestInvalidAcmeBaseUri()
         {
-            AssertInvalidConfig(BuildConfigKey(AcmeBaseUriKeySuffix, WebApp2), "http:/OnlyOneSlash.com");
+            AssertInvalidConfig(BuildConfigKey(AcmeBaseUriKeySuffix, WebApp2), "http:/OnlyOneSlash.com", "acmeBaseUri");
         }
 
         [TestMethod]
         public void TestInvalidSharedSetting()
         {
-            AssertInvalidConfig(BuildConfigKey(UseIpBasedSslKeySuffix), "maybe false, maybe true - who knows?");
+            AssertInvalidConfig(BuildConfigKey(UseIpBasedSslKeySuffix), "maybe false, maybe true - who knows?", "useIpBasedSsl");
         }
 
-        private void AssertInvalidConfig(string key, string value)
+        private void AssertInvalidConfig(string key, string value, string expectedText = null)
         {
             m_appSettings[key] = value;
-            AssertExtensions.Throws<ConfigurationErrorsException>(() => m_renewer.Renew().GetAwaiter().GetResult());
+            AssertExtensions.Throws<ConfigurationErrorsException>(
+                () => m_renewer.Renew().GetAwaiter().GetResult(),
+                e => expectedText == null || e.Message.Contains(expectedText) || e.ToString().Contains(expectedText));
         }
 
         private static string BuildConfigKey(string key, string webApp = null)
