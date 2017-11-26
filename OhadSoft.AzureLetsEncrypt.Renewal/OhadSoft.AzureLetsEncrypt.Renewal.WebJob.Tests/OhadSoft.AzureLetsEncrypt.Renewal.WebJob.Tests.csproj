@@ -96,7 +96,6 @@
     <AdditionalFiles Include="..\stylecop.json">
       <Link>Properties\stylecop.json</Link>
     </AdditionalFiles>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
