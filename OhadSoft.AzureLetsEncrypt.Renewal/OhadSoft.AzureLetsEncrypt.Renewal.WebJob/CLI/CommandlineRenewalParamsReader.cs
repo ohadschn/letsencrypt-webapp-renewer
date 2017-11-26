@@ -2,6 +2,7 @@
 using CommandLine;
 using CommandLine.Text;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
+using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Exceptions;
 using static System.FormattableString;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
@@ -23,25 +24,35 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
 
             if (parserResult.Tag != ParserResultType.Parsed)
             {
-                throw new ArgumentValidationException("Could not parse command-line arguments", GetUsage(parserResult));
+                throw new ArgumentParsingException("Could not parse command-line arguments", GetUsage(parserResult));
             }
 
             var parsed = ((Parsed<Options>)parserResult).Value;
 
-            return new RenewalParameters(
-                parsed.SubscriptionId,
-                parsed.TenantId,
-                parsed.ResourceGroup,
-                parsed.WebApp,
-                parsed.Hosts,
-                parsed.Email,
-                parsed.ClientId,
-                parsed.ClientSecret,
-                parsed.ServicePlanResourceGroup,
-                parsed.SiteSlotName,
-                parsed.UseIpBasedSsl,
-                parsed.RsaKeyLength,
-                parsed.AcmeBaseUri);
+            RenewalParameters renewalParameters;
+            try
+            {
+                renewalParameters = new RenewalParameters(
+                    parsed.SubscriptionId,
+                    parsed.TenantId,
+                    parsed.ResourceGroup,
+                    parsed.WebApp,
+                    parsed.Hosts,
+                    parsed.Email,
+                    parsed.ClientId,
+                    parsed.ClientSecret,
+                    parsed.ServicePlanResourceGroup,
+                    parsed.SiteSlotName,
+                    parsed.UseIpBasedSsl,
+                    parsed.RsaKeyLength,
+                    parsed.AcmeBaseUri);
+            }
+            catch (ArgumentException e)
+            {
+                throw new ArgumentValidationException(e);
+            }
+
+            return renewalParameters;
         }
 
         private static string GetUsage(ParserResult<Options> parserResult)
