@@ -14,9 +14,6 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
 {
     internal static class Program
     {
-        private const int Success = 0;
-        private const int ArgumentError = 1;
-        private const int UnexpectedException = 2;
         private const string DisableTelemetryEnvVarNAme = "LETSENCRYPT_DISABLE_TELEMETRY";
         private const string VerboseOutputEnvVarName = "LETSENCRYPT_VERBOSE";
 
@@ -63,7 +60,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             }
 
             Events.WebjobRenewalCompleted(webjobName, startTicks);
-            return Success;
+            return ExitCodes.Success;
         }
 
         private static int CliMain(string[] args)
@@ -78,6 +75,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             {
                 renewer.Renew(args);
             }
+            catch (ArgumentValidationException e)
+            {
+                Trace.TraceError(e.Message);
+                Console.WriteLine(e.HelpText);
+                TelemetryHelper.Client.TrackException(e);
+            }
             catch (ArgumentException e)
             {
                 Trace.TraceError(
@@ -90,34 +93,17 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
 
                 TelemetryHelper.Client.TrackException(e);
 
-                PrintUsage();
-                return ArgumentError;
+                return ExitCodes.ArgumentError;
             }
             catch (Exception e) when (!ExceptionHelper.IsCriticalException(e))
             {
                 Trace.TraceError("Unexpected exception: {0}", e);
                 TelemetryHelper.Client.TrackException(e);
-                return UnexpectedException;
+                return ExitCodes.UnexpectedException;
             }
 
             Events.CliRenewalCompleted(startTicks);
-            return Success;
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", Justification = "technical terms not in dictionary")]
-        private static void PrintUsage()
-        {
-            Console.WriteLine(
-                "Usage: {0}.exe SubscriptionId TenantId ResourceGroup WebApp Hosts Email ClientId ClientSecret [ServicePlanResourceGroupName] [SiteSlotName] [UseIpBasedSsl] [RsaKeyLength] [AcmeBaseUri]",
-                typeof(Program).Assembly.GetName().Name);
-            Console.WriteLine("'Hosts' is a semicolon-delimited list of host names");
-            Console.WriteLine("'ServicePlanResourceGroupName' is optional and can be empty (\"\"), in which case the web app resource group will be used");
-            Console.WriteLine("'SiteSlotName' is optional and can be empty (\"\") if site deployment slots are not to be used");
-            Console.WriteLine("'UseIpBasedSsl' is optional and defaults to false");
-            Console.WriteLine("'RsaKeyLength' is optional and defaults to 2048");
-            Console.WriteLine("'AcmeBaseUri' is optional and defaults to https://acme-v01.api.letsencrypt.org/");
-            Console.WriteLine("Consult the Let's Encrypt documentation for rate limits: https://letsencrypt.org/docs/rate-limits/");
-            Console.WriteLine("Exit codes: {0} = success, {1} = argument error, {2} = unexpected error", Success, ArgumentError, UnexpectedException);
+            return ExitCodes.Success;
         }
     }
 }
