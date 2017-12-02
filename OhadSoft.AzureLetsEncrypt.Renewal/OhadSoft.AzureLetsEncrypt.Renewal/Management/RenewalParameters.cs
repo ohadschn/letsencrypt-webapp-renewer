@@ -20,6 +20,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public bool UseIpBasedSsl { get; }
         public int RsaKeyLength { get; }
         public Uri AcmeBaseUri { get; }
+        public int RenewXNumberOfDaysBeforeExpiration { get; }
 
         public RenewalParameters(
             Guid subscriptionId,
@@ -34,7 +35,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             string siteSlotName = null,
             bool useIpBasedSsl = false,
             int rsaKeyLength = 2048,
-            Uri acmeBaseUri = null)
+            Uri acmeBaseUri = null,
+            int renewXNumberOfDaysBeforeExpiration = -1)
         {
             SubscriptionId = subscriptionId != default
                 ? subscriptionId
@@ -86,11 +88,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             AcmeBaseUri = acmeBaseUri == null || acmeBaseUri.IsAbsoluteUri
                 ? acmeBaseUri
                 : throw new ArgumentException("ACME base URI must be either null or absolute", nameof(acmeBaseUri));
+
+            RenewXNumberOfDaysBeforeExpiration = renewXNumberOfDaysBeforeExpiration;
         }
 
         public override string ToString()
         {
-            return Invariant($"{nameof(SubscriptionId)}: {SubscriptionId}, {nameof(TenantId)}: {TenantId}, {nameof(ClientId)}: {ClientId}, {nameof(ClientSecret)}: [SCRUBBED], {nameof(ResourceGroup)}: {ResourceGroup}, {nameof(ServicePlanResourceGroup)}: {ServicePlanResourceGroup}, {nameof(WebApp)}: {WebApp}, {nameof(SiteSlotName)}: {SiteSlotName}, {nameof(Email)}: {Email}, {nameof(Hosts)}: {String.Join(", ", Hosts)}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBaseUri)}: {AcmeBaseUri}");
+            return Invariant($"{nameof(SubscriptionId)}: {SubscriptionId}, {nameof(TenantId)}: {TenantId}, {nameof(ClientId)}: {ClientId}, {nameof(ClientSecret)}: [SCRUBBED], {nameof(ResourceGroup)}: {ResourceGroup}, {nameof(ServicePlanResourceGroup)}: {ServicePlanResourceGroup}, {nameof(WebApp)}: {WebApp}, {nameof(SiteSlotName)}: {SiteSlotName}, {nameof(Email)}: {Email}, {nameof(Hosts)}: {String.Join(", ", Hosts)}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBaseUri)}: {AcmeBaseUri}, {nameof(RenewXNumberOfDaysBeforeExpiration)}: {RenewXNumberOfDaysBeforeExpiration}");
         }
 
         public bool Equals(RenewalParameters other)
@@ -117,7 +121,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 && string.Equals(SiteSlotName, other.SiteSlotName)
                 && UseIpBasedSsl == other.UseIpBasedSsl
                 && RsaKeyLength == other.RsaKeyLength
-                && Equals(AcmeBaseUri, other.AcmeBaseUri);
+                && Equals(AcmeBaseUri, other.AcmeBaseUri)
+                && RenewXNumberOfDaysBeforeExpiration == other.RenewXNumberOfDaysBeforeExpiration;
         }
 
         public override bool Equals(object obj)
@@ -150,6 +155,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 hashCode = (hashCode * 397) ^ UseIpBasedSsl.GetHashCode();
                 hashCode = (hashCode * 397) ^ RsaKeyLength;
                 hashCode = (hashCode * 397) ^ (AcmeBaseUri != null ? AcmeBaseUri.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ RenewXNumberOfDaysBeforeExpiration;
                 return hashCode;
             }
         }

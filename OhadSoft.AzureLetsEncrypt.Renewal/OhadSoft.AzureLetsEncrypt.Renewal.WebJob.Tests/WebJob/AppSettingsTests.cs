@@ -17,19 +17,20 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
     {
         public const string KeyPrefix = "letsencrypt:";
 
-        public const string WebAppsKey = "webApps";
-        public const string SubscriptionIdKeySuffix = "subscriptionId";
-        public const string TenantIdKeySuffix = "tenantId";
-        public const string ResourceGroupKeySuffix = "resourceGroup";
-        public const string HostsKeySuffix = "hosts";
-        public const string EmailKeySuffix = "email";
-        public const string ClientIdKeySuffix = "clientId";
-        public const string ClientSecretKeySuffix = "clientSecret";
-        public const string ServicePlanResourceGroupKeySuffix = "servicePlanResourceGroup";
-        public const string SiteSlotNameSuffix = "siteSlotName";
-        public const string UseIpBasedSslKeySuffix = "useIpBasedSsl";
-        public const string RsaKeyLengthKeySuffix = "rsaKeyLength";
-        public const string AcmeBaseUriKeySuffix = "acmeBaseUri";
+        private const string WebAppsKey = "webApps";
+        private const string SubscriptionIdKeySuffix = "subscriptionId";
+        private const string TenantIdKeySuffix = "tenantId";
+        private const string ResourceGroupKeySuffix = "resourceGroup";
+        private const string HostsKeySuffix = "hosts";
+        private const string EmailKeySuffix = "email";
+        private const string ClientIdKeySuffix = "clientId";
+        private const string ClientSecretKeySuffix = "clientSecret";
+        private const string ServicePlanResourceGroupKeySuffix = "servicePlanResourceGroup";
+        private const string SiteSlotNameSuffix = "siteSlotName";
+        private const string UseIpBasedSslKeySuffix = "useIpBasedSsl";
+        private const string RsaKeyLengthKeySuffix = "rsaKeyLength";
+        private const string AcmeBaseUriKeySuffix = "acmeBaseUri";
+        private const string RenewXNumberOfDaysBeforeExpirationKeySuffix = "renewXNumberOfDaysBeforeExpiration";
 
         private readonly AppSettingsRenewer m_renewer;
 
@@ -40,6 +41,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
 
             // Shared
             { BuildConfigKey(ClientIdKeySuffix), ClientId1.ToString() },
+            { BuildConfigKey(RenewXNumberOfDaysBeforeExpirationKeySuffix), RenewXNumberOfDaysBeforeExpiration.ToString(CultureInfo.InvariantCulture) },
 
             // WebApp1
             { BuildConfigKey(SubscriptionIdKeySuffix, WebApp1), Subscription1.ToString() },

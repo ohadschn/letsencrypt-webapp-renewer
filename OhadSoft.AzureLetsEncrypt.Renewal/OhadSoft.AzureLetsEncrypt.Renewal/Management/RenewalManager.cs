@@ -56,7 +56,14 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 new CertificateServiceSettings { UseIPBasedSSL = renewalParams.UseIpBasedSsl },
                 new AuthProviderConfig());
 
-            await manager.AddCertificate();
+            if (renewalParams.RenewXNumberOfDaysBeforeExpiration > 0)
+            {
+                await manager.RenewCertificate(false, renewalParams.RenewXNumberOfDaysBeforeExpiration);
+            }
+            else
+            {
+                await manager.AddCertificate();
+            }
 
             Trace.TraceInformation("SSL cert added successfully to '{0}'", renewalParams.WebApp);
         }

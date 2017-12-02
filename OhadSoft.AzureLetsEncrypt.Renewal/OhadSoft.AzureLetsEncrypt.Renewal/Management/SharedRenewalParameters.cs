@@ -5,7 +5,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 {
     public sealed class SharedRenewalParameters
     {
-        public SharedRenewalParameters(string resourceGroup, Guid? subscriptionId, string tenantId, Guid? clientId, string clientSecret, string email, string servicePlanResourceGroup, bool? useIpBasedSsl, int? rsaKeyLength, Uri acmeBaseUri)
+        public SharedRenewalParameters(string resourceGroup, Guid? subscriptionId, string tenantId, Guid? clientId, string clientSecret, string email, string servicePlanResourceGroup, bool? useIpBasedSsl, int? rsaKeyLength, Uri acmeBaseUri, int? renewXNumberOfDaysBeforeExpiration)
         {
             ResourceGroup = resourceGroup;
             SubscriptionId = subscriptionId;
@@ -17,6 +17,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             UseIpBasedSsl = useIpBasedSsl;
             RsaKeyLength = rsaKeyLength;
             AcmeBaseUri = acmeBaseUri;
+            RenewXNumberOfDaysBeforeExpiration = renewXNumberOfDaysBeforeExpiration;
         }
 
         public string ResourceGroup { get; }
@@ -29,6 +30,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public bool? UseIpBasedSsl { get; }
         public int? RsaKeyLength { get; }
         public Uri AcmeBaseUri { get; }
+        public int? RenewXNumberOfDaysBeforeExpiration { get; }
 
         public override string ToString()
         {

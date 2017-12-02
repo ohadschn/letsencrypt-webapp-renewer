@@ -24,6 +24,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
         private const string UseIpBasedSslKey = "useIpBasedSsl";
         private const string RsaKeyLengthKey = "rsaKeyLength";
         private const string AcmeBaseUriKey = "acmeBaseUri";
+        private const string RenewXNumberOfDaysBeforeExpiration = "renewXNumberOfDaysBeforeExpiration";
 
         private readonly IAppSettingsReader m_appSettings;
 
@@ -43,10 +44,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 
             Trace.TraceInformation("Parsed web apps for SSL renewal: {0}", String.Join("; ", webApps));
 
-            var adminParams = GetSharedParams();
-            Trace.TraceInformation("Parsed common admin parameters: {0}", adminParams);
+            var sharedParams = GetSharedParams();
+            Trace.TraceInformation("Parsed shared parameters: {0}", sharedParams);
 
-            var webAppRenewalInfos = webApps.Select(wa => GetWebAppRenewalInfo(wa, adminParams)).ToArray();
+            var webAppRenewalInfos = webApps.Select(wa => GetWebAppRenewalInfo(wa, sharedParams)).ToArray();
 
             Trace.TraceInformation("Completed parsing of Web App SSL cert renewal information");
             return webAppRenewalInfos;
@@ -64,7 +65,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                 GetCommonSetting(ServicePlanResourceGroupKey),
                 GetCommonBooleanSetting(UseIpBasedSslKey),
                 GetCommonInt32Setting(RsaKeyLengthKey),
-                GetCommonUriSetting(AcmeBaseUriKey));
+                GetCommonUriSetting(AcmeBaseUriKey),
+                GetCommonInt32Setting(RenewXNumberOfDaysBeforeExpiration));
         }
 
         private RenewalParameters GetWebAppRenewalInfo(string webApp, SharedRenewalParameters sharedRenewalParams)
@@ -87,7 +89,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                     m_appSettings.GetStringOrDefault(BuildConfigKey(SiteSlotNameKey, webApp)),
                     m_appSettings.GetBooleanOrDefault(BuildConfigKey(UseIpBasedSslKey, webApp), sharedRenewalParams.UseIpBasedSsl ?? false).Value,
                     m_appSettings.GetInt32OrDefault(BuildConfigKey(RsaKeyLengthKey, webApp), sharedRenewalParams.RsaKeyLength ?? 2048).Value,
-                    m_appSettings.GetUriOrDefault(BuildConfigKey(AcmeBaseUriKey, webApp), UriKind.Absolute, sharedRenewalParams.AcmeBaseUri));
+                    m_appSettings.GetUriOrDefault(BuildConfigKey(AcmeBaseUriKey, webApp), UriKind.Absolute, sharedRenewalParams.AcmeBaseUri),
+                    m_appSettings.GetInt32OrDefault(BuildConfigKey(RenewXNumberOfDaysBeforeExpiration, webApp), sharedRenewalParams.RenewXNumberOfDaysBeforeExpiration ?? -1).Value);
             } // ReSharper restore PossibleInvalidOperationException
             catch (ArgumentException e)
             {
@@ -112,7 +115,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 
         private int? GetCommonInt32Setting(string key)
         {
-            return m_appSettings.GetInt32OrDefault(key);
+            return m_appSettings.GetInt32OrDefault(BuildConfigKey(key));
         }
 
         private Uri GetCommonUriSetting(string key)

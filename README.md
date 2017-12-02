@@ -39,11 +39,12 @@ The `letsencrypt-webapp-renewer` WebJob is configured via [Web App Settings](htt
    1. `letsencrypt:webAppName-email` (will be used for both Let's Encrypt registration and e-mail notifications)
    1. `letsencrypt:webAppName-clientId`
    1. `letsencrypt:webAppName-clientSecret` (should be set as a **connection string**)
-   1. (optional) `letsencrypt:webAppName-servicePlanResourceGroup`
-   1. (optional) `letsencrypt:webAppName-siteSlotName`
-   1. (optional) `letsencrypt:webAppName-useIpBasedSsl`
-   1. (optional) `letsencrypt:webAppName-rsaKeyLength`
-   1. (optional) `letsencrypt:webAppName-acmeBaseUri`
+   1. `letsencrypt:webAppName-servicePlanResourceGroup` (optional, defaults to the Web App Resource Group)
+   1. `letsencrypt:webAppName-siteSlotName` (optional, defaults to the main deployment slot)
+   1. `letsencrypt:webAppName-useIpBasedSsl` (optional, defaults to `false`)
+   1. `letsencrypt:webAppName-rsaKeyLength` (optional, defaults to `2048`)
+   1. `letsencrypt:webAppName-acmeBaseUri` (optiona, defaults to `https://acme-v01.api.letsencrypt.org`)
+   1. `letsencrypt:webAppName-renewXNumberOfDaysBeforeExpiration` (optional, defaults to `-1` which means renewal will take place regardless of the expiry time)
 
 For more information about the various renewal settings see: https://github.com/sjkp/letsencrypt-siteextension.
 
