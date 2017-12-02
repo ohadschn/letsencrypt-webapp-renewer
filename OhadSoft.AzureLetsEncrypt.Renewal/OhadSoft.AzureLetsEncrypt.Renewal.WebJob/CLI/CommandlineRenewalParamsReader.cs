@@ -1,6 +1,9 @@
 ﻿using System;
-using System.Linq;
+using CommandLine;
+using CommandLine.Text;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
+using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Exceptions;
+using static System.FormattableString;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
 {
@@ -13,89 +16,57 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
                 throw new ArgumentNullException(nameof(args));
             }
 
-            if (args.Length < 8 || args.Length > 13)
+            ParserResult<Options> parserResult;
+            using (var parser = new Parser())
             {
-                throw new ArgumentException("Invalid parameter count");
+                parserResult = parser.ParseArguments<Options>(args);
             }
 
-            if (!Guid.TryParse(args[0], out Guid subscriptionId))
+            if (parserResult.Tag != ParserResultType.Parsed)
             {
-                throw new ArgumentException("Could not parse subscription ID GUID");
+                throw new ArgumentParsingException("Could not parse command-line arguments", GetUsage(parserResult));
             }
 
-            var tenantId = !String.IsNullOrWhiteSpace(args[1])
-                ? args[1]
-                : throw new ArgumentException("Tenant cannot be null or whitespace");
+            var parsed = ((Parsed<Options>)parserResult).Value;
 
-            var resourceGroup = !String.IsNullOrWhiteSpace(args[2])
-                ? args[2]
-                : throw new ArgumentException("Resource group cannot be null or whitespace");
-
-            var webApp = !String.IsNullOrWhiteSpace(args[3])
-                ? args[3]
-                : throw new ArgumentException("Web app cannot be null or whitespace");
-
-            var hosts = !String.IsNullOrWhiteSpace(args[4])
-                ? args[4].Split(';').Select(s => s.Trim()).ToArray()
-                : throw new ArgumentException("Hosts cannot be null or whitespace");
-
-            var email = !String.IsNullOrWhiteSpace(args[5])
-                ? args[5]
-                : throw new ArgumentException("Email cannot be null or whitespace");
-
-            if (!Guid.TryParse(args[6], out Guid clientId))
+            RenewalParameters renewalParameters;
+            try
             {
-                throw new ArgumentException("Could not parse client ID GUID");
+                renewalParameters = new RenewalParameters(
+                    parsed.SubscriptionId,
+                    parsed.TenantId,
+                    parsed.ResourceGroup,
+                    parsed.WebApp,
+                    parsed.Hosts,
+                    parsed.Email,
+                    parsed.ClientId,
+                    parsed.ClientSecret,
+                    parsed.ServicePlanResourceGroup,
+                    parsed.SiteSlotName,
+                    parsed.UseIpBasedSsl,
+                    parsed.RsaKeyLength,
+                    parsed.AcmeBaseUri);
+            }
+            catch (ArgumentException e)
+            {
+                throw new ArgumentValidationException(e);
             }
 
-            var clientSecret = !String.IsNullOrWhiteSpace(args[7])
-                ? args[7]
-                : throw new ArgumentException("Client secret cannot be null or whitespace");
+            return renewalParameters;
+        }
 
-            string servicePlanResourceGroup = null;
-            if (args.Length >= 9 && !String.IsNullOrWhiteSpace(args[8]))
-            {
-                servicePlanResourceGroup = args[8];
-            }
+        private static string GetUsage(ParserResult<Options> parserResult)
+        {
+            var autoBuild = HelpText.AutoBuild(parserResult);
 
-            string siteSlotName = null;
-            if (args.Length >= 10 && !String.IsNullOrWhiteSpace(args[9]))
-            {
-                siteSlotName = args[9];
-            }
+            autoBuild.AddPostOptionsLine("Exit codes:");
+            autoBuild.AddPostOptionsLine(Invariant($"{ExitCodes.Success} - Success"));
+            autoBuild.AddPostOptionsLine(Invariant($"{ExitCodes.ArgumentError} - Bad argument(s)"));
+            autoBuild.AddPostOptionsLine(Invariant($"{ExitCodes.UnexpectedException} - Unexpected error"));
+            autoBuild.AddPostOptionsLine(String.Empty);
+            autoBuild.AddPostOptionsLine("Consult the Let's Encrypt documentation for rate limits: https://letsencrypt.org/docs/rate-limits/");
 
-            bool useIpBasedSsl = false;
-            if (args.Length >= 11 && !Boolean.TryParse(args[10], out useIpBasedSsl))
-            {
-                throw new ArgumentException("Could not parse useIpBasedSsl as boolean (true/false)");
-            }
-
-            int rsaKeyLength = 2048;
-            if (args.Length >= 12 && !Int32.TryParse(args[11], out rsaKeyLength))
-            {
-                throw new ArgumentException("Could not parse RSA key length as 32-bit integer");
-            }
-
-            Uri acmeBaseUri = null;
-            if (args.Length >= 13 && !Uri.TryCreate(args[12], UriKind.Absolute, out acmeBaseUri))
-            {
-                throw new ArgumentException("Could not parse ACME Base URI (as absolute)");
-            }
-
-            return new RenewalParameters(
-                subscriptionId,
-                tenantId,
-                resourceGroup,
-                webApp,
-                hosts,
-                email,
-                clientId,
-                clientSecret,
-                servicePlanResourceGroup,
-                siteSlotName,
-                useIpBasedSsl,
-                rsaKeyLength,
-                acmeBaseUri);
+            return autoBuild;
         }
     }
 }

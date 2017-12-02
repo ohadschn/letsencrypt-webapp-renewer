@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Util;
 
@@ -12,14 +11,26 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
     [TestClass]
     public class CliTests : RenewalTestBase
     {
-        private static readonly IReadOnlyCollection<string> FullValidArgs = new[]
+        private IReadOnlyDictionary<(string shortName, string longName), string> FullValidArgs { get; } = new Dictionary<(string, string), string>
         {
-            Subscription1.ToString(), Tenant1, ResourceGroup1, WebApp1, String.Join(";", Hosts1),
-            Email1, ClientId1.ToString(), ClientSecret1, ServicePlanResourceGroup1, SiteSlotName1, UseIpBasedSsl1.ToString(), RsaKeyLength1.ToString(CultureInfo.InvariantCulture), AcmeBaseUri1.ToString()
+#pragma warning disable SA1008
+            { ("-s", "--subscriptionId"), Subscription1.ToString() },
+            { ("-t", "--tenantId"), Tenant1 },
+            { ("-r", "--resourceGroup"), ResourceGroup1 },
+            { ("-w", "--webApp"), WebApp1 },
+            { ("-o", "--hosts"), String.Join(";", Hosts1) },
+            { ("-e", "--email"), Email1 },
+            { ("-c", "--clientId"), ClientId1.ToString() },
+            { ("-l", "--clientSecret"), ClientSecret1 },
+            { ("-p", "--servicePlanResourceGroup"), ServicePlanResourceGroup1 },
+            { ("-d", "--siteSlotName"), SiteSlotName1 },
+            { ("-i", "--useIpBasedSsl"), UseIpBasedSsl1.ToString() },
+            { ("-k", "--rsaKeyLength"), RsaKeyLength1.ToString(CultureInfo.InvariantCulture) },
+            { ("-a", "--acmeBaseUri"), AcmeBaseUri1.ToString() }
+#pragma warning restore SA1008
         };
 
-        private static string[] GetMaximalValidArgs() => FullValidArgs.ToArray();
-        private static string[] GetMinimalValidArgs() => FullValidArgs.Take(8).ToArray();
+        private IEnumerable<KeyValuePair<(string shortName, string longName), string>> GetMinimalValidArgs() => FullValidArgs.Take(8);
 
         private readonly CliRenewer m_renewer;
 
@@ -29,119 +40,90 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
         }
 
         [TestMethod]
-        public void TooFewParameters()
-        {
-            var strings = FullValidArgs.Take(7).ToArray();
-            AssertExtensions.Throws<ArgumentException>(() => m_renewer.Renew(strings));
-        }
-
-        [TestMethod]
-        public void TooManyParameters()
-        {
-            var strings = FullValidArgs.Concat(new[] { "foo" }).ToArray();
-            AssertExtensions.Throws<ArgumentException>(() => m_renewer.Renew(strings));
-        }
-
-        [TestMethod]
         public void InvalidSubscriptionId()
         {
-            TestInvalidParameter(0, "e004af7e-50be-41af-ac1a-hello");
+            TestInvalidParameter("-s", Guid.Empty.ToString(), "subscriptionId");
         }
 
         [TestMethod]
         public void InvalidTenant()
         {
-            TestInvalidParameter(1, String.Empty);
+            TestInvalidParameter("-t", String.Empty, "tenantId");
         }
 
         [TestMethod]
         public void InvalidResourceGroup()
         {
-            TestInvalidParameter(2, " ");
+            TestInvalidParameter("-r", " ", "resourceGroup");
         }
 
         [TestMethod]
         public void InvalidWebApp()
         {
-            TestInvalidParameter(3, "     ");
+            TestInvalidParameter("-w", "     ", "webApp");
         }
 
         [TestMethod]
         public void InvalidHosts()
         {
-            TestInvalidParameter(4, "/");
+            TestInvalidParameter("-o", "/", "hosts");
         }
 
         [TestMethod]
         public void InvalidEmail()
         {
-            TestInvalidParameter(5, "@notAnEmail");
+            TestInvalidParameter("-e", "@notAnEmail", "email");
         }
 
         [TestMethod]
         public void InvalidClientId()
         {
-            TestInvalidParameter(6, Guid.Empty.ToString());
+            TestInvalidParameter("-c", Guid.Empty.ToString(), "clientId");
         }
 
         [TestMethod]
-        public void InvalidSecret()
+        public void InvalidClientSecret()
         {
-            TestInvalidParameter(7, String.Empty);
-        }
-
-        [TestMethod]
-        public void InvalidUseIpBasedSsl()
-        {
-            TestInvalidParameter(10, "notTrueOrFalse");
+            TestInvalidParameter("-l", String.Empty, "clientSecret");
         }
 
         [TestMethod]
         public void InvalidRsaKeyLength()
         {
-            TestInvalidParameter(11, "-1");
+            TestInvalidParameter("-k", "-1", "rsaKeyLength");
         }
 
-        [TestMethod]
-        public void InvalidAcmeBaseUri()
+        private void TestInvalidParameter(string name, string value, string expectedText)
         {
-            TestInvalidParameter(12, "www.nohttp.com");
-        }
-
-        private void TestInvalidParameter(int index, string value)
-        {
-            var args = index <= 7 ? GetMinimalValidArgs() : GetMaximalValidArgs();
-            args[index] = value;
-            AssertExtensions.Throws<ArgumentException>(() => m_renewer.Renew(args));
+            AssertExtensions.Throws<ArgumentException>(() => m_renewer.Renew(CompleteArgs(new[] { name, value })), e => e.ToString().Contains(expectedText));
         }
 
         [TestMethod]
         public void MinimalProperParametersShouldSucceed()
         {
-            m_renewer.Renew(GetMinimalValidArgs());
+            m_renewer.Renew(GetMinimalValidArgs().SelectMany(kvp => new[] { kvp.Key.shortName, kvp.Value }).ToArray());
             VerifySuccessfulRenewal(ExpectedPartialRenewalParameters1);
         }
 
         [TestMethod]
         public void MaximalProperParametersShouldSucceed()
         {
-            m_renewer.Renew(GetMaximalValidArgs());
+            m_renewer.Renew(FullValidArgs.SelectMany(kvp => new[] { kvp.Key.longName, kvp.Value }).ToArray());
             VerifySuccessfulRenewal(ExpectedFullRenewalParameters1);
         }
 
-        [TestMethod]
-        public void EmptyMiddleParameter()
+        private string[] CompleteArgs(string[] args)
         {
-            m_renewer.Renew(GetMinimalValidArgs().Concat(new[] { String.Empty, SiteSlotName1, "true" }).ToArray());
-            VerifySuccessfulRenewal(
-                new RenewalParameters(Subscription1, Tenant1, ResourceGroup1, WebApp1, Hosts1, Email1, ClientId1, ClientSecret1, null, SiteSlotName1, true));
-        }
+            var list = new List<string>(args);
 
-        [TestMethod]
-        public void EmptyParameters()
-        {
-            m_renewer.Renew(GetMinimalValidArgs().Concat(new[] { "  ", " " }).ToArray());
-            VerifySuccessfulRenewal(ExpectedPartialRenewalParameters1);
+            var argNames = new HashSet<string>(args.Where((value, index) => index % 2 == 0)); // the even indices are the parameter names
+            foreach (var kvp in GetMinimalValidArgs().Where(kvp => !argNames.Contains(kvp.Key.shortName) && !argNames.Contains(kvp.Key.longName)))
+            {
+                list.Add(kvp.Key.longName);
+                list.Add(kvp.Value);
+            }
+
+            return list.ToArray();
         }
     }
 }
