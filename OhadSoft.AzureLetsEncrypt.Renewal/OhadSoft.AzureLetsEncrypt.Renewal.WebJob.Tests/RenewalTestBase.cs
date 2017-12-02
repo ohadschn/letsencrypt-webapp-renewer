@@ -37,6 +37,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected static readonly Guid ClientId2 = Guid.Parse("618a929b-d9c9-4ec1-b8dc-66f55d949d52");
         protected static readonly Uri AcmeBaseUri1 = new Uri("http://foo.example.com");
         protected static readonly Uri AcmeBaseUri2 = new Uri("http://bar.example.com");
+        protected static readonly int RenewXNumberOfDaysBeforeExpiration = 22;
 
         protected static readonly RenewalParameters ExpectedFullRenewalParameters1 = new RenewalParameters(
             Subscription1,
@@ -51,7 +52,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             SiteSlotName1,
             UseIpBasedSsl1,
             RsaKeyLength1,
-            AcmeBaseUri1);
+            AcmeBaseUri1,
+            RenewXNumberOfDaysBeforeExpiration);
 
         protected static readonly RenewalParameters ExpectedPartialRenewalParameters1 = new RenewalParameters(
             Subscription1,
@@ -61,7 +63,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             Hosts1,
             Email1,
             ClientId1,
-            ClientSecret1);
+            ClientSecret1,
+            null,
+            null,
+            false,
+            2048,
+            null,
+            RenewXNumberOfDaysBeforeExpiration);
 
         protected static readonly RenewalParameters ExpectedFullRenewalParameters2 = new RenewalParameters(
             Subscription2,
@@ -76,7 +84,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             SiteSlotName2,
             UseIpBasedSsl2,
             RsaKeyLength2,
-            AcmeBaseUri2);
+            AcmeBaseUri2,
+            RenewXNumberOfDaysBeforeExpiration);
 
         protected static readonly RenewalParameters ExpectedPartialRenewalParameters2 = new RenewalParameters(
             Subscription2,
@@ -86,7 +95,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             Hosts2,
             Email2,
             ClientId2,
-            ClientSecret2);
+            ClientSecret2,
+            null,
+            null,
+            false,
+            2048,
+            null,
+            RenewXNumberOfDaysBeforeExpiration);
 
         protected RenewalManagerMock RenewalManager { get; } = new RenewalManagerMock();
 

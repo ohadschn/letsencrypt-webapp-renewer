@@ -10,21 +10,6 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 {
     internal class AppSettingsRenewalParamsReader : IAppSettingsRenewalParamsReader
     {
-        public const string KeyPrefix = "letsencrypt:";
-
-        private const string SubscriptionIdKey = "subscriptionId";
-        private const string TenantIdKey = "tenantId";
-        private const string ResourceGroupKey = "resourceGroup";
-        private const string HostsKey = "hosts";
-        private const string EmailKey = "email";
-        private const string ClientIdKey = "clientId";
-        private const string ClientSecretKey = "clientSecret";
-        private const string ServicePlanResourceGroupKey = "servicePlanResourceGroup";
-        private const string SiteSlotNameKey = "siteSlotName";
-        private const string UseIpBasedSslKey = "useIpBasedSsl";
-        private const string RsaKeyLengthKey = "rsaKeyLength";
-        private const string AcmeBaseUriKey = "acmeBaseUri";
-
         private readonly IAppSettingsReader m_appSettings;
 
         public AppSettingsRenewalParamsReader(IAppSettingsReader appSettings)
@@ -35,7 +20,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
         public IReadOnlyCollection<RenewalParameters> Read()
         {
             Trace.TraceInformation("Parsing Web Apps for SSL renewal from webjob/site configuration...");
-            var webApps = m_appSettings.GetDelimitedList(KeyPrefix + "webApps");
+            var webApps = m_appSettings.GetDelimitedList(Constants.KeyPrefix + "webApps");
             if (webApps.Any(String.IsNullOrWhiteSpace))
             {
                 throw new ConfigurationErrorsException("webApp list contains a whitespace-only entry");
@@ -43,10 +28,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 
             Trace.TraceInformation("Parsed web apps for SSL renewal: {0}", String.Join("; ", webApps));
 
-            var adminParams = GetSharedParams();
-            Trace.TraceInformation("Parsed common admin parameters: {0}", adminParams);
+            var sharedParams = GetSharedParams();
+            Trace.TraceInformation("Parsed shared parameters: {0}", sharedParams);
 
-            var webAppRenewalInfos = webApps.Select(wa => GetWebAppRenewalInfo(wa, adminParams)).ToArray();
+            var webAppRenewalInfos = webApps.Select(wa => GetWebAppRenewalInfo(wa, sharedParams)).ToArray();
 
             Trace.TraceInformation("Completed parsing of Web App SSL cert renewal information");
             return webAppRenewalInfos;
@@ -55,16 +40,17 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
         private SharedRenewalParameters GetSharedParams()
         {
             return new SharedRenewalParameters(
-                GetCommonSetting(ResourceGroupKey),
-                GetCommonGuidSetting(SubscriptionIdKey),
-                GetCommonSetting(TenantIdKey),
-                GetCommonGuidSetting(ClientIdKey),
-                GetCommonConnectionString(ClientSecretKey),
-                GetCommonSetting(EmailKey),
-                GetCommonSetting(ServicePlanResourceGroupKey),
-                GetCommonBooleanSetting(UseIpBasedSslKey),
-                GetCommonInt32Setting(RsaKeyLengthKey),
-                GetCommonUriSetting(AcmeBaseUriKey));
+                GetCommonSetting(Constants.ResourceGroupKey),
+                GetCommonGuidSetting(Constants.SubscriptionIdKey),
+                GetCommonSetting(Constants.TenantIdKey),
+                GetCommonGuidSetting(Constants.ClientIdKey),
+                GetCommonConnectionString(Constants.ClientSecretKey),
+                GetCommonSetting(Constants.EmailKey),
+                GetCommonSetting(Constants.ServicePlanResourceGroupKey),
+                GetCommonBooleanSetting(Constants.UseIpBasedSslKey),
+                GetCommonInt32Setting(Constants.RsaKeyLengthKey),
+                GetCommonUriSetting(Constants.AcmeBaseUriKey),
+                GetCommonInt32Setting(Constants.RenewXNumberOfDaysBeforeExpirationKey));
         }
 
         private RenewalParameters GetWebAppRenewalInfo(string webApp, SharedRenewalParameters sharedRenewalParams)
@@ -75,19 +61,20 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
             {
               // ReSharper disable PossibleInvalidOperationException
                 return new RenewalParameters(
-                    ResolveGuidSetting(SubscriptionIdKey, webApp, sharedRenewalParams.SubscriptionId),
-                    ResolveSetting(TenantIdKey, webApp, sharedRenewalParams.TenantId),
-                    ResolveSetting(ResourceGroupKey, webApp, sharedRenewalParams.ResourceGroup),
+                    ResolveGuidSetting(Constants.SubscriptionIdKey, webApp, sharedRenewalParams.SubscriptionId),
+                    ResolveSetting(Constants.TenantIdKey, webApp, sharedRenewalParams.TenantId),
+                    ResolveSetting(Constants.ResourceGroupKey, webApp, sharedRenewalParams.ResourceGroup),
                     webApp,
-                    m_appSettings.GetDelimitedList(BuildConfigKey(HostsKey, webApp)),
-                    ResolveSetting(EmailKey, webApp, sharedRenewalParams.Email),
-                    ResolveGuidSetting(ClientIdKey, webApp, sharedRenewalParams.ClientId),
-                    ResolveConnectionString(ClientSecretKey, webApp, sharedRenewalParams.ClientSecret),
-                    m_appSettings.GetStringOrDefault(BuildConfigKey(ServicePlanResourceGroupKey, webApp), sharedRenewalParams.ServicePlanResourceGroup),
-                    m_appSettings.GetStringOrDefault(BuildConfigKey(SiteSlotNameKey, webApp)),
-                    m_appSettings.GetBooleanOrDefault(BuildConfigKey(UseIpBasedSslKey, webApp), sharedRenewalParams.UseIpBasedSsl ?? false).Value,
-                    m_appSettings.GetInt32OrDefault(BuildConfigKey(RsaKeyLengthKey, webApp), sharedRenewalParams.RsaKeyLength ?? 2048).Value,
-                    m_appSettings.GetUriOrDefault(BuildConfigKey(AcmeBaseUriKey, webApp), UriKind.Absolute, sharedRenewalParams.AcmeBaseUri));
+                    m_appSettings.GetDelimitedList(BuildConfigKey(Constants.HostsKey, webApp)),
+                    ResolveSetting(Constants.EmailKey, webApp, sharedRenewalParams.Email),
+                    ResolveGuidSetting(Constants.ClientIdKey, webApp, sharedRenewalParams.ClientId),
+                    ResolveConnectionString(Constants.ClientSecretKey, webApp, sharedRenewalParams.ClientSecret),
+                    m_appSettings.GetStringOrDefault(BuildConfigKey(Constants.ServicePlanResourceGroupKey, webApp), sharedRenewalParams.ServicePlanResourceGroup),
+                    m_appSettings.GetStringOrDefault(BuildConfigKey(Constants.SiteSlotNameKey, webApp)),
+                    m_appSettings.GetBooleanOrDefault(BuildConfigKey(Constants.UseIpBasedSslKey, webApp), sharedRenewalParams.UseIpBasedSsl ?? false).Value,
+                    m_appSettings.GetInt32OrDefault(BuildConfigKey(Constants.RsaKeyLengthKey, webApp), sharedRenewalParams.RsaKeyLength ?? 2048).Value,
+                    m_appSettings.GetUriOrDefault(BuildConfigKey(Constants.AcmeBaseUriKey, webApp), UriKind.Absolute, sharedRenewalParams.AcmeBaseUri),
+                    m_appSettings.GetInt32OrDefault(BuildConfigKey(Constants.RenewXNumberOfDaysBeforeExpirationKey, webApp), sharedRenewalParams.RenewXNumberOfDaysBeforeExpiration ?? -1).Value);
             } // ReSharper restore PossibleInvalidOperationException
             catch (ArgumentException e)
             {
@@ -112,7 +99,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 
         private int? GetCommonInt32Setting(string key)
         {
-            return m_appSettings.GetInt32OrDefault(key);
+            return m_appSettings.GetInt32OrDefault(BuildConfigKey(key));
         }
 
         private Uri GetCommonUriSetting(string key)
@@ -155,7 +142,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 
         private static string BuildConfigKey(string key, string webApp = null)
         {
-            var builder = new StringBuilder(KeyPrefix);
+            var builder = new StringBuilder(Constants.KeyPrefix);
             if (webApp != null)
             {
                 builder.Append(webApp + "-");

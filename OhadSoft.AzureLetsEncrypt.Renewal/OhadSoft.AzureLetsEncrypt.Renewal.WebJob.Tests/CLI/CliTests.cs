@@ -26,7 +26,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
             { ("-d", "--siteSlotName"), SiteSlotName1 },
             { ("-i", "--useIpBasedSsl"), UseIpBasedSsl1.ToString() },
             { ("-k", "--rsaKeyLength"), RsaKeyLength1.ToString(CultureInfo.InvariantCulture) },
-            { ("-a", "--acmeBaseUri"), AcmeBaseUri1.ToString() }
+            { ("-a", "--acmeBaseUri"), AcmeBaseUri1.ToString() },
+            { ("-n", "--renewXNumberOfDaysBeforeExpiration"), RenewXNumberOfDaysBeforeExpiration.ToString(CultureInfo.InvariantCulture) }
 #pragma warning restore SA1008
         };
 
@@ -101,7 +102,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
         [TestMethod]
         public void MinimalProperParametersShouldSucceed()
         {
-            m_renewer.Renew(GetMinimalValidArgs().SelectMany(kvp => new[] { kvp.Key.shortName, kvp.Value }).ToArray());
+            m_renewer.Renew(GetMinimalValidArgs().SelectMany(kvp => new[] { kvp.Key.shortName, kvp.Value }).Union(new[] { "-n", "22" }).ToArray());
             VerifySuccessfulRenewal(ExpectedPartialRenewalParameters1);
         }
 
