@@ -16,8 +16,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
             string email,
             Guid clientId,
             string clientSecret,
-            string servicePlanResourceGroup,
-            string siteSlotName,
+            OptionalString servicePlanResourceGroup,
+            OptionalString siteSlotName,
             bool useIpBasedSsl,
             int rsaKeyLength,
             Uri acmeBaseUri)
@@ -61,11 +61,11 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
         [Option('l', "clientSecret", Required = true, HelpText = "Client Secret")]
         public string ClientSecret { get; }
 
-        [Option('p', "servicePlanResourceGroup", Required = false, Default = null, HelpText = "Service Plan Resource Group (if not specified, the provided Web App resource group will be used)")]
-        public string ServicePlanResourceGroup { get; }
+        [Option('p', "servicePlanResourceGroup", Required = false, HelpText = "Service Plan Resource Group (if not specified, the provided Web App resource group will be used)")]
+        public OptionalString ServicePlanResourceGroup { get; }
 
-        [Option('d', "siteSlotName", Required = false, Default = null, HelpText = "Site Deployment Slot")]
-        public string SiteSlotName { get; }
+        [Option('d', "siteSlotName", Required = false, HelpText = "Site Deployment Slot")]
+        public OptionalString SiteSlotName { get; }
 
         [Option('i', "useIpBasedSsl", Required = false, Default = false, HelpText = "Use IP Based SSL")]
         public bool UseIpBasedSsl { get; }
@@ -73,7 +73,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
         [Option('k', "rsaKeyLength", Required = false, Default = 2048, HelpText = "Certificate RSA key length")]
         public int RsaKeyLength { get; }
 
-        [Option('a', "acmeBaseUri", Required = false, Default = RenewalManager.DefaultAcmeBaseUri, HelpText = "ACME base URI")]
+        [Option('a', "acmeBaseUri", Required = false, HelpText = "ACME base URI, defaults to: " + RenewalManager.DefaultAcmeBaseUri)]
         public Uri AcmeBaseUri { get; }
     }
 }
