@@ -15,7 +15,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public const string DefaultWebsiteDomainName = "azurewebsites.net";
         public const string DefaultAcmeBaseUri = "https://acme-v01.api.letsencrypt.org/";
         public const string DefaultAuthenticationUri = "https://login.windows.net/";
-        public const string DefaultAzureTokenService = "https://management.core.windows.net/";
+        public const string DefaultAzureTokenAudienceService = "https://management.core.windows.net/";
         public const string DefaultManagementEndpoint = "https://management.azure.com";
 #pragma warning restore S1075 // URIs should not be hardcoded
 
@@ -50,7 +50,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                     AzureWebSitesDefaultDomainName = renewalParams.AzureDefaultWebsiteDomainName ?? DefaultWebsiteDomainName,
                     AuthenticationEndpoint = renewalParams.AuthenticationUri ?? new Uri(DefaultAuthenticationUri),
                     ManagementEndpoint = renewalParams.AzureManagementEndpoint ?? new Uri(DefaultManagementEndpoint),
-                    TokenAudience = renewalParams.AzureTokenAudience ?? new Uri(DefaultAzureTokenService)
+                    TokenAudience = renewalParams.AzureTokenAudience ?? new Uri(DefaultAzureTokenAudienceService)
                 },
                 new AcmeConfig
                 {

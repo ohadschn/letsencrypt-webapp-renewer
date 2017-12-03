@@ -21,7 +21,11 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
             bool useIpBasedSsl,
             int rsaKeyLength,
             Uri acmeBaseUri,
-            int renewXNumberOfDaysBeforeExpiration)
+            int renewXNumberOfDaysBeforeExpiration,
+            Uri azureAuthenticationEndpoint,
+            Uri azureTokenAudience,
+            Uri azureManagementEndpoint,
+            OptionalString azureDefaultWebsiteDomainName)
         {
             SubscriptionId = subscriptionId;
             TenantId = tenantId;
@@ -37,6 +41,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
             RsaKeyLength = rsaKeyLength;
             AcmeBaseUri = acmeBaseUri;
             RenewXNumberOfDaysBeforeExpiration = renewXNumberOfDaysBeforeExpiration;
+            AzureAuthenticationEndpoint = azureAuthenticationEndpoint;
+            AzureTokenAudience = azureTokenAudience;
+            AzureManagementEndpoint = azureManagementEndpoint;
+            AzureDefaultWebsiteDomainName = azureDefaultWebsiteDomainName;
         }
 
         [Option('s', Constants.SubscriptionIdKey, Required = true, HelpText = "Subscription ID")]
@@ -80,5 +88,17 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
 
         [Option('n', Constants.RenewXNumberOfDaysBeforeExpirationKey, Required = false, Default = -1, HelpText = "Number of days before certificate expiry to renew, defaults to a negative value meaning renewal will take place regardless of the expiry time")]
         public int RenewXNumberOfDaysBeforeExpiration { get; }
+
+        [Option('h', Constants.AzureAuthenticationEndpointKey, Required = false, HelpText = "The Active Directory Authority, defaults to: " + RenewalManager.DefaultAuthenticationUri)]
+        public Uri AzureAuthenticationEndpoint { get; }
+
+        [Option('u', Constants.AzureTokenAudienceKey, Required = false, HelpText = "The Active Directory Service Endpoint Resource ID, defaults to: " + RenewalManager.DefaultAzureTokenAudienceService)]
+        public Uri AzureTokenAudience { get; }
+
+        [Option('m', Constants.AzureManagementEndpointKey, Required = false, HelpText = "The Resource Manager URL, defaults to: " + RenewalManager.DefaultManagementEndpoint)]
+        public Uri AzureManagementEndpoint { get; }
+
+        [Option('b', Constants.AzureDefaultWebSiteDomainNameKey, Required = false, HelpText = "The Azure Web Sites default domain name, defaults to: " + RenewalManager.DefaultWebsiteDomainName)]
+        public OptionalString AzureDefaultWebsiteDomainName { get; }
     }
 }
