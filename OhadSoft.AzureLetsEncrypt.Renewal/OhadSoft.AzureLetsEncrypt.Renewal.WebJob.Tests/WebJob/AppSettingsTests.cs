@@ -31,6 +31,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         private const string RsaKeyLengthKeySuffix = "rsaKeyLength";
         private const string AcmeBaseUriKeySuffix = "acmeBaseUri";
         private const string RenewXNumberOfDaysBeforeExpirationKeySuffix = "renewXNumberOfDaysBeforeExpiration";
+        private const string AzureAuthenticationEndpointKeySuffix = "azureAuthenticationEndpoint";
+        private const string AzureTokenAudienceKeySuffix = "azureTokenAudience";
+        private const string AzureManagementEndpointKeySuffix = "azureManagementEndpoint";
+        private const string AzureDefaultWebSiteDomainNameKeySuffix = "azureDefaultWebSiteDomainName";
 
         private readonly AppSettingsRenewer m_renewer;
 
@@ -54,7 +58,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             { BuildConfigKey(RsaKeyLengthKeySuffix, WebApp1), RsaKeyLength1.ToString(CultureInfo.InvariantCulture) },
             { BuildConfigKey(AcmeBaseUriKeySuffix, WebApp1), AcmeBaseUri1.ToString() },
             { BuildConfigKey(ServicePlanResourceGroupKeySuffix, WebApp1), ServicePlanResourceGroup1 },
-            { BuildC }
+            { BuildConfigKey(AzureAuthenticationEndpointKeySuffix, WebApp1), AzureAuthenticationEndpoint1.ToString() },
+            { BuildConfigKey(AzureTokenAudienceKeySuffix, WebApp1), AzureTokenAudience1.ToString() },
+            { BuildConfigKey(AzureManagementEndpointKeySuffix, WebApp1), AzureManagementEndpoint1.ToString() },
+            { BuildConfigKey(AzureDefaultWebSiteDomainNameKeySuffix, WebApp1), AzureDefaultWebsiteDomainName1 },
 
             // WebApp2
             { BuildConfigKey(SubscriptionIdKeySuffix, WebApp2), Subscription2.ToString() },
@@ -164,8 +171,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         [TestMethod]
         public void TestInvalidClientSecret()
         {
+            var sharedClientSecretKey = BuildConfigKey(ClientSecretKeySuffix);
             var clientSecretKey = BuildConfigKey(ClientSecretKeySuffix, WebApp1);
             m_connectionStrings.Remove(clientSecretKey);
+            m_connectionStrings.Remove(sharedClientSecretKey);
+            AssertExtensions.Throws<ConfigurationErrorsException>(() => m_renewer.Renew().GetAwaiter().GetResult(), e => e.ToString().Contains("clientSecret"));
+
             m_connectionStrings.Add(new ConnectionStringSettings(clientSecretKey, " "));
             AssertExtensions.Throws<ConfigurationErrorsException>(() => m_renewer.Renew().GetAwaiter().GetResult(), e => e.ToString().Contains("clientSecret"));
         }

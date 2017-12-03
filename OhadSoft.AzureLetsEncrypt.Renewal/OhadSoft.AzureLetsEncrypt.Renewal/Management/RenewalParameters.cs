@@ -125,7 +125,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
         public override string ToString()
         {
-            return Invariant($"{nameof(SubscriptionId)}: {SubscriptionId}, {nameof(TenantId)}: {TenantId}, {nameof(ClientId)}: {ClientId}, {nameof(ClientSecret)}: [SCRUBBED], {nameof(ResourceGroup)}: {ResourceGroup}, {nameof(ServicePlanResourceGroup)}: {ServicePlanResourceGroup}, {nameof(WebApp)}: {WebApp}, {nameof(SiteSlotName)}: {SiteSlotName}, {nameof(Email)}: {Email}, {nameof(Hosts)}: {String.Join(", ", Hosts)}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBaseUri)}: {AcmeBaseUri}, {nameof(RenewXNumberOfDaysBeforeExpiration)}: {RenewXNumberOfDaysBeforeExpiration}");
+            return Invariant($"{nameof(SubscriptionId)}: {SubscriptionId}, {nameof(TenantId)}: {TenantId}, {nameof(ResourceGroup)}: {ResourceGroup}, {nameof(WebApp)}: {WebApp}, {nameof(Hosts)}: {Hosts}, {nameof(Email)}: {Email}, {nameof(ClientId)}: {ClientId}, {nameof(ClientSecret)}: <SCRUBBED>, {nameof(ServicePlanResourceGroup)}: {ServicePlanResourceGroup}, {nameof(SiteSlotName)}: {SiteSlotName}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBaseUri)}: {AcmeBaseUri}, {nameof(RenewXNumberOfDaysBeforeExpiration)}: {RenewXNumberOfDaysBeforeExpiration}, {nameof(AuthenticationUri)}: {AuthenticationUri}, {nameof(AzureTokenAudience)}: {AzureTokenAudience}, {nameof(AzureManagementEndpoint)}: {AzureManagementEndpoint}, {nameof(AzureDefaultWebsiteDomainName)}: {AzureDefaultWebsiteDomainName}");
         }
 
         public bool Equals(RenewalParameters other)
