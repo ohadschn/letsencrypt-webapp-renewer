@@ -44,8 +44,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             { BuildConfigKey(WebAppsKey), WebApp1 + ";" + WebApp2 },
 
             // Shared
-            { BuildConfigKey(ClientIdKeySuffix), ClientId1.ToString() },
-            { BuildConfigKey(RenewXNumberOfDaysBeforeExpirationKeySuffix), RenewXNumberOfDaysBeforeExpiration.ToString(CultureInfo.InvariantCulture) },
+            { BuildConfigKey(ClientIdKeySuffix), ClientIdShared.ToString() },
 
             // WebApp1
             { BuildConfigKey(SubscriptionIdKeySuffix, WebApp1), Subscription1.ToString() },
@@ -53,11 +52,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             { BuildConfigKey(TenantIdKeySuffix, WebApp1), Tenant1 },
             { BuildConfigKey(HostsKeySuffix, WebApp1), String.Join(";", Hosts1) },
             { BuildConfigKey(EmailKeySuffix, WebApp1), Email1 },
+            { BuildConfigKey(ClientIdKeySuffix, WebApp1), ClientId1.ToString() }, // override shared
             { BuildConfigKey(SiteSlotNameSuffix, WebApp1), SiteSlotName1 },
             { BuildConfigKey(UseIpBasedSslKeySuffix, WebApp1), UseIpBasedSsl1.ToString() },
             { BuildConfigKey(RsaKeyLengthKeySuffix, WebApp1), RsaKeyLength1.ToString(CultureInfo.InvariantCulture) },
             { BuildConfigKey(AcmeBaseUriKeySuffix, WebApp1), AcmeBaseUri1.ToString() },
             { BuildConfigKey(ServicePlanResourceGroupKeySuffix, WebApp1), ServicePlanResourceGroup1 },
+            { BuildConfigKey(RenewXNumberOfDaysBeforeExpirationKeySuffix, WebApp1), RenewXNumberOfDaysBeforeExpiration1.ToString(CultureInfo.InvariantCulture) },
             { BuildConfigKey(AzureAuthenticationEndpointKeySuffix, WebApp1), AzureAuthenticationEndpoint1.ToString() },
             { BuildConfigKey(AzureTokenAudienceKeySuffix, WebApp1), AzureTokenAudience1.ToString() },
             { BuildConfigKey(AzureManagementEndpointKeySuffix, WebApp1), AzureManagementEndpoint1.ToString() },
@@ -69,7 +70,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             { BuildConfigKey(ResourceGroupKeySuffix, WebApp2), ResourceGroup2 },
             { BuildConfigKey(HostsKeySuffix, WebApp2), String.Join(";", Hosts2) },
             { BuildConfigKey(EmailKeySuffix, WebApp2), Email2 },
-            { BuildConfigKey(ClientIdKeySuffix, WebApp2), ClientId2.ToString() }
+            { BuildConfigKey(ClientIdKeySuffix, WebApp2), ClientId2.ToString() } // override shared
         };
 
         private readonly ConnectionStringSettingsCollection m_connectionStrings = new ConnectionStringSettingsCollection
@@ -77,7 +78,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             // Shared
             new ConnectionStringSettings(BuildConfigKey(ClientSecretKeySuffix), ClientSecret1),
 
-            // WebApp2 override
+            // override
+            new ConnectionStringSettings(BuildConfigKey(ClientSecretKeySuffix, WebApp1), ClientSecret1),
             new ConnectionStringSettings(BuildConfigKey(ClientSecretKeySuffix, WebApp2), ClientSecret2)
         };
 
