@@ -92,7 +92,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         }
 
         [TestMethod]
-        public async Task TestSingleWebAppConfig1()
+        public async Task TestSingleWebAppConfig()
         {
             m_appSettings[KeyPrefix + WebAppsKey] = WebApp1;
             await m_renewer.Renew();
