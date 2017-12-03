@@ -54,6 +54,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             { BuildConfigKey(RsaKeyLengthKeySuffix, WebApp1), RsaKeyLength1.ToString(CultureInfo.InvariantCulture) },
             { BuildConfigKey(AcmeBaseUriKeySuffix, WebApp1), AcmeBaseUri1.ToString() },
             { BuildConfigKey(ServicePlanResourceGroupKeySuffix, WebApp1), ServicePlanResourceGroup1 },
+            { BuildC }
 
             // WebApp2
             { BuildConfigKey(SubscriptionIdKeySuffix, WebApp2), Subscription2.ToString() },
@@ -84,7 +85,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         }
 
         [TestMethod]
-        public async Task TestSingleWebAppConfig()
+        public async Task TestSingleWebAppConfig1()
         {
             m_appSettings[KeyPrefix + WebAppsKey] = WebApp1;
             await m_renewer.Renew();

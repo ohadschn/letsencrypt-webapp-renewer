@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -12,8 +11,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 {
     public class RenewalManager : IRenewalManager
     {
-        [SuppressMessage("Sonar", "S1075:URIsShouldNotBeHardcoded", Justification = "Default URI")]
+#pragma warning disable S1075 // URIs should not be hardcoded
+        public const string DefaultWebsiteDomainName = "azurewebsites.net";
         public const string DefaultAcmeBaseUri = "https://acme-v01.api.letsencrypt.org/";
+        public const string DefaultAuthenticationUri = "https://login.windows.net/";
+        public const string DefaultAzureTokenService = "https://management.core.windows.net/";
+        public const string DefaultManagementEndpoint = "https://management.azure.com";
+#pragma warning restore S1075 // URIs should not be hardcoded
 
         private static readonly RNGCryptoServiceProvider s_randomGenerator = new RNGCryptoServiceProvider(); // thread-safe
 
@@ -41,7 +45,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                     renewalParams.ResourceGroup,
                     renewalParams.WebApp,
                     renewalParams.ServicePlanResourceGroup,
-                    renewalParams.SiteSlotName),
+                    renewalParams.SiteSlotName)
+                {
+                    AzureWebSitesDefaultDomainName = renewalParams.AzureDefaultWebsiteDomainName ?? DefaultWebsiteDomainName,
+                    AuthenticationEndpoint = renewalParams.AuthenticationUri ?? new Uri(DefaultAuthenticationUri),
+                    ManagementEndpoint = renewalParams.AzureManagementEndpoint ?? new Uri(DefaultManagementEndpoint),
+                    TokenAudience = renewalParams.AzureTokenAudience ?? new Uri(DefaultAzureTokenService)
+                },
                 new AcmeConfig
                 {
                     Host = renewalParams.Hosts[0],
@@ -49,9 +59,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                     RegistrationEmail = renewalParams.Email,
                     RSAKeyLength = renewalParams.RsaKeyLength,
                     PFXPassword = Convert.ToBase64String(pfxPassData),
-#pragma warning disable S1075
                     BaseUri = (renewalParams.AcmeBaseUri ?? new Uri(DefaultAcmeBaseUri)).ToString()
-#pragma warning restore S1075
                 },
                 new CertificateServiceSettings { UseIPBasedSSL = renewalParams.UseIpBasedSsl },
                 new AuthProviderConfig());

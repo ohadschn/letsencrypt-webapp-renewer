@@ -50,7 +50,11 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                 GetCommonBooleanSetting(Constants.UseIpBasedSslKey),
                 GetCommonInt32Setting(Constants.RsaKeyLengthKey),
                 GetCommonUriSetting(Constants.AcmeBaseUriKey),
-                GetCommonInt32Setting(Constants.RenewXNumberOfDaysBeforeExpirationKey));
+                GetCommonInt32Setting(Constants.RenewXNumberOfDaysBeforeExpirationKey),
+                GetCommonUriSetting(Constants.AzureAuthenticationEndpointKey),
+                GetCommonUriSetting(Constants.AzureTokenAudienceKey),
+                GetCommonUriSetting(Constants.AzureManagementEndpointKey),
+                GetCommonSetting(Constants.AzureDefaultWebSiteDomainNameKey));
         }
 
         private RenewalParameters GetWebAppRenewalInfo(string webApp, SharedRenewalParameters sharedRenewalParams)
@@ -59,7 +63,6 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 
             try
             {
-              // ReSharper disable PossibleInvalidOperationException
                 return new RenewalParameters(
                     ResolveGuidSetting(Constants.SubscriptionIdKey, webApp, sharedRenewalParams.SubscriptionId),
                     ResolveSetting(Constants.TenantIdKey, webApp, sharedRenewalParams.TenantId),
@@ -69,18 +72,43 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                     ResolveSetting(Constants.EmailKey, webApp, sharedRenewalParams.Email),
                     ResolveGuidSetting(Constants.ClientIdKey, webApp, sharedRenewalParams.ClientId),
                     ResolveConnectionString(Constants.ClientSecretKey, webApp, sharedRenewalParams.ClientSecret),
-                    m_appSettings.GetStringOrDefault(BuildConfigKey(Constants.ServicePlanResourceGroupKey, webApp), sharedRenewalParams.ServicePlanResourceGroup),
-                    m_appSettings.GetStringOrDefault(BuildConfigKey(Constants.SiteSlotNameKey, webApp)),
-                    m_appSettings.GetBooleanOrDefault(BuildConfigKey(Constants.UseIpBasedSslKey, webApp), sharedRenewalParams.UseIpBasedSsl ?? false).Value,
-                    m_appSettings.GetInt32OrDefault(BuildConfigKey(Constants.RsaKeyLengthKey, webApp), sharedRenewalParams.RsaKeyLength ?? 2048).Value,
-                    m_appSettings.GetUriOrDefault(BuildConfigKey(Constants.AcmeBaseUriKey, webApp), UriKind.Absolute, sharedRenewalParams.AcmeBaseUri),
-                    m_appSettings.GetInt32OrDefault(BuildConfigKey(Constants.RenewXNumberOfDaysBeforeExpirationKey, webApp), sharedRenewalParams.RenewXNumberOfDaysBeforeExpiration ?? -1).Value);
-            } // ReSharper restore PossibleInvalidOperationException
+                    ResolveOptionalSetting(Constants.ServicePlanResourceGroupKey, webApp, sharedRenewalParams.ServicePlanResourceGroup),
+                    ResolveOptionalSetting(Constants.SiteSlotNameKey, webApp),
+                    ResolveOptionalBooleanSetting(Constants.UseIpBasedSslKey, webApp, sharedRenewalParams.UseIpBasedSsl, false),
+                    ResolveOptionalInt32Setting(Constants.RsaKeyLengthKey, webApp, sharedRenewalParams.RsaKeyLength, 2048),
+                    ResolveOptionalUriSetting(Constants.AcmeBaseUriKey, webApp, sharedRenewalParams.AcmeBaseUri),
+                    ResolveOptionalInt32Setting(Constants.RenewXNumberOfDaysBeforeExpirationKey, webApp, sharedRenewalParams.RenewXNumberOfDaysBeforeExpiration, -1),
+                    ResolveOptionalUriSetting(Constants.AzureAuthenticationEndpointKey, webApp, sharedRenewalParams.AuthenticationUri),
+                    ResolveOptionalUriSetting(Constants.AzureTokenAudienceKey, webApp, sharedRenewalParams.AzureTokenAudience),
+                    ResolveOptionalUriSetting(Constants.AzureManagementEndpointKey, webApp, sharedRenewalParams.AzureManagementEndpoint),
+                    ResolveOptionalSetting(Constants.AzureDefaultWebSiteDomainNameKey, webApp, sharedRenewalParams.AzureDefaultWebsiteDomainName));
+            }
             catch (ArgumentException e)
             {
                 throw new ConfigurationErrorsException("Error parsing SSL renewal parameters for web app: " + webApp, e);
             }
         }
+
+        private string ResolveOptionalSetting(string key, string webApp, string defaultValue = null)
+        {
+            return m_appSettings.GetStringOrDefault(BuildConfigKey(key, webApp), defaultValue);
+        }
+
+        private Uri ResolveOptionalUriSetting(string key, string webApp, Uri sharedValue, Uri defaultValue = null)
+        {
+            return m_appSettings.GetUriOrDefault(BuildConfigKey(key, webApp), UriKind.Absolute, sharedValue ?? defaultValue);
+        }
+
+        // ReSharper disable PossibleInvalidOperationException
+        private bool ResolveOptionalBooleanSetting(string key, string webApp, bool? sharedValue, bool defaultValue)
+        {
+            return m_appSettings.GetBooleanOrDefault(BuildConfigKey(key, webApp), sharedValue ?? defaultValue).Value;
+        }
+
+        private int ResolveOptionalInt32Setting(string key, string webApp, int? sharedValue, int defaultValue)
+        {
+            return m_appSettings.GetInt32OrDefault(BuildConfigKey(key, webApp), sharedValue ?? defaultValue).Value;
+        } // ReSharper restore PossibleInvalidOperationException
 
         private string GetCommonSetting(string key)
         {
