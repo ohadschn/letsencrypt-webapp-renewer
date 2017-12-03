@@ -132,7 +132,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 
         private Uri GetCommonUriSetting(string key)
         {
-            return m_appSettings.GetUriOrDefault(key);
+            return m_appSettings.GetUriOrDefault(BuildConfigKey(key));
         }
 
         private string GetCommonConnectionString(string key)

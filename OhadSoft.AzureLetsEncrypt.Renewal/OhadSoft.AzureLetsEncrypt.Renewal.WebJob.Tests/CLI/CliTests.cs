@@ -27,7 +27,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
             { ("-i", "--useIpBasedSsl"), UseIpBasedSsl1.ToString() },
             { ("-k", "--rsaKeyLength"), RsaKeyLength1.ToString(CultureInfo.InvariantCulture) },
             { ("-a", "--acmeBaseUri"), AcmeBaseUri1.ToString() },
-            { ("-n", "--renewXNumberOfDaysBeforeExpiration"), RenewXNumberOfDaysBeforeExpiration.ToString(CultureInfo.InvariantCulture) },
+            { ("-n", "--renewXNumberOfDaysBeforeExpiration"), RenewXNumberOfDaysBeforeExpiration1.ToString(CultureInfo.InvariantCulture) },
             { ("-h", "--azureAuthenticationEndpoint"), AzureAuthenticationEndpoint1.ToString() },
             { ("-u", "--azureTokenAudience"), AzureTokenAudience1.ToString() },
             { ("-m", "--azureManagementEndpoint"), AzureManagementEndpoint1.ToString() },
@@ -112,7 +112,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
         [TestMethod]
         public void MinimalProperParametersShouldSucceed()
         {
-            m_renewer.Renew(GetMinimalValidArgs().SelectMany(kvp => new[] { kvp.Key.shortName, kvp.Value }).Union(new[] { "-n", "22" }).ToArray());
+            m_renewer.Renew(GetMinimalValidArgs().SelectMany(kvp => new[] { kvp.Key.shortName, kvp.Value }).ToArray());
             VerifySuccessfulRenewal(ExpectedPartialRenewalParameters1);
         }
 
