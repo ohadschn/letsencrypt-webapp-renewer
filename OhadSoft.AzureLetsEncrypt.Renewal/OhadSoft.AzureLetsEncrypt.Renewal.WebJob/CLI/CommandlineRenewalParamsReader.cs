@@ -46,7 +46,11 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
                     parsed.UseIpBasedSsl,
                     parsed.RsaKeyLength,
                     parsed.AcmeBaseUri,
-                    parsed.RenewXNumberOfDaysBeforeExpiration);
+                    parsed.RenewXNumberOfDaysBeforeExpiration,
+                    parsed.AzureAuthenticationEndpoint,
+                    parsed.AzureTokenAudience,
+                    parsed.AzureManagementEndpoint,
+                    parsed.AzureDefaultWebsiteDomainName);
             }
             catch (ArgumentException e)
             {

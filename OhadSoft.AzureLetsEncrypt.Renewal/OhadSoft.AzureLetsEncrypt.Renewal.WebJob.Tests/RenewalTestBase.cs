@@ -38,6 +38,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected static readonly Uri AcmeBaseUri1 = new Uri("http://foo.example.com");
         protected static readonly Uri AcmeBaseUri2 = new Uri("http://bar.example.com");
         protected static readonly int RenewXNumberOfDaysBeforeExpiration = 22;
+        protected static readonly Uri AzureAuthenticationEndpoint1 = new Uri("https://authenticate.com");
+        protected static readonly Uri AzureTokenAudience1 = new Uri("https://www.tokens.com");
+        protected static readonly Uri AzureManagementEndpoint1 = new Uri("https://manage.azure.ms");
+        protected static readonly string AzureDefaultWebsiteDomainName1 = "websites.io";
 
         protected static readonly RenewalParameters ExpectedFullRenewalParameters1 = new RenewalParameters(
             Subscription1,
@@ -53,7 +57,11 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             UseIpBasedSsl1,
             RsaKeyLength1,
             AcmeBaseUri1,
-            RenewXNumberOfDaysBeforeExpiration);
+            RenewXNumberOfDaysBeforeExpiration,
+            AzureAuthenticationEndpoint1,
+            AzureTokenAudience1,
+            AzureManagementEndpoint1,
+            AzureDefaultWebsiteDomainName1);
 
         protected static readonly RenewalParameters ExpectedPartialRenewalParameters1 = new RenewalParameters(
             Subscription1,
@@ -69,22 +77,6 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             false,
             2048,
             null,
-            RenewXNumberOfDaysBeforeExpiration);
-
-        protected static readonly RenewalParameters ExpectedFullRenewalParameters2 = new RenewalParameters(
-            Subscription2,
-            Tenant2,
-            ResourceGroup2,
-            WebApp2,
-            Hosts2,
-            Email2,
-            ClientId2,
-            ClientSecret2,
-            ServicePlanResourceGroup2,
-            SiteSlotName2,
-            UseIpBasedSsl2,
-            RsaKeyLength2,
-            AcmeBaseUri2,
             RenewXNumberOfDaysBeforeExpiration);
 
         protected static readonly RenewalParameters ExpectedPartialRenewalParameters2 = new RenewalParameters(

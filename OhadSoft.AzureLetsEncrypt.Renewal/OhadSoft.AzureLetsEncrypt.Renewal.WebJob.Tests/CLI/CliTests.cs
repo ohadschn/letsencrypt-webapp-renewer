@@ -27,7 +27,11 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
             { ("-i", "--useIpBasedSsl"), UseIpBasedSsl1.ToString() },
             { ("-k", "--rsaKeyLength"), RsaKeyLength1.ToString(CultureInfo.InvariantCulture) },
             { ("-a", "--acmeBaseUri"), AcmeBaseUri1.ToString() },
-            { ("-n", "--renewXNumberOfDaysBeforeExpiration"), RenewXNumberOfDaysBeforeExpiration.ToString(CultureInfo.InvariantCulture) }
+            { ("-n", "--renewXNumberOfDaysBeforeExpiration"), RenewXNumberOfDaysBeforeExpiration.ToString(CultureInfo.InvariantCulture) },
+            { ("-h", "--azureAuthenticationEndpoint"), AzureAuthenticationEndpoint1.ToString() },
+            { ("-u", "--azureTokenAudience"), AzureTokenAudience1.ToString() },
+            { ("-m", "--azureManagementEndpoint"), AzureManagementEndpoint1.ToString() },
+            { ("-b", "--azureDefaultWebSiteDomainName"), AzureDefaultWebsiteDomainName1 }
 #pragma warning restore SA1008
         };
 
@@ -92,6 +96,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
         public void InvalidRsaKeyLength()
         {
             TestInvalidParameter("-k", "-1", "rsaKeyLength");
+        }
+
+        [TestMethod]
+        public void InvalidDefaultWebsiteDomainName()
+        {
+            TestInvalidParameter("--azureDefaultWebSiteDomainName", "@", "azureDefaultWebsiteDomainName");
         }
 
         private void TestInvalidParameter(string name, string value, string expectedText)

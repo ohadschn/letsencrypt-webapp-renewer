@@ -5,7 +5,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 {
     public sealed class SharedRenewalParameters
     {
-        public SharedRenewalParameters(string resourceGroup, Guid? subscriptionId, string tenantId, Guid? clientId, string clientSecret, string email, string servicePlanResourceGroup, bool? useIpBasedSsl, int? rsaKeyLength, Uri acmeBaseUri, int? renewXNumberOfDaysBeforeExpiration)
+        public SharedRenewalParameters(string resourceGroup, Guid? subscriptionId, string tenantId, Guid? clientId, string clientSecret, string email, string servicePlanResourceGroup, bool? useIpBasedSsl, int? rsaKeyLength, Uri acmeBaseUri, int? renewXNumberOfDaysBeforeExpiration, Uri authenticationUri, Uri azureTokenAudience, Uri azureManagementEndpoint, string azureDefaultWebsiteDomainName)
         {
             ResourceGroup = resourceGroup;
             SubscriptionId = subscriptionId;
@@ -18,6 +18,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             RsaKeyLength = rsaKeyLength;
             AcmeBaseUri = acmeBaseUri;
             RenewXNumberOfDaysBeforeExpiration = renewXNumberOfDaysBeforeExpiration;
+            AuthenticationUri = authenticationUri;
+            AzureTokenAudience = azureTokenAudience;
+            AzureManagementEndpoint = azureManagementEndpoint;
+            AzureDefaultWebsiteDomainName = azureDefaultWebsiteDomainName;
         }
 
         public string ResourceGroup { get; }
@@ -31,10 +35,14 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public int? RsaKeyLength { get; }
         public Uri AcmeBaseUri { get; }
         public int? RenewXNumberOfDaysBeforeExpiration { get; }
+        public Uri AuthenticationUri { get; }
+        public Uri AzureTokenAudience { get; }
+        public Uri AzureManagementEndpoint { get; }
+        public string AzureDefaultWebsiteDomainName { get; }
 
         public override string ToString()
         {
-            return Invariant($"{nameof(ResourceGroup)}: {ResourceGroup}, {nameof(SubscriptionId)}: {SubscriptionId}, {nameof(TenantId)}: {TenantId}, {nameof(ClientId)}: {ClientId}, {nameof(ClientSecret)}: {(String.IsNullOrWhiteSpace(ClientSecret) ? "<UNSPECIFIED>" : "<SCRUBBED>")}, {nameof(Email)}: {Email}, {nameof(ServicePlanResourceGroup)}: {ServicePlanResourceGroup}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBaseUri)}: {AcmeBaseUri}");
+            return Invariant($"{nameof(ResourceGroup)}: {ResourceGroup}, {nameof(SubscriptionId)}: {SubscriptionId}, {nameof(TenantId)}: {TenantId}, {nameof(ClientId)}: {ClientId}, {nameof(ClientSecret)}: <SCRUBBED>, {nameof(Email)}: {Email}, {nameof(ServicePlanResourceGroup)}: {ServicePlanResourceGroup}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBaseUri)}: {AcmeBaseUri}, {nameof(RenewXNumberOfDaysBeforeExpiration)}: {RenewXNumberOfDaysBeforeExpiration}, {nameof(AuthenticationUri)}: {AuthenticationUri}, {nameof(AzureTokenAudience)}: {AzureTokenAudience}, {nameof(AzureManagementEndpoint)}: {AzureManagementEndpoint}, {nameof(AzureDefaultWebsiteDomainName)}: {AzureDefaultWebsiteDomainName}");
         }
     }
 }
