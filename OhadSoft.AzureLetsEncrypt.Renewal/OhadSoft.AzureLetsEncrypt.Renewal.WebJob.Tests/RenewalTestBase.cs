@@ -116,17 +116,23 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             AzureDefaultWebsiteDomainNameShared);
 
         protected RenewalManagerMock RenewalManager { get; } = new RenewalManagerMock();
+        protected EmailNotifierMock EmailNotifier { get; } = new EmailNotifierMock();
 
         protected void VerifySuccessfulRenewal(params RenewalParameters[] renewalParameters)
         {
             VerifySuccessfulRenewal(renewalParameters, RenewalManager.RenewalParameters);
         }
 
+        protected void VerifySuccessfulNotification(params RenewalParameters[] renewalParameters)
+        {
+            VerifySuccessfulRenewal(renewalParameters, EmailNotifier.RenewalParameters);
+        }
+
 #pragma warning disable S3242
-        protected static void VerifySuccessfulRenewal(IReadOnlyCollection<RenewalParameters> expectedRenewalParams, IReadOnlyCollection<RenewalParameters> actualRenewalParams)
+        private static void VerifySuccessfulRenewal(IReadOnlyCollection<RenewalParameters> expectedRenewalParams, IReadOnlyCollection<RenewalParameters> actualRenewalParams)
 #pragma warning restore S3242
         {
-        var nl = Environment.NewLine;
+            var nl = Environment.NewLine;
             var renewalParamsComparer = new RenewalParametersComparer();
             var actualSorted = actualRenewalParams.OrderBy(rp => rp, renewalParamsComparer).ToArray();
             var expectedSorted = expectedRenewalParams.OrderBy(rp => rp, renewalParamsComparer).ToArray();

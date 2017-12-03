@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings;
-using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Mocks;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Util;
 using AppSettingsReader = OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings.AppSettingsReader;
 
@@ -83,31 +82,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             new ConnectionStringSettings(BuildConfigKey(ClientSecretKeySuffix, WebApp2), ClientSecret2)
         };
 
-        private readonly EmailNotifierMock m_emailNotifier = new EmailNotifierMock();
-
         public AppSettingsTests()
         {
             m_renewer = new AppSettingsRenewer(
                 RenewalManager,
                 new AppSettingsRenewalParamsReader(new AppSettingsReader(m_appSettings, m_connectionStrings)),
-                m_emailNotifier);
-        }
-
-        [TestMethod]
-        public async Task TestSingleWebAppConfig()
-        {
-            m_appSettings[KeyPrefix + WebAppsKey] = WebApp1;
-            await m_renewer.Renew();
-            VerifySuccessfulRenewal(ExpectedFullRenewalParameters1);
-            VerifySuccessfulRenewal(new[] { ExpectedFullRenewalParameters1 }, m_emailNotifier.RenewalParameters);
-        }
-
-        [TestMethod]
-        public async Task TestDoubleWebAppConfig()
-        {
-            await m_renewer.Renew();
-            VerifySuccessfulRenewal(ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2);
-            VerifySuccessfulRenewal(new[] { ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2 }, m_emailNotifier.RenewalParameters);
+                EmailNotifier);
         }
 
         [TestMethod]
@@ -205,6 +185,62 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         public void TestInvalidSharedSetting()
         {
             AssertInvalidConfig(BuildConfigKey(UseIpBasedSslKeySuffix), "maybe false, maybe true - who knows?", "useIpBasedSsl");
+        }
+
+        [TestMethod]
+        public async Task TestSingleWebAppConfig()
+        {
+            m_appSettings[KeyPrefix + WebAppsKey] = WebApp1;
+            await m_renewer.Renew();
+            VerifySuccessfulRenewal(ExpectedFullRenewalParameters1);
+            VerifySuccessfulNotification(ExpectedFullRenewalParameters1);
+        }
+
+        [TestMethod]
+        public async Task TestDoubleWebAppConfig()
+        {
+            await m_renewer.Renew();
+            VerifySuccessfulRenewal(ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2);
+            VerifySuccessfulNotification(ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2);
+        }
+
+        [TestMethod]
+        public async Task TestSharedSettings()
+        {
+            var appSettings = new NameValueCollection
+            {
+                { BuildConfigKey(WebAppsKey), WebApp3 },
+                { BuildConfigKey(SubscriptionIdKeySuffix), SubscriptionShared.ToString() },
+                { BuildConfigKey(ResourceGroupKeySuffix), ResourceGroupShared },
+                { BuildConfigKey(TenantIdKeySuffix), TenantShared },
+                { BuildConfigKey(HostsKeySuffix, WebApp3), String.Join(";", Hosts3) },
+                { BuildConfigKey(EmailKeySuffix), EmailShared },
+                { BuildConfigKey(ClientIdKeySuffix), ClientIdShared.ToString() },
+                { BuildConfigKey(UseIpBasedSslKeySuffix), UseIpBasedSslShared.ToString() },
+                { BuildConfigKey(RsaKeyLengthKeySuffix), RsaKeyLengthShared.ToString(CultureInfo.InvariantCulture) },
+                { BuildConfigKey(AcmeBaseUriKeySuffix), AcmeBaseUriShared.ToString() },
+                { BuildConfigKey(ServicePlanResourceGroupKeySuffix), ServicePlanResourceGroupShared },
+                { BuildConfigKey(RenewXNumberOfDaysBeforeExpirationKeySuffix), RenewXNumberOfDaysBeforeExpirationShared.ToString(CultureInfo.InvariantCulture) },
+                { BuildConfigKey(AzureAuthenticationEndpointKeySuffix), AzureAuthenticationEndpointShared.ToString() },
+                { BuildConfigKey(AzureTokenAudienceKeySuffix), AzureTokenAudienceShared.ToString() },
+                { BuildConfigKey(AzureManagementEndpointKeySuffix), AzureManagementEndpointShared.ToString() },
+                { BuildConfigKey(AzureDefaultWebSiteDomainNameKeySuffix), AzureDefaultWebsiteDomainNameShared },
+            };
+
+            var connectionStrings = new ConnectionStringSettingsCollection
+            {
+                new ConnectionStringSettings(BuildConfigKey(ClientSecretKeySuffix), ClientSecretShared),
+            };
+
+            var renewer = new AppSettingsRenewer(
+                RenewalManager,
+                new AppSettingsRenewalParamsReader(new AppSettingsReader(appSettings, connectionStrings)),
+                EmailNotifier);
+
+            await renewer.Renew();
+
+            VerifySuccessfulRenewal(ExpectedPartialRenewalParameters3);
+            VerifySuccessfulNotification(ExpectedPartialRenewalParameters3);
         }
 
         private void AssertInvalidConfig(string key, string value, string expectedText = null)
