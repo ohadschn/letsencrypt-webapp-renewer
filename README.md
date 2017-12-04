@@ -95,21 +95,35 @@ The following are optional but **highly recommended**.
 Test the WebJob by [triggering it manually](https://pragmaticdevs.wordpress.com/2016/10/24/triggering-azure-web-jobs-manually/). **You should see a new certificate served when you visit your site**.
 
 ## Command Line usage
-When executed outside of a WebJob context (as determined by the [WEBJOBS_NAME](https://github.com/projectkudu/kudu/wiki/WebJobs#environment-settings) environment variable), the WebJob executable (`AzureLetsEncryptRenewer.exe`) functions as a standalone command-line tool:
+When executed outside of a WebJob context (as determined by the [WEBJOBS_NAME](https://github.com/projectkudu/kudu/wiki/WebJobs#environment-settings) environment variable), the WebJob executable (`AzureLetsEncryptRenewer.exe`) functions as a standalone command-line tool with the following options:
 
-> AzureLetsEncryptRenewer.exe SubscriptionId TenantId ResourceGroup WebApp Hosts Email ClientId ClientSecret [ServicePlanResourceGroupName] [SiteSlotName] [UseIpBasedSsl] [RsaKeyLength] [AcmeBaseUri]
+| Flag | Details |
+| - | - |
+| -s, --subscriptionId | Required. Subscription ID |
+| -t, --tenantId |                             Required. Tenant ID
+| -r, --resourceGroup |                        Required. Resource Group
+| -w, --webApp |                               Required. Web App
+| -o, --hosts |                                Required. Semicolon-delimited list of hosts to include in the certificate - the first will comprise the Subject Name SN) and the rest will comprise the Subject Alternative Names (SANs) 
+| -e, --email |                                Required. E-mail for Let's Encrypt registration and expiry notifications
+| -c, --clientId |                             Required. Client ID
+| -l, --clientSecret |                         Required. Client Secret
+| -p, --servicePlanResourceGroup |             Service Plan Resource Group (if not specified, the provided Web App resource group will be used)
+| -d, --siteSlotName |                         Site Deployment Slot 
+| -i, --useIpBasedSsl |                        (Default: false) Use IP Based SSL
+| -k, --rsaKeyLength |                         (Default: 2048) Certificate RSA key length   
+| -a, --acmeBaseUri |                          ACME base URI, defaults to: https://acme-v01.api.letsencrypt.org/
+| -n, --renewXNumberOfDaysBeforeExpiration |   (Default: -1) Number of days before certificate expiry to renew, defaults to a negative value meaning renewal will ake place regardless of the expiry time
+| -h, --azureAuthenticationEndpoint |          The Active Directory Authority, defaults to: https://login.windows.net/
+| -u, --azureTokenAudience |                   The Active Directory Service Endpoint Resource ID, defaults to: https://management.core.windows.net/
+| -m, --azureManagementEndpoint |              The Resource Manager URL, defaults to: https://management.azure.com
+| -b, --azureDefaultWebSiteDomainName  |       The Azure Web Sites default domain name, defaults to: azurewebsites.net
+--help  |                                    Display this help screen.
+--version  |                                 Display version information.
 
-- `Hosts` is a semicolon-delimited list of host names
-- `ServicePlanResourceGroupName` is optional and can be empty (`""`) if it is the same as the Web App resource group
-- `SiteSlotName` is optional and can be empty (`""`) if site deployment slots are not to be used
-- `UseIpBasedSsl` is optional and defaults to false
-- `RsaKeyLength` is optional and defaults to 2048
-- `AcmeBaseUri` is optional and defaults to https://acme-v01.api.letsencrypt.org/
-
-Exit codes: 
-- 0 = Success
-- 1 = Argument error
-- 2 = Unexpected error
+### Exit codes
+- 0 - Success
+- 1 - Bad argument(s)
+- 2 - Unexpected error
 
 ## Telemetry
 `letsencrypt-webapp-renewer` gathers anonymous telemetry for usage analysis and error reporting. You can disable it by setting the `LETSENCRYPT_DISABLE_TELEMETRY` to any non-empty value.
