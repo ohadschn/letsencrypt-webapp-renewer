@@ -93,98 +93,97 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         [TestMethod]
         public void TestInvalidWebApps()
         {
-            AssertInvalidConfig(BuildConfigKey(WebAppsKey), String.Empty, "webApp");
+            AssertInvalidConfig(WebAppsKey, null, String.Empty, "webApp", testMissing: true, testShared: false);
         }
 
         [TestMethod]
-        public void TestMissingWebApp()
+        public void TestMissingWebAppConfiguration()
         {
-            AssertInvalidConfig(BuildConfigKey(WebAppsKey), "hello");
+            AssertInvalidConfig(WebAppsKey, null, "hello", expectedText: null, testMissing: true, testShared: false);
         }
 
         [TestMethod]
         public void TestInvalidSubscriptionId()
         {
-            AssertInvalidConfig(BuildConfigKey(SubscriptionIdKeySuffix, WebApp1), "not a GUID", "subscriptionId");
+            AssertInvalidConfig(SubscriptionIdKeySuffix, WebApp1, "not a GUID", "subscriptionId");
         }
 
         [TestMethod]
         public void TestInvalidTenantId()
         {
-            AssertInvalidConfig(BuildConfigKey(TenantIdKeySuffix, WebApp2), String.Empty, "tenantId");
+            AssertInvalidConfig(TenantIdKeySuffix, WebApp2, String.Empty, "tenantId");
         }
 
         [TestMethod]
         public void TestInvalidResourceGroup()
         {
-            AssertInvalidConfig(BuildConfigKey(ResourceGroupKeySuffix, WebApp1), "     ", "resourceGroup");
+            AssertInvalidConfig(ResourceGroupKeySuffix, WebApp1, "     ", "resourceGroup");
         }
 
         [TestMethod]
         public void TestInvalidHosts()
         {
-            AssertInvalidConfig(BuildConfigKey(HostsKeySuffix, WebApp2), "www.foo.com;not/valid", "hosts");
+            AssertInvalidConfig(HostsKeySuffix, WebApp2, "www.foo.com;not/valid", "hosts", testMissing: true, testShared: false);
         }
 
         [TestMethod]
         public void TestInvalidEmail()
         {
-            AssertInvalidConfig(BuildConfigKey(EmailKeySuffix, WebApp1), "mail@", "email");
+            AssertInvalidConfig(EmailKeySuffix, WebApp1, "mail@", "email");
         }
 
         [TestMethod]
         public void TestInvalidClientId()
         {
-            AssertInvalidConfig(BuildConfigKey(ClientIdKeySuffix, WebApp2), " ", "clientId");
+            AssertInvalidConfig(ClientIdKeySuffix, WebApp2, " ", "clientId");
         }
 
         [TestMethod]
         public void TestInvalidServicePlanResourceGroup()
         {
-            AssertInvalidConfig(BuildConfigKey(ServicePlanResourceGroupKeySuffix, WebApp1), String.Empty, "servicePlanResourceGroup");
+            AssertInvalidConfig(ServicePlanResourceGroupKeySuffix, WebApp1, String.Empty, "servicePlanResourceGroup", testMissing: false);
         }
 
         [TestMethod]
         public void TestInvalidSiteSlotName()
         {
-            AssertInvalidConfig(BuildConfigKey(SiteSlotNameSuffix, WebApp2), " ", "siteSlotName");
+            AssertInvalidConfig(SiteSlotNameSuffix, WebApp2, " ", "siteSlotName", testMissing: false, testShared: false);
         }
 
         [TestMethod]
         public void TestInvalidClientSecret()
         {
-            var sharedClientSecretKey = BuildConfigKey(ClientSecretKeySuffix);
             var clientSecretKey = BuildConfigKey(ClientSecretKeySuffix, WebApp1);
+            var sharedClientSecretKey = BuildConfigKey(ClientSecretKeySuffix);
+
             m_connectionStrings.Remove(clientSecretKey);
             m_connectionStrings.Remove(sharedClientSecretKey);
-            AssertExtensions.Throws<ConfigurationErrorsException>(() => m_renewer.Renew().GetAwaiter().GetResult(), e => e.ToString().Contains("clientSecret"));
+            AssertInvalidConfigCore("clientSecret");
 
-            m_connectionStrings.Add(new ConnectionStringSettings(clientSecretKey, " "));
-            AssertExtensions.Throws<ConfigurationErrorsException>(() => m_renewer.Renew().GetAwaiter().GetResult(), e => e.ToString().Contains("clientSecret"));
+            m_connectionStrings.Add(new ConnectionStringSettings(clientSecretKey, String.Empty));
+            AssertInvalidConfigCore("clientSecret");
+
+            m_connectionStrings.Remove(clientSecretKey);
+            m_connectionStrings.Add(new ConnectionStringSettings(sharedClientSecretKey, String.Empty));
+            AssertInvalidConfigCore("clientSecret");
         }
 
         [TestMethod]
         public void TestInvalidUseIpBasedSsl()
         {
-            AssertInvalidConfig(BuildConfigKey(UseIpBasedSslKeySuffix, WebApp2), String.Empty, "useIpBasedSsl");
+            AssertInvalidConfig(UseIpBasedSslKeySuffix, WebApp2, String.Empty, "useIpBasedSsl", testMissing: false);
         }
 
         [TestMethod]
         public void TestInvalidRsaKeyLength()
         {
-            AssertInvalidConfig(BuildConfigKey(RsaKeyLengthKeySuffix, WebApp1), "x", "rsaKeyLength");
+            AssertInvalidConfig(RsaKeyLengthKeySuffix, WebApp1, "x", "rsaKeyLength", testMissing: false);
         }
 
         [TestMethod]
         public void TestInvalidAcmeBaseUri()
         {
-            AssertInvalidConfig(BuildConfigKey(AcmeBaseUriKeySuffix, WebApp2), "http:/OnlyOneSlash.com", "acmeBaseUri");
-        }
-
-        [TestMethod]
-        public void TestInvalidSharedSetting()
-        {
-            AssertInvalidConfig(BuildConfigKey(UseIpBasedSslKeySuffix), "maybe false, maybe true - who knows?", "useIpBasedSsl");
+            AssertInvalidConfig(AcmeBaseUriKeySuffix, WebApp2, "http:/OnlyOneSlash.com", "acmeBaseUri", testMissing: false);
         }
 
         [TestMethod]
@@ -243,12 +242,33 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             VerifySuccessfulNotification(ExpectedPartialRenewalParameters3);
         }
 
-        private void AssertInvalidConfig(string key, string value, string expectedText = null)
+        private void AssertInvalidConfig(string key, string webApp, string value, string expectedText = null, bool testMissing = true, bool testShared = true)
         {
-            m_appSettings[key] = value;
+            var configKey = BuildConfigKey(key, webApp);
+
+            m_appSettings[configKey] = value;
+            AssertInvalidConfigCore(expectedText);
+
+            m_appSettings.Remove(configKey);
+            var sharedCofigKey = BuildConfigKey(key);
+            if (testShared)
+            {
+                m_appSettings[sharedCofigKey] = value;
+                AssertInvalidConfigCore(expectedText);
+            }
+
+            if (testMissing)
+            {
+                m_appSettings.Remove(sharedCofigKey);
+                AssertInvalidConfigCore(expectedText);
+            }
+        }
+
+        private void AssertInvalidConfigCore(string expectedText)
+        {
             AssertExtensions.Throws<ConfigurationErrorsException>(
                 () => m_renewer.Renew().GetAwaiter().GetResult(),
-                e => expectedText == null || e.Message.Contains(expectedText) || e.ToString().Contains(expectedText));
+                e => expectedText == null || e.ToString().Contains(expectedText));
         }
 
         private static string BuildConfigKey(string key, string webApp = null)
