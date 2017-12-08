@@ -32,7 +32,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email
             if (m_apiKey == null)
             {
                 Trace.TraceWarning(
-                    "E-mail notification for web app {0} skipped because the '{1}' environment variable was not set",
+                    "E-mail notification for web app {0} skipped because the '{1}' connection string was not set",
                     renewalParams.WebApp,
                     Constants.SendGridApiKey);
                 return;
