@@ -21,5 +21,6 @@
         public const string AzureTokenAudienceKey = "azureTokenAudience";
         public const string AzureManagementEndpointKey = "azureManagementEndpoint";
         public const string AzureDefaultWebSiteDomainNameKey = "azureDefaultWebSiteDomainName";
+        public const string SendGridApiKey = "SendGridApiKey";
     }
 }

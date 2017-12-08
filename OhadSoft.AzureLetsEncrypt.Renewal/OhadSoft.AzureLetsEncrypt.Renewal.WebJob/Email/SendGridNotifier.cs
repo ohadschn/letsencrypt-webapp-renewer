@@ -31,7 +31,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email
 
             if (m_apiKey == null)
             {
-                Trace.TraceWarning("E-mail notification for web app {0} skipped because SendGrid API key is not configured", renewalParams.WebApp);
+                Trace.TraceWarning(
+                    "E-mail notification for web app {0} skipped because the '{1}' environment variable was not set",
+                    renewalParams.WebApp,
+                    Constants.SendGridApiKey);
                 return;
             }
 
