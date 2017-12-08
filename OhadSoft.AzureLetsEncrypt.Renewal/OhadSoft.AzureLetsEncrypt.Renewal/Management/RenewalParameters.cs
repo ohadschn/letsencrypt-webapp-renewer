@@ -53,7 +53,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             Hosts = VerifyHosts(hosts, nameof(hosts));
             Email = VerifyEmail(email, nameof(email));
             ClientId = VerifyGuid(clientId, nameof(clientId));
-            ClientSecret = VerifyString(clientSecret, nameof(clientSecret));
+            ClientSecret = VerifyString(clientSecret, nameof(clientSecret), allowWhitespace: true);
             ServicePlanResourceGroup = VerifyOptionalString(servicePlanResourceGroup, nameof(servicePlanResourceGroup));
             SiteSlotName = VerifyOptionalString(siteSlotName, nameof(siteSlotName));
             UseIpBasedSsl = useIpBasedSsl;
@@ -102,9 +102,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 : throw new ArgumentException("E-mail address must not be null and must be valid", name);
         }
 
-        private static string VerifyString(string str, string name)
+        private static string VerifyString(string str, string name, bool allowWhitespace = false)
         {
-            return !String.IsNullOrWhiteSpace(str)
+            return (allowWhitespace ? !String.IsNullOrEmpty(str) : !String.IsNullOrWhiteSpace(str))
                 ? str
                 : throw new ArgumentException("String cannot be null or whitespace", name);
         }
