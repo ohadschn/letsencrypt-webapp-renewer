@@ -17,7 +17,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected const string ResourceGroup1 = "foo-resource-group";
         protected const string ResourceGroup2 = "bar-resource-group";
         protected const string ResourceGroupShared = "shared-resource-group";
-        protected const string WebApp1 = "fooApp";
+        protected const string SiteSlotName1 = "foo-slot";
+        protected const string WebApp1Name = "fooApp";
+        protected const string WebApp1 = WebApp1Name + "{" + SiteSlotName1 + "}";
         protected const string WebApp2 = "barApp";
         protected const string WebApp3 = "bazApp";
         protected const string Email1 = "foo@gmail.com";
@@ -28,7 +30,6 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected const string ClientSecretShared = "shared-secret4real";
         protected const string ServicePlanResourceGroup1 = "foo-service-plan-resource-group";
         protected const string ServicePlanResourceGroupShared = "shared-service-plan-resource-group";
-        protected const string SiteSlotName1 = "foo-slot";
         protected const bool UseIpBasedSsl1 = true;
         protected const bool UseIpBasedSslShared = true;
         protected const int RsaKeyLength1 = 1024;
@@ -59,7 +60,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             Subscription1,
             Tenant1,
             ResourceGroup1,
-            WebApp1,
+            WebApp1Name,
             Hosts1,
             Email1,
             ClientId1,
@@ -79,7 +80,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             Subscription1,
             Tenant1,
             ResourceGroup1,
-            WebApp1,
+            WebApp1Name,
             Hosts1,
             Email1,
             ClientId1,

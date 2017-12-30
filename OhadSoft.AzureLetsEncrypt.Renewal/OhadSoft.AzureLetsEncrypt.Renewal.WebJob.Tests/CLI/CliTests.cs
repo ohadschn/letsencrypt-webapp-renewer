@@ -17,7 +17,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
             { ("-s", "--subscriptionId"), Subscription1.ToString() },
             { ("-t", "--tenantId"), Tenant1 },
             { ("-r", "--resourceGroup"), ResourceGroup1 },
-            { ("-w", "--webApp"), WebApp1 },
+            { ("-w", "--webApp"), WebApp1Name },
             { ("-o", "--hosts"), String.Join(";", Hosts1) },
             { ("-e", "--email"), Email1 },
             { ("-c", "--clientId"), ClientId1.ToString() },
