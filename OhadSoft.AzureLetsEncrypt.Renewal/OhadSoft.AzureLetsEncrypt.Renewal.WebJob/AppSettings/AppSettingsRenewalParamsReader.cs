@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
@@ -61,19 +62,29 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
         {
             Trace.TraceInformation("Parsing SSL renewal parameters for web app '{0}'...", webApp);
 
+            string webAppName = webApp;
+            string siteSlotName = null;
+
+            var match = Regex.Match(webApp, "^(.*){(.*)}$");
+            if (match.Success)
+            {
+                webAppName = match.Groups[1].Value;
+                siteSlotName = match.Groups[2].Value;
+            }
+
             try
             {
                 return new RenewalParameters(
                     ResolveGuidSetting(Constants.SubscriptionIdKey, webApp, sharedRenewalParams.SubscriptionId),
                     ResolveSetting(Constants.TenantIdKey, webApp, sharedRenewalParams.TenantId),
                     ResolveSetting(Constants.ResourceGroupKey, webApp, sharedRenewalParams.ResourceGroup),
-                    webApp,
+                    webAppName,
                     m_appSettings.GetDelimitedList(BuildConfigKey(Constants.HostsKey, webApp)),
                     ResolveSetting(Constants.EmailKey, webApp, sharedRenewalParams.Email),
                     ResolveGuidSetting(Constants.ClientIdKey, webApp, sharedRenewalParams.ClientId),
                     ResolveConnectionString(Constants.ClientSecretKey, webApp, sharedRenewalParams.ClientSecret),
                     ResolveOptionalSetting(Constants.ServicePlanResourceGroupKey, webApp, sharedRenewalParams.ServicePlanResourceGroup),
-                    ResolveOptionalSetting(Constants.SiteSlotNameKey, webApp),
+                    siteSlotName,
                     ResolveOptionalBooleanSetting(Constants.UseIpBasedSslKey, webApp, sharedRenewalParams.UseIpBasedSsl, false),
                     ResolveOptionalInt32Setting(Constants.RsaKeyLengthKey, webApp, sharedRenewalParams.RsaKeyLength, 2048),
                     ResolveOptionalUriSetting(Constants.AcmeBaseUriKey, webApp, sharedRenewalParams.AcmeBaseUri),

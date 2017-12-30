@@ -25,7 +25,6 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         private const string ClientIdKeySuffix = "clientId";
         private const string ClientSecretKeySuffix = "clientSecret";
         private const string ServicePlanResourceGroupKeySuffix = "servicePlanResourceGroup";
-        private const string SiteSlotNameSuffix = "siteSlotName";
         private const string UseIpBasedSslKeySuffix = "useIpBasedSsl";
         private const string RsaKeyLengthKeySuffix = "rsaKeyLength";
         private const string AcmeBaseUriKeySuffix = "acmeBaseUri";
@@ -52,7 +51,6 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             { BuildConfigKey(HostsKeySuffix, WebApp1), String.Join(";", Hosts1) },
             { BuildConfigKey(EmailKeySuffix, WebApp1), Email1 },
             { BuildConfigKey(ClientIdKeySuffix, WebApp1), ClientId1.ToString() }, // override shared
-            { BuildConfigKey(SiteSlotNameSuffix, WebApp1), SiteSlotName1 },
             { BuildConfigKey(UseIpBasedSslKeySuffix, WebApp1), UseIpBasedSsl1.ToString() },
             { BuildConfigKey(RsaKeyLengthKeySuffix, WebApp1), RsaKeyLength1.ToString(CultureInfo.InvariantCulture) },
             { BuildConfigKey(AcmeBaseUriKeySuffix, WebApp1), AcmeBaseUri1.ToString() },
@@ -147,7 +145,16 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         [TestMethod]
         public void TestInvalidSiteSlotName()
         {
-            AssertInvalidConfig(SiteSlotNameSuffix, WebApp2, " ", "siteSlotName", testMissing: false, testShared: false);
+            const string webApp = "foo{ }";
+
+            m_appSettings[BuildConfigKey(WebAppsKey)] = webApp;
+            m_appSettings[BuildConfigKey(SubscriptionIdKeySuffix, webApp)] = Subscription1.ToString();
+            m_appSettings[BuildConfigKey(TenantIdKeySuffix, webApp)] = Tenant1;
+            m_appSettings[BuildConfigKey(ResourceGroupKeySuffix, webApp)] = ResourceGroup1;
+            m_appSettings[BuildConfigKey(HostsKeySuffix, webApp)] = String.Join(";", Hosts1);
+            m_appSettings[BuildConfigKey(EmailKeySuffix, webApp)] = Email1;
+
+            AssertInvalidConfigCore("siteSlotName");
         }
 
         [TestMethod]
