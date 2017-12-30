@@ -40,22 +40,12 @@ The `letsencrypt-webapp-renewer` WebJob is configured via [Web App Settings](htt
    1. `letsencrypt:webAppName-clientId`
    1. `letsencrypt:webAppName-clientSecret` (should be set as a **connection string**)
    1. `letsencrypt:webAppName-servicePlanResourceGroup` (optional, defaults to the Web App Resource Group)
-   1. `letsencrypt:webAppName-siteSlotName` (optional, defaults to the main deployment slot)
    1. `letsencrypt:webAppName-useIpBasedSsl` (optional, defaults to `false`)
    1. `letsencrypt:webAppName-rsaKeyLength` (optional, defaults to `2048`)
    1. `letsencrypt:webAppName-acmeBaseUri` (optiona, defaults to `https://acme-v01.api.letsencrypt.org`)
    1. `letsencrypt:webAppName-renewXNumberOfDaysBeforeExpiration` (optional, defaults to `-1` which means renewal will take place regardless of the expiry time)
 
 For more information about the various renewal settings see: https://github.com/sjkp/letsencrypt-siteextension.
-
-### Sovereign Cloud (Mooncake, BlackForest, etc.)
-The following settings are required in order to renew certificates on sovereign clouds:
-   1. `letsencrypt:webAppName-azureAuthenticationEndpoint`
-   1. `letsencrypt:webAppName-azureTokenAudience`
-   1. `letsencrypt:webAppName-azureManagementEndpoint`
-   1. `letsencrypt:webAppName-azureDefaultWebSiteDomainName`
-
-You can run the `Get-AzureEnvironment` PowerShell cmdlet to get the required values. For more information about configuring sovereign clouds see: https://github.com/sjkp/letsencrypt-siteextension/wiki/Azure-Germany,-US-or-China.
 
 ### Sample configuration
 - `letsencrypt:webApps`: `ohadsoft;howlongtobeatsteam`
@@ -74,10 +64,22 @@ You can run the `Get-AzureEnvironment` PowerShell cmdlet to get the required val
 - `letsencrypt:howlongtobeatsteam-clientId`: `5e1346b6-7db5-4eae-b9fa-7b3d5e42e6c7`
 - (**connection string**) `letsencrypt:howlongtobeatsteam-clientSecret`: `MySecretPassword123`
 
+### Sovereign Cloud (Mooncake, BlackForest, etc.)
+The following settings are required in order to renew certificates on sovereign clouds:
+   1. `letsencrypt:webAppName-azureAuthenticationEndpoint`
+   1. `letsencrypt:webAppName-azureTokenAudience`
+   1. `letsencrypt:webAppName-azureManagementEndpoint`
+   1. `letsencrypt:webAppName-azureDefaultWebSiteDomainName`
+
+You can run the `Get-AzureEnvironment` PowerShell cmdlet to get the required values. For more information about configuring sovereign clouds see: https://github.com/sjkp/letsencrypt-siteextension/wiki/Azure-Germany,-US-or-China.
+
+### Site Deployment Slots
+In order to specify a Site Deployment Slot for a given web app, use the following syntax for the web app's name: `webAppName{siteSlotName}`. For example, if you have a `foo` site with no deployment slots and a `bar` site with `staging` and `prod` deployment slots, configure `letsencrypt:webApps` to be `foo;bar{staging};bar{prod}`. Different deployment slots are treated as different web apps and the normal setting rules apply, so you would still need to configure the regular settings for each of them (e.g. `letsencrypt:foo-subscriptionId`, `letsencrypt:bar{staging}-subscriptionId`, `letsencrypt:bar{prod}-subscriptionId` and so forth). 
+
 ### Shared configuration
 It is sometimes useful to share configuraiton settings beween web apps. For example, you might be using the same client credentials, the same subscription ID, or the same resource group for multiple web apps. In order to share a configuration setting between web apps, simply omit the `webAppName-` component of the configuration key. For example, in order to configure shared client credentials, set the `letsencrypt:clientId` app setting and `letsencrypt:clientSecret` connection string. These values will now be used by default for all configured web apps, unless explicitly overriden by setting the fully WebApp-qualified key name (by including the `webAppName-` component, e.g. `letsencrypt:mySpecialSite-clientId`).
 
-All settings except `hosts` and `siteSlotName` may be shared.
+All settings except `hosts`may be shared.
 
 ## Installation
 1. (**optional but highly recommended**) Create a new dedicated Web App for cert renewal, to which you will deploy the `letsencrypt-webapp-renewer` WebJob. This will drastically decrease the likelihood of accidental deletion of the renewal WebJob  (e.g. upon deployment of a different app to the same Web App using _Delete Existing files_)
