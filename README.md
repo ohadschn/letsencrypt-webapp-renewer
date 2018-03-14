@@ -42,7 +42,7 @@ The `letsencrypt-webapp-renewer` WebJob is configured via [Web App Settings](htt
    1. `letsencrypt:webAppName-servicePlanResourceGroup` (optional, defaults to the Web App Resource Group)
    1. `letsencrypt:webAppName-useIpBasedSsl` (optional, defaults to `false`)
    1. `letsencrypt:webAppName-rsaKeyLength` (optional, defaults to `2048`)
-   1. `letsencrypt:webAppName-acmeBaseUri` (optiona, defaults to `https://acme-v01.api.letsencrypt.org`)
+   1. `letsencrypt:webAppName-acmeBaseUri` (optional, defaults to `https://acme-v01.api.letsencrypt.org`)
    1. `letsencrypt:webAppName-renewXNumberOfDaysBeforeExpiration` (optional, defaults to `-1` which means renewal will take place regardless of the expiry time)
 
 For more information about the various renewal settings see: https://github.com/sjkp/letsencrypt-siteextension.
