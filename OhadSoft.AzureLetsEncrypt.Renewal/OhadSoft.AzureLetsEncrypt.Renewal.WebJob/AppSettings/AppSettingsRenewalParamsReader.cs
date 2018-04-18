@@ -65,7 +65,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
             string webAppName = webApp;
             string siteSlotName = null;
 
-            var match = Regex.Match(webApp, "^(.*){(.*)}$");
+            var match = Regex.Match(webAppName, @"^(.*)\[.*\]$");
+            if (match.Success)
+            {
+                webAppName = match.Groups[1].Value;
+            }
+
+            match = Regex.Match(webAppName, "^(.*){(.*)}$");
             if (match.Success)
             {
                 webAppName = match.Groups[1].Value;
