@@ -84,7 +84,7 @@ All settings except `hosts`may be shared.
 ### Using the configuration script
 There is a PowerShell configuration-script available [here](WebAppConfig.ps1) which can be used to streamline the configuration of multiple Web Apps.
 Download the script and update the settings in the `param` block at the beginning of the script with the values as explained above.
-After updating the needed settings a new Web App can be configured by executing the following commad in PowerShell: `.\WebAppConfig.ps1 -webAppTarget "AppName" -webAppHosts "appname.com"`.
+After updating the needed settings a new Web App can be configured by executing the following commad in PowerShell: `.\WebAppConfig.ps1 -WebAppTarget "AppName" -WebAppHosts "appname.com"`.
 
 ## Installation
 1. (**optional but highly recommended**) Create a new dedicated Web App for cert renewal, to which you will deploy the `letsencrypt-webapp-renewer` WebJob. This will drastically decrease the likelihood of accidental deletion of the renewal WebJob  (e.g. upon deployment of a different app to the same Web App using _Delete Existing files_)
