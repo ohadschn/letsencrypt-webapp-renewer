@@ -42,13 +42,13 @@ $appSettingsTarget[$letsEncryptPrefix + $WebAppTarget + "-renewXNumberOfDaysBefo
 $appSettingsTarget[$letsEncryptPrefix + $WebAppTarget + "-resourceGroup"] = $ResourceGroupTarget
 $appSettingsTarget[$letsEncryptPrefix + $WebAppTarget + "-subscriptionId"] = $SubscriptionId
 $appSettingsTarget[$letsEncryptPrefix + $WebAppTarget + "-tenantId"] = $TenantId 
-if ($appSettingsTarget.ContainsKey("letsencrypt:webApps")) {
-	if ($appSettingsTarget["letsencrypt:webApps"].IndexOf($WebAppTarget, StringComparison.OrdinalIgnoreCase) < 0) {
-		$appSettingsTarget["letsencrypt:webApps"] = $appSettingsTarget["letsencrypt:webApps"] + ";" + $WebAppTarget
+if ($appSettingsTarget.ContainsKey($letsEncryptPrefix + "webApps")) {
+	if ($appSettingsTarget[$letsEncryptPrefix + "webApps"] -like ("*" + $WebAppTarget + "*")) {
+		$appSettingsTarget[$letsEncryptPrefix + "webApps"] = $appSettingsTarget[$letsEncryptPrefix + "webApps"] + ";" + $WebAppTarget
 	}
 }
 else {
-	$appSettingsTarget["letsencrypt:webApps"] = $WebAppTarget
+	$appSettingsTarget[$letsEncryptPrefix + "webApps"] = $WebAppTarget
 }
 
 # Save Settings to Target
