@@ -41,6 +41,7 @@ Param(
 
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
+$InformationPreference = "Continue"
 
 $letsEncryptPrefix = "letsencrypt:"
 Function Set-LetsEncryptConfig
@@ -69,7 +70,7 @@ Write-Information "Setting context to the Let's Encrypt subscription ID..."
 Set-AzureRmContext -SubscriptionId $LetsEncryptSubscriptionId
 
 Write-Information "Loading existing Let's Encrypt web app settings..."
-$letsEncryptWebAppInfo = Get-AzureRmWebAppSlot -ResourceGroupName $LetsEncryptResourceGroup -Name $LetsEncryptWebApp
+$letsEncryptWebAppInfo = Get-AzureRmWebApp -ResourceGroupName $LetsEncryptResourceGroup -Name $LetsEncryptWebApp
 
 Write-Information "Copying over existing app settings..."
 $updatedAppSettings = @{}
@@ -112,3 +113,5 @@ $updatedConnectionStrings["$letsEncryptPrefix$WebApp-clientSecret"] = @{ Type = 
 
 Write-Information "Updating settings..."
 Set-AzureRmWebApp -ResourceGroupName $LetsEncryptResourceGroup -Name $LetsEncryptWebApp -AppSettings $updatedAppSettings -ConnectionStrings $updatedConnectionStrings
+
+Write-Information "All done"
