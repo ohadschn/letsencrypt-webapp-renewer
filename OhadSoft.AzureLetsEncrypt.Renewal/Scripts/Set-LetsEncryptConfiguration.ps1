@@ -1,3 +1,22 @@
+<#
+.SYNOPSIS
+Sets up the confguration for a Let's Encrypt renewal web app (https://github.com/ohadschn/letsencrypt-webapp-renewer)
+
+.DESCRIPTION
+The Set-LetsEncryptConfiguration script sets up your letsencrypt-webapp-renewer web app with the required renewal configuration.
+Renewal web app parameters are documented below, the rest are per https://github.com/ohadschn/letsencrypt-webapp-renewer#configuration.
+
+.PARAMETER LetsEncryptSubscriptionId 
+The ID of the Subscription containg the letsencrypt-webapp-renewer web app.
+
+.PARAMETER LetsEncryptResourceGroup
+The name of the resource group containg the letsencrypt-webapp-renewer web app.
+
+.PARAMETER LetsEncryptWebApp
+The name of the letsencrypt-webapp-renewer web app.
+
+#>
+
 Param(
 	[Parameter(Mandatory=$true)]
 	[string]$LetsEncryptSubscriptionId,
