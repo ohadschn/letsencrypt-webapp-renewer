@@ -82,9 +82,7 @@ It is sometimes useful to share configuraiton settings beween web apps. For exam
 All settings except `hosts`may be shared.
 
 ### Using the configuration script
-There is a PowerShell configuration-script available [here](WebAppConfig.ps1) which can be used to streamline the configuration of multiple Web Apps.
-Download the script and update the settings in the `param` block at the beginning of the script with the values as explained above.
-After updating the needed settings a new Web App can be configured by executing the following commad in PowerShell: `.\WebAppConfig.ps1 -WebAppTarget "AppName" -WebAppHosts "appname.com"`.
+There is a PowerShell configuration-script [Set-LetsEncryptConfiguration.ps1](OhadSoft.AzureLetsEncrypt.Renewal/Scripts/Set-LetsEncryptConfiguration.ps1) which can be used to streamline the configuration of multiple Web Apps. Running the script is straightfoward, and further documentation resides inside it.
 
 ## Installation
 1. (**optional but highly recommended**) Create a new dedicated Web App for cert renewal, to which you will deploy the `letsencrypt-webapp-renewer` WebJob. This will drastically decrease the likelihood of accidental deletion of the renewal WebJob  (e.g. upon deployment of a different app to the same Web App using _Delete Existing files_)
