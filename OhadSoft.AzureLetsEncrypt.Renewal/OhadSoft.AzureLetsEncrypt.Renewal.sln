@@ -14,6 +14,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Rules", "Rules", "{0905F60B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests", "OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests\OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.csproj", "{DF035A8A-E58B-43E0-BA8A-E07281DE5AE9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{9D02A433-1878-49BA-B7BE-18F731FDB0BD}"
+	ProjectSection(SolutionItems) = preProject
+		Scripts\Set-LetsEncryptConfiguration.ps1 = Scripts\Set-LetsEncryptConfiguration.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -35,5 +40,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C8EC8F9D-DAFD-4390-80A8-E8B6794DBD19}
 	EndGlobalSection
 EndGlobal
