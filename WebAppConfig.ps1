@@ -1,72 +1,114 @@
-param(
-	[string]$WebAppTarget,
-	[string]$WebAppHosts,
-	[string]$RenewXNumberOfDaysBeforeExpiration = "-1", # set this to e.g. 65 after first request to avoid hitting the cert-limit if the job is triggerd manually more than 5 times
-	[string]$TenantId = "<default tenant Id>",
-	[string]$SubscriptionId = "<default subscription Id>",
-	[string]$WebAppLetsEncrypt = "<default letsencrypt web app>",
-	[string]$ResourceGroupLetsEncrypt = "<default resource group of letsencrypt web app>",
-	[string]$ClientId = "<default client Id>",
-	[string]$ClientSecret = "<default client secret>",
-	[string]$ResourceGroupTarget = "<default target resource group>",
-	[string]$Email = "<default email>",
-	[string]$WebAppSlot = "production")
+Param(
+	[Parameter(Mandatory=$true)]
+	[string]$LetsEncryptSubscriptionId,
+	
+	[Parameter(Mandatory=$true)]
+	[string]$LetsEncryptResourceGroup,
+
+	[Parameter(Mandatory=$true)]
+	[string]$LetsEncryptWebApp,
+
+	[Parameter(Mandatory=$true)]
+	[string]$SubscriptionId,
+
+	[Parameter(Mandatory=$true)]
+	[string]$ResourceGroup,
+
+	[Parameter(Mandatory=$true)]
+	[string]$WebApp,
+
+	[Parameter(Mandatory=$false)]
+	[string]$ServicePlanResourceGroup = $ResourceGroup,
+
+	[Parameter(Mandatory=$true)]
+	[string]$TenantId,
+
+	[Parameter(Mandatory=$true)]
+	[string]$ClientId,
+
+	[Parameter(Mandatory=$true)]
+	[string]$ClientSecret,
+
+	[Parameter(Mandatory=$true)]
+	[string]$Hosts,
+
+	[Parameter(Mandatory=$true)]
+	[string]$Email,
+
+	[Parameter(Mandatory=$false)]
+	[int]$RenewXNumberOfDaysBeforeExpiration = -1
+)
 
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
+$letsEncryptPrefix = "letsencrypt:"
+Function Set-LetsEncryptConfig
+{
+	Param(
+		[Parameter(Mandatory=$true)]
+		[hashtable]$AppSettings,
+
+		[Parameter(Mandatory=$true)]
+		[string]$WebApp,
+
+		[Parameter(Mandatory=$true)]
+		[string]$Name,
+
+		[Parameter(Mandatory=$true)]
+		[string]$Value
+	)
+
+	$AppSettings["$letsEncryptPrefix$WebApp-$Name"] = $Value
+}
+
+Write-Information "Signing in to Azure Resource Manager account (use the account that contains your Let's Encrypt renewal web app)..."
 Login-AzureRmAccount
 
-Set-AzureRmContext -SubscriptionId $SubscriptionId
+Write-Information "Setting context to the Let's Encrypt subscription ID..."
+Set-AzureRmContext -SubscriptionId $LetsEncryptSubscriptionId
 
-# Load Existing Web App settings for source and target
-$webAppSource = Get-AzureRmWebAppSlot -ResourceGroupName $ResourceGroupLetsEncrypt -Name $WebAppLetsEncrypt -Slot $WebAppSlot
+Write-Information "Loading existing Let's Encrypt web app settings..."
+$letsEncryptWebAppInfo = Get-AzureRmWebAppSlot -ResourceGroupName $LetsEncryptResourceGroup -Name $LetsEncryptWebApp
 
-# Get reference to the source app settings
-$appSettingsSource = $webAppSource.SiteConfig.AppSettings
-
-# Create Hash variable for App Settings
-$appSettingsTarget = @{}
-
-# Copy over all Existing App Settings to the Hash
-ForEach ($appSettingSource in $appSettingsSource) {
-    $appSettingsTarget[$appSettingSource.Name] = $appSettingSource.Value
+Write-Information "Copying over existing app settings..."
+$updatedAppSettings = @{}
+foreach ($appSetting in $letsEncryptWebAppInfo.SiteConfig.AppSettings) {
+    $updatedAppSettings[$appSetting.Name] = $appSetting.Value
 }
 
-# Add new settings
-$letsEncryptPrefix = "letsencrypt:"
-$appSettingsTarget[$letsEncryptPrefix + $WebAppTarget + "-clientId"] = $ClientId
-$appSettingsTarget[$letsEncryptPrefix + $WebAppTarget + "-email"] = $Email
-$appSettingsTarget[$letsEncryptPrefix + $WebAppTarget + "-hosts"] = $WebAppHosts
-$appSettingsTarget[$letsEncryptPrefix + $WebAppTarget + "-renewXNumberOfDaysBeforeExpiration"] = $RenewXNumberOfDaysBeforeExpiration
-$appSettingsTarget[$letsEncryptPrefix + $WebAppTarget + "-resourceGroup"] = $ResourceGroupTarget
-$appSettingsTarget[$letsEncryptPrefix + $WebAppTarget + "-subscriptionId"] = $SubscriptionId
-$appSettingsTarget[$letsEncryptPrefix + $WebAppTarget + "-tenantId"] = $TenantId 
-if ($appSettingsTarget.ContainsKey($letsEncryptPrefix + "webApps")) {
-	if ($appSettingsTarget[$letsEncryptPrefix + "webApps"] -like ("*" + $WebAppTarget + "*")) {
-		$appSettingsTarget[$letsEncryptPrefix + "webApps"] = $appSettingsTarget[$letsEncryptPrefix + "webApps"] + ";" + $WebAppTarget
+Write-Information "Adding new settings..."
+
+$webAppsKey = $letsEncryptPrefix + "webApps"
+if ($updatedAppSettings.ContainsKey($webAppsKey)) 
+{
+	if ($updatedAppSettings[$webAppsKey] -notlike "*$WebApp*") 
+	{
+		$updatedAppSettings[$webAppsKey] = $updatedAppSettings[$webAppsKey] + ";" + $WebApp
 	}
 }
-else {
-	$appSettingsTarget[$letsEncryptPrefix + "webApps"] = $WebAppTarget
+else 
+{
+	$updatedAppSettings[$webAppsKey] = $WebApp
 }
 
-# Save Settings to Target
-Set-AzureRmWebAppSlot -ResourceGroupName $ResourceGroupTarget -Name $WebAppLetsEncrypt -Slot $WebAppSlot -AppSettings $appSettingsTarget
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "subscriptionId" $SubscriptionId
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "resourceGroup" $ResourceGroup
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "servicePlanResourceGroup" $ServicePlanResourceGroup
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "tenantId" $TenantId
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "clientId" $ClientId
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "hosts" $Hosts
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "email" $Email
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "renewXNumberOfDaysBeforeExpiration" $RenewXNumberOfDaysBeforeExpiration
 
-# Get reference to the source Connection Strings
-$cConnectionStringsSource = $webAppSource.SiteConfig.ConnectionStrings
-
-# Create Hash variable for Connection Strings
-$connectionStringsTarget = @{}
-
-# Copy over all Existing Connection Strings to the Hash
-ForEach($ConnStringSource in $connectionStringsSource) {
-    $connectionStringsTarget[$ConnStringSource.Name] = @{ Type = $ConnStringSource.Type.ToString(); Value = $ConnStringSource.ConnectionString }
+Write-Information "Copying over existing connection strings..."
+$updatedConnectionStrings = @{}
+foreach ($connectionString in $letsEncryptWebAppInfo.SiteConfig.ConnectionStrings) {
+    $updatedConnectionStrings[$connectionString.Name] = @{ Type = $connectionString.Type.ToString(); Value = $connectionString.ConnectionString }
 }
 
-# Add new Connection String
-$connectionStringsTarget[$letsEncryptPrefix + $WebAppTarget + "-clientSecret"] = @{ Type = "Custom"; Value = $ClientSecret }
+Write-Information "Adding new connection string..."
+$updatedConnectionStrings["$letsEncryptPrefix$WebApp-clientSecret"] = @{ Type = "Custom"; Value = $ClientSecret }
 
-# Save Connection Strings to Target
-Set-AzureRmWebAppSlot -ResourceGroupName $ResourceGroupTarget -Name $WebAppLetsEncrypt -Slot $WebAppSlot -ConnectionStrings $connectionStringsTarget
+Write-Information "Updating settings..."
+Set-AzureRmWebApp -ResourceGroupName $LetsEncryptResourceGroup -Name $LetsEncryptWebApp -AppSettings $updatedAppSettings -ConnectionStrings $updatedConnectionStrings
