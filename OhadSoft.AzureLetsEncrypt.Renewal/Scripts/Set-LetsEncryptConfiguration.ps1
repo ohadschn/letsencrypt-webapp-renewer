@@ -32,8 +32,17 @@ Param(
 	[Parameter(Mandatory=$true)]
 	[string]$Hosts,
 
-	[Parameter(Mandatory=$true)]
+	[Parameter(Mandatory=$false)]
 	[string]$Email,
+
+	[Parameter(Mandatory=$false)]
+	[bool]$UseIpBasedSsl,
+
+	[Parameter(Mandatory=$false)]
+	[int]$RsaKeyLength,
+
+	[Parameter(Mandatory=$false)]
+	[string]$AcmeBaseUri,
 
 	[Parameter(Mandatory=$false)]
 	[int]$RenewXNumberOfDaysBeforeExpiration = -1
@@ -59,6 +68,12 @@ Function Set-LetsEncryptConfig
 		[Parameter(Mandatory=$true)]
 		[string]$Value
 	)
+
+	if (!$Value)
+	{
+		Write-Information "Value not provided for app setting '$Name' - skipping..."
+		return
+	}
 
 	$AppSettings["$letsEncryptPrefix$WebApp-$Name"] = $Value
 }
@@ -100,6 +115,9 @@ Set-LetsEncryptConfig $updatedAppSettings $WebApp "tenantId" $TenantId
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "clientId" $ClientId
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "hosts" $Hosts
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "email" $Email
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "useIpBasedSsl" $UseIpBasedSsl
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "rsaKeyLength" $RsaKeyLength
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "acmeBaseUri" $AcmeBaseUri
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "renewXNumberOfDaysBeforeExpiration" $RenewXNumberOfDaysBeforeExpiration
 
 Write-Information "Copying over existing connection strings..."
