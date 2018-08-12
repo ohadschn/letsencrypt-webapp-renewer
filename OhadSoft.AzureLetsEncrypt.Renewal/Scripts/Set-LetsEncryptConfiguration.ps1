@@ -65,8 +65,8 @@ Function Set-LetsEncryptConfig
 		[Parameter(Mandatory=$true)]
 		[string]$Name,
 
-		[Parameter(Mandatory=$true)]
-		[string]$Value
+		[Parameter(Mandatory=$false)]
+		[object]$Value
 	)
 
 	if (!$Value)
@@ -75,7 +75,8 @@ Function Set-LetsEncryptConfig
 		return
 	}
 
-	$AppSettings["$letsEncryptPrefix$WebApp-$Name"] = $Value
+	Write-Information "Setting '$Name' to '$Value'..."
+	$AppSettings["$letsEncryptPrefix$WebApp-$Name"] = $Value.ToString()
 }
 
 Write-Information "Signing in to Azure Resource Manager account (use the account that contains your Let's Encrypt renewal web app)..."
@@ -132,4 +133,4 @@ $updatedConnectionStrings["$letsEncryptPrefix$WebApp-clientSecret"] = @{ Type = 
 Write-Information "Updating settings..."
 Set-AzureRmWebApp -ResourceGroupName $LetsEncryptResourceGroup -Name $LetsEncryptWebApp -AppSettings $updatedAppSettings -ConnectionStrings $updatedConnectionStrings
 
-Write-Information "All done"
+Write-Information "Let's Encrypt settings updated successfully"
