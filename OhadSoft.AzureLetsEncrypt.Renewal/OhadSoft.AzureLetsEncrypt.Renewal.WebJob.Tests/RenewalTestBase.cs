@@ -22,6 +22,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected const string WebApp1 = WebApp1Name + "{" + SiteSlotName1 + "}";
         protected const string WebApp2 = "barApp";
         protected const string WebApp3 = "bazApp";
+        protected const string WebApp4 = WebApp1Name + "[barBaz]";
         protected const string Email1 = "foo@gmail.com";
         protected const string Email2 = "bar@outlook.com";
         protected const string EmailShared = "shared@yahoo.com";
@@ -40,6 +41,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected static readonly IReadOnlyList<string> Hosts1 = new[] { "www.foo.com" };
         protected static readonly IReadOnlyList<string> Hosts2 = new[] { "www.bar.com", "bar.com" };
         protected static readonly IReadOnlyList<string> Hosts3 = new[] { "www.shared.com" };
+        protected static readonly IReadOnlyList<string> Hosts4 = new[] { "www.barbaz.com", "barbaz.com" };
         protected static readonly Guid ClientId1 = Guid.Parse("89e5c1ee-a37b-4af7-89fc-217a4b99652c");
         protected static readonly Guid ClientId2 = Guid.Parse("618a929b-d9c9-4ec1-b8dc-66f55d949d52");
         protected static readonly Guid ClientIdShared = Guid.Parse("a06ff82d-7964-45a0-920f-22897ab9f9cb");
@@ -115,6 +117,16 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             AzureTokenAudienceShared,
             AzureManagementEndpointShared,
             AzureDefaultWebsiteDomainNameShared);
+
+        protected static readonly RenewalParameters ExpectedPartialRenewalParameters4 = new RenewalParameters(
+            Subscription1,
+            Tenant1,
+            ResourceGroup1,
+            WebApp1Name,
+            Hosts4,
+            Email1,
+            ClientId1,
+            ClientSecret1);
 
         protected RenewalManagerMock RenewalManager { get; } = new RenewalManagerMock();
         protected EmailNotifierMock EmailNotifier { get; } = new EmailNotifierMock();
