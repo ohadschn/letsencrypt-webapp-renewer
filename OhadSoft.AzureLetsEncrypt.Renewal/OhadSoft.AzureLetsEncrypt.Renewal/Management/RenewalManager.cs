@@ -34,7 +34,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             var pfxPassData = new byte[32];
             s_randomGenerator.GetBytes(pfxPassData);
 
-            Trace.TraceInformation("Adding SSL cert for '{0}'...", renewalParams.WebApp);
+            Trace.TraceInformation(
+                "Adding SSL cert for '{0}{1}'...",
+                renewalParams.WebApp,
+                renewalParams.GroupName == null ? String.Empty : $"[{renewalParams.GroupName}]");
 
             var manager = CertificateManager.CreateKuduWebAppCertificateManager(
                 new AzureWebAppEnvironment(

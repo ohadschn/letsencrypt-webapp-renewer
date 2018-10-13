@@ -17,6 +17,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public string ClientSecret { get; }
         public string ServicePlanResourceGroup { get; }
         public string SiteSlotName { get; }
+        public string GroupName { get; }
         public bool UseIpBasedSsl { get; }
         public int RsaKeyLength { get; }
         public Uri AcmeBaseUri { get; }
@@ -36,6 +37,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             Guid clientId,
             string clientSecret,
             string servicePlanResourceGroup = null,
+            string groupName = null,
             string siteSlotName = null,
             bool useIpBasedSsl = false,
             int rsaKeyLength = 2048,
@@ -55,6 +57,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             ClientId = VerifyGuid(clientId, nameof(clientId));
             ClientSecret = VerifyString(clientSecret, nameof(clientSecret), allowWhitespace: true);
             ServicePlanResourceGroup = VerifyOptionalString(servicePlanResourceGroup, nameof(servicePlanResourceGroup));
+            GroupName = VerifyOptionalString(groupName, nameof(groupName));
             SiteSlotName = VerifyOptionalString(siteSlotName, nameof(siteSlotName));
             UseIpBasedSsl = useIpBasedSsl;
             RsaKeyLength = VerifyPositiveInteger(rsaKeyLength, nameof(rsaKeyLength));
