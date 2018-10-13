@@ -21,13 +21,18 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
         private static readonly RNGCryptoServiceProvider s_randomGenerator = new RNGCryptoServiceProvider(); // thread-safe
 
-        public async Task Renew(RenewalParameters renewalParams)
+        public Task Renew(RenewalParameters renewalParams)
         {
             if (renewalParams == null)
             {
                 throw new ArgumentNullException(nameof(renewalParams));
             }
 
+            return RenewCore(renewalParams);
+        }
+
+        private static async Task RenewCore(RenewalParameters renewalParams)
+        {
             Trace.TraceInformation("Generating SSL certificate with parameters: {0}", renewalParams);
 
             Trace.TraceInformation("Generating secure PFX password for '{0}'...", renewalParams.WebApp);

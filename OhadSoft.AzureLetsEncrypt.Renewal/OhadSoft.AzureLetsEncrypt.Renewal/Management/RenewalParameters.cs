@@ -107,7 +107,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
         private static string VerifyString(string str, string name, bool allowWhitespace = false)
         {
-            return (allowWhitespace ? !String.IsNullOrEmpty(str) : !String.IsNullOrWhiteSpace(str))
+            var valid = allowWhitespace ? !String.IsNullOrEmpty(str) : !String.IsNullOrWhiteSpace(str);
+            return valid
                 ? str
                 : throw new ArgumentException("String cannot be null or whitespace", name);
         }

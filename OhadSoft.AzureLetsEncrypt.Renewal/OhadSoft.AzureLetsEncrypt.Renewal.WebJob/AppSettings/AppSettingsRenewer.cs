@@ -26,7 +26,6 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
         {
             var exceptions = new ConcurrentQueue<Exception>();
 
-            // TODO use ForeachAsync when concurrent renewals are supported: https://github.com/sjkp/letsencrypt-siteextension/issues/161
             foreach (var renewalParams in m_renewalParamsReader.Read())
             {
                 Events.RenewalInProgress(renewalParams);
