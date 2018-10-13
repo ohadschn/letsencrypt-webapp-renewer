@@ -64,11 +64,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 
             string webAppName = webApp;
             string siteSlotName = null;
+            string groupName = null;
 
-            var match = Regex.Match(webAppName, @"^(.*)\[.*\]$");
+            var match = Regex.Match(webAppName, @"^(.*)\[(.*)\]$");
             if (match.Success)
             {
                 webAppName = match.Groups[1].Value;
+                groupName = match.Groups[2].Value;
             }
 
             match = Regex.Match(webAppName, "^(.*){(.*)}$");
@@ -90,6 +92,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                     ResolveGuidSetting(Constants.ClientIdKey, webApp, sharedRenewalParams.ClientId),
                     ResolveConnectionString(Constants.ClientSecretKey, webApp, sharedRenewalParams.ClientSecret),
                     ResolveOptionalSetting(Constants.ServicePlanResourceGroupKey, webApp, sharedRenewalParams.ServicePlanResourceGroup),
+                    groupName,
                     siteSlotName,
                     ResolveOptionalBooleanSetting(Constants.UseIpBasedSslKey, webApp, sharedRenewalParams.UseIpBasedSsl, false),
                     ResolveOptionalInt32Setting(Constants.RsaKeyLengthKey, webApp, sharedRenewalParams.RsaKeyLength, 2048),

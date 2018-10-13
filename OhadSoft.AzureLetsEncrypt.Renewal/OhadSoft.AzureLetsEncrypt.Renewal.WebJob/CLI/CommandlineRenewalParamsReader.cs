@@ -42,6 +42,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
                     parsed.ClientId,
                     parsed.ClientSecret,
                     parsed.ServicePlanResourceGroup,
+                    groupName: null,
                     parsed.SiteSlotName,
                     parsed.UseIpBasedSsl,
                     parsed.RsaKeyLength,
