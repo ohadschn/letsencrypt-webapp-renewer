@@ -14,17 +14,17 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
 {
     internal static class Program
     {
-        private const string DisableTelemetryEnvVarNAme = "LETSENCRYPT_DISABLE_TELEMETRY";
+        private const string DisableTelemetryEnvVarName = "LETSENCRYPT_DISABLE_TELEMETRY";
 
         private static int Main(string[] args)
         {
-            if (Environment.GetEnvironmentVariable(DisableTelemetryEnvVarNAme) == null)
+            if (Environment.GetEnvironmentVariable(DisableTelemetryEnvVarName) == null)
             {
                 TelemetryHelper.Setup();
             }
             else
             {
-                Trace.TraceInformation("{0} environment variable detected - telemetry disabled", DisableTelemetryEnvVarNAme);
+                Trace.TraceInformation("{0} environment variable detected - telemetry disabled", DisableTelemetryEnvVarName);
             }
 
             try
