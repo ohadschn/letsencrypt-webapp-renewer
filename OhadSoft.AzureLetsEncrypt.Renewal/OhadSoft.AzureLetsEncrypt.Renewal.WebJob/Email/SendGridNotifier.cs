@@ -22,13 +22,18 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email
             m_apiKey = apiKey;
         }
 
-        public async Task NotifyAsync(RenewalParameters renewalParams)
+        public Task NotifyAsync(RenewalParameters renewalParams)
         {
             if (renewalParams == null)
             {
                 throw new ArgumentNullException(nameof(renewalParams));
             }
 
+            return NotifyAsyncCore(renewalParams);
+        }
+
+        private async Task NotifyAsyncCore(RenewalParameters renewalParams)
+        {
             if (m_apiKey == null)
             {
                 Trace.TraceWarning(
