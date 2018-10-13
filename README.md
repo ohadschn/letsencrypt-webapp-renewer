@@ -134,7 +134,7 @@ When executed outside of a WebJob context (as determined by the [WEBJOBS_NAME](h
 - 2 - Unexpected error
 
 ## Telemetry
-`letsencrypt-webapp-renewer` gathers anonymous telemetry for usage analysis and error reporting. You can disable it by setting the `LETSENCRYPT_DISABLE_TELEMETRY` to any non-empty value.
+`letsencrypt-webapp-renewer` gathers anonymous telemetry for usage analysis and error reporting. You can disable it by setting the `LETSENCRYPT_DISABLE_TELEMETRY` environment variable to any non-empty value.
 
 ## Limitations & Disclaimer 
 Since this project relies on https://github.com/sjkp/letsencrypt-siteextension, some of its limitations apply as well:
