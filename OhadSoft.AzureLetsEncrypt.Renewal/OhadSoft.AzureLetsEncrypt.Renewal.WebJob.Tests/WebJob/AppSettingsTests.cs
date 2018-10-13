@@ -252,7 +252,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         [TestMethod]
         public async Task TestMultipleHostWebAppConfig()
         {
-            m_appSettings[BuildConfigKey(WebAppsKey)] = WebApp4;
+            m_appSettings[BuildConfigKey(WebAppsKey)] += ";" + WebApp4;
             m_appSettings[BuildConfigKey(SubscriptionIdKeySuffix, WebApp4)] = Subscription1.ToString();
             m_appSettings[BuildConfigKey(TenantIdKeySuffix, WebApp4)] = Tenant1;
             m_appSettings[BuildConfigKey(ClientIdKeySuffix, WebApp4)] = ClientId1.ToString();
@@ -263,8 +263,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
 
             await m_renewer.Renew();
 
-            VerifySuccessfulRenewal(ExpectedPartialRenewalParameters4);
-            VerifySuccessfulNotification(ExpectedPartialRenewalParameters4);
+            VerifySuccessfulRenewal(ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2, ExpectedPartialRenewalParameters4);
+            VerifySuccessfulNotification(ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2, ExpectedPartialRenewalParameters4);
         }
 
         private void AssertInvalidConfig(string key, string webApp, string value, string expectedText = null, bool testMissing = true, bool testShared = true)
