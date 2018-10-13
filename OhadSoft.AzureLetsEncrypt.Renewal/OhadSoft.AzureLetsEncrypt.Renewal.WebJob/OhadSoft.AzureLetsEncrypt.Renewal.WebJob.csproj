@@ -8,11 +8,12 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>OhadSoft.AzureLetsEncrypt.Renewal.WebJob</RootNamespace>
     <AssemblyName>AzureLetsEncryptRenewer</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -107,7 +108,9 @@
     <AdditionalFiles Include="..\stylecop.json">
       <Link>Properties\stylecop.json</Link>
     </AdditionalFiles>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\PublishProfiles\ohadsoft-ssl-renewer - Web Deploy.pubxml" />
     <None Include="Properties\webjob-publish-settings.json" />
     <None Condition="'$(BuildingInsideVisualStudio)' == 'true'" Include="settings.job">
