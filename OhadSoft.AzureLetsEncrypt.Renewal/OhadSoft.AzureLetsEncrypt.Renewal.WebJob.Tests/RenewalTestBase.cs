@@ -68,7 +68,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             ClientId1,
             ClientSecret1,
             ServicePlanResourceGroup1,
-            groupName: null,
+            null, // groupName
             SiteSlotName1,
             UseIpBasedSsl1,
             RsaKeyLength1,
@@ -109,8 +109,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             ClientIdShared,
             ClientSecretShared,
             ServicePlanResourceGroupShared,
-            groupName: null,
-            siteSlotName: null,
+            null, // groupName
+            null, // siteSlotName
             UseIpBasedSslShared,
             RsaKeyLengthShared,
             AcmeBaseUriShared,
