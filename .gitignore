@@ -23,6 +23,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+*.binlog
 
 # Visual Studio cache/options directory
 .vs/
