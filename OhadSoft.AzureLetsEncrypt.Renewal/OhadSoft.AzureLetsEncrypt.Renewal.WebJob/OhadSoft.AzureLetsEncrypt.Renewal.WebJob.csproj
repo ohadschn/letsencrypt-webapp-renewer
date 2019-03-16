@@ -86,7 +86,6 @@
     <Compile Include="AppSettings\IAppSettingsReader.cs" />
     <Compile Include="AppSettings\AppSettingsRenewalParamsReader.cs" />
     <Compile Include="AppSettings\IAppSettingsRenewalParamsReader.cs" />
-    <Compile Include="Cli\OptionalString.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Exceptions\ArgumentParsingException.cs" />
     <Compile Include="Cli\CliRenewer.cs" />
