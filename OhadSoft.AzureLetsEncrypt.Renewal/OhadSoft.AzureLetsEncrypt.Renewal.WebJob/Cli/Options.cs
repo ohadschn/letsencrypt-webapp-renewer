@@ -16,8 +16,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
             string email,
             Guid clientId,
             string clientSecret,
-            OptionalString servicePlanResourceGroup,
-            OptionalString siteSlotName,
+            string servicePlanResourceGroup,
+            string siteSlotName,
             bool useIpBasedSsl,
             int rsaKeyLength,
             Uri acmeBaseUri,
@@ -25,7 +25,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
             Uri azureAuthenticationEndpoint,
             Uri azureTokenAudience,
             Uri azureManagementEndpoint,
-            OptionalString azureDefaultWebsiteDomainName)
+            string azureDefaultWebsiteDomainName)
         {
             SubscriptionId = subscriptionId;
             TenantId = tenantId;
@@ -72,10 +72,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
         public string ClientSecret { get; }
 
         [Option('p', Constants.ServicePlanResourceGroupKey, Required = false, HelpText = "Service Plan Resource Group (if not specified, the provided Web App resource group will be used)")]
-        public OptionalString ServicePlanResourceGroup { get; }
+        public string ServicePlanResourceGroup { get; }
 
         [Option('d', Constants.SiteSlotNameKey, Required = false, HelpText = "Site Deployment Slot")]
-        public OptionalString SiteSlotName { get; }
+        public string SiteSlotName { get; }
 
         [Option('i', Constants.UseIpBasedSslKey, Required = false, Default = false, HelpText = "Use IP Based SSL")]
         public bool UseIpBasedSsl { get; }
@@ -99,6 +99,6 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
         public Uri AzureManagementEndpoint { get; }
 
         [Option('b', Constants.AzureDefaultWebSiteDomainNameKey, Required = false, HelpText = "The Azure Web Sites default domain name, defaults to: " + RenewalManager.DefaultWebsiteDomainName)]
-        public OptionalString AzureDefaultWebsiteDomainName { get; }
+        public string AzureDefaultWebsiteDomainName { get; }
     }
 }
