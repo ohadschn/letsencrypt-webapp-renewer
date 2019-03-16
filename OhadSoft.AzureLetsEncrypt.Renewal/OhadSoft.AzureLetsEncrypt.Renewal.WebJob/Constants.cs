@@ -16,6 +16,7 @@
         public const string UseIpBasedSslKey = "useIpBasedSsl";
         public const string RsaKeyLengthKey = "rsaKeyLength";
         public const string AcmeBaseUriKey = "acmeBaseUri";
+        public const string WebRootPathKey = "webRootPath";
         public const string RenewXNumberOfDaysBeforeExpirationKey = "renewXNumberOfDaysBeforeExpiration";
         public const string AzureAuthenticationEndpointKey = "azureAuthenticationEndpoint";
         public const string AzureTokenAudienceKey = "azureTokenAudience";

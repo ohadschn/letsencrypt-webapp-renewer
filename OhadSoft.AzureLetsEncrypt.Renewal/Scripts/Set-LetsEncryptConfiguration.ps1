@@ -63,6 +63,9 @@ Param(
 	[Parameter(Mandatory=$false)]
 	[string]$AcmeBaseUri,
 
+    [Parameter(Mandatory=$false)]
+    [string]$WebRootPath,
+
 	[Parameter(Mandatory=$false)]
 	[int]$RenewXNumberOfDaysBeforeExpiration = -1
 )
@@ -138,6 +141,7 @@ Set-LetsEncryptConfig $updatedAppSettings $WebApp "email" $Email
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "useIpBasedSsl" $UseIpBasedSsl
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "rsaKeyLength" $RsaKeyLength
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "acmeBaseUri" $AcmeBaseUri
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "webRootPath" $WebRootPath
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "renewXNumberOfDaysBeforeExpiration" $RenewXNumberOfDaysBeforeExpiration
 
 Write-Information "Copying over existing connection strings..."

@@ -5,7 +5,23 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 {
     public sealed class SharedRenewalParameters
     {
-        public SharedRenewalParameters(string resourceGroup, Guid? subscriptionId, string tenantId, Guid? clientId, string clientSecret, string email, string servicePlanResourceGroup, bool? useIpBasedSsl, int? rsaKeyLength, Uri acmeBaseUri, int? renewXNumberOfDaysBeforeExpiration, Uri authenticationUri, Uri azureTokenAudience, Uri azureManagementEndpoint, string azureDefaultWebsiteDomainName)
+        public SharedRenewalParameters(
+            string resourceGroup,
+            Guid? subscriptionId,
+            string tenantId,
+            Guid? clientId,
+            string clientSecret,
+            string email,
+            string servicePlanResourceGroup,
+            bool? useIpBasedSsl,
+            int? rsaKeyLength,
+            Uri acmeBaseUri,
+            string webRootPath,
+            int? renewXNumberOfDaysBeforeExpiration,
+            Uri authenticationUri,
+            Uri azureTokenAudience,
+            Uri azureManagementEndpoint,
+            string azureDefaultWebsiteDomainName)
         {
             ResourceGroup = resourceGroup;
             SubscriptionId = subscriptionId;
@@ -17,6 +33,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             UseIpBasedSsl = useIpBasedSsl;
             RsaKeyLength = rsaKeyLength;
             AcmeBaseUri = acmeBaseUri;
+            WebRootPath = webRootPath;
             RenewXNumberOfDaysBeforeExpiration = renewXNumberOfDaysBeforeExpiration;
             AuthenticationUri = authenticationUri;
             AzureTokenAudience = azureTokenAudience;
@@ -34,6 +51,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public bool? UseIpBasedSsl { get; }
         public int? RsaKeyLength { get; }
         public Uri AcmeBaseUri { get; }
+        public string WebRootPath { get; }
         public int? RenewXNumberOfDaysBeforeExpiration { get; }
         public Uri AuthenticationUri { get; }
         public Uri AzureTokenAudience { get; }

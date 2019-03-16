@@ -22,7 +22,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected const string WebApp1 = WebApp1Name + "{" + SiteSlotName1 + "}";
         protected const string WebApp2 = "barApp";
         protected const string WebApp3 = "bazApp";
-        protected const string WebApp4 = WebApp1Name + "[barBaz]";
+        protected const string GroupName4 = "barBaz";
+        protected const string WebApp4 = WebApp1Name + "[" + GroupName4 + "]";
         protected const string Email1 = "foo@gmail.com";
         protected const string Email2 = "bar@outlook.com";
         protected const string EmailShared = "shared@yahoo.com";
@@ -31,6 +32,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected const string ClientSecretShared = "shared-secret4real";
         protected const string ServicePlanResourceGroup1 = "foo-service-plan-resource-group";
         protected const string ServicePlanResourceGroupShared = "shared-service-plan-resource-group";
+        protected const string WebRootPath1 = "D:\\home";
+        protected const string WebRootPathShared = "C:\\wwroot";
         protected const bool UseIpBasedSsl1 = true;
         protected const bool UseIpBasedSslShared = true;
         protected const int RsaKeyLength1 = 1024;
@@ -68,11 +71,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             ClientId1,
             ClientSecret1,
             ServicePlanResourceGroup1,
-            groupName: null,
+            null,
             SiteSlotName1,
             UseIpBasedSsl1,
             RsaKeyLength1,
             AcmeBaseUri1,
+            WebRootPath1,
             RenewXNumberOfDaysBeforeExpiration1,
             AzureAuthenticationEndpoint1,
             AzureTokenAudience1,
@@ -109,11 +113,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             ClientIdShared,
             ClientSecretShared,
             ServicePlanResourceGroupShared,
-            groupName: null,
-            siteSlotName: null,
+            null,
+            null,
             UseIpBasedSslShared,
             RsaKeyLengthShared,
             AcmeBaseUriShared,
+            WebRootPathShared,
             RenewXNumberOfDaysBeforeExpirationShared,
             AzureAuthenticationEndpointShared,
             AzureTokenAudienceShared,
@@ -128,7 +133,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             Hosts4,
             Email1,
             ClientId1,
-            ClientSecret1);
+            ClientSecret1,
+            groupName: GroupName4);
 
         protected RenewalManagerMock RenewalManager { get; } = new RenewalManagerMock();
         protected EmailNotifierMock EmailNotifier { get; } = new EmailNotifierMock();

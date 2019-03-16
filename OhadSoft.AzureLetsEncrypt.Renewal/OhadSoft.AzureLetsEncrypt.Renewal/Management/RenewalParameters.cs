@@ -21,6 +21,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public bool UseIpBasedSsl { get; }
         public int RsaKeyLength { get; }
         public Uri AcmeBaseUri { get; }
+        public string WebRootPath { get; }
         public int RenewXNumberOfDaysBeforeExpiration { get; }
         public Uri AuthenticationUri { get; }
         public Uri AzureTokenAudience { get; }
@@ -42,6 +43,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             bool useIpBasedSsl = false,
             int rsaKeyLength = 2048,
             Uri acmeBaseUri = null,
+            string webRootPath = null,
             int renewXNumberOfDaysBeforeExpiration = -1,
             Uri authenticationUri = null,
             Uri azureTokenAudience = null,
@@ -62,6 +64,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             UseIpBasedSsl = useIpBasedSsl;
             RsaKeyLength = VerifyPositiveInteger(rsaKeyLength, nameof(rsaKeyLength));
             AcmeBaseUri = VerifyOptionalUri(acmeBaseUri, nameof(acmeBaseUri));
+            WebRootPath = VerifyOptionalString(webRootPath, nameof(webRootPath));
             RenewXNumberOfDaysBeforeExpiration = renewXNumberOfDaysBeforeExpiration;
             AuthenticationUri = VerifyOptionalUri(authenticationUri, nameof(authenticationUri));
             AzureTokenAudience = VerifyOptionalUri(azureTokenAudience, nameof(azureTokenAudience));
@@ -129,40 +132,40 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
         public override string ToString()
         {
-            return Invariant($"{nameof(SubscriptionId)}: {SubscriptionId}, {nameof(TenantId)}: {TenantId}, {nameof(ResourceGroup)}: {ResourceGroup}, {nameof(WebApp)}: {WebApp}, {nameof(Hosts)}: {String.Join(", ", Hosts)}, {nameof(Email)}: {Email}, {nameof(ClientId)}: {ClientId}, {nameof(ClientSecret)}: <SCRUBBED>, {nameof(ServicePlanResourceGroup)}: {ServicePlanResourceGroup}, {nameof(GroupName)}: {GroupName}, {nameof(SiteSlotName)}: {SiteSlotName}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBaseUri)}: {AcmeBaseUri}, {nameof(RenewXNumberOfDaysBeforeExpiration)}: {RenewXNumberOfDaysBeforeExpiration}, {nameof(AuthenticationUri)}: {AuthenticationUri}, {nameof(AzureTokenAudience)}: {AzureTokenAudience}, {nameof(AzureManagementEndpoint)}: {AzureManagementEndpoint}, {nameof(AzureDefaultWebsiteDomainName)}: {AzureDefaultWebsiteDomainName}");
+            return Invariant($"{nameof(SubscriptionId)}: {SubscriptionId}, {nameof(TenantId)}: {TenantId}, {nameof(ResourceGroup)}: {ResourceGroup}, {nameof(WebApp)}: {WebApp}, {nameof(Hosts)}: {String.Join(", ", Hosts)}, {nameof(Email)}: {Email}, {nameof(ClientId)}: {ClientId}, {nameof(ClientSecret)}: <SCRUBBED>, {nameof(ServicePlanResourceGroup)}: {ServicePlanResourceGroup}, {nameof(GroupName)}: {GroupName}, {nameof(SiteSlotName)}: {SiteSlotName}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBaseUri)}: {AcmeBaseUri}, {nameof(RenewXNumberOfDaysBeforeExpiration)}: {RenewXNumberOfDaysBeforeExpiration}, {nameof(WebRootPath)}: {WebRootPath}, {nameof(AuthenticationUri)}: {AuthenticationUri}, {nameof(AzureTokenAudience)}: {AzureTokenAudience}, {nameof(AzureManagementEndpoint)}: {AzureManagementEndpoint}, {nameof(AzureDefaultWebsiteDomainName)}: {AzureDefaultWebsiteDomainName}");
         }
 
         public bool Equals(RenewalParameters other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-
             return SubscriptionId.Equals(other.SubscriptionId)
-                && string.Equals(TenantId, other.TenantId)
-                && string.Equals(ResourceGroup, other.ResourceGroup)
-                && string.Equals(WebApp, other.WebApp)
-                && Hosts.SequenceEqual(other.Hosts)
-                && string.Equals(Email, other.Email)
-                && ClientId.Equals(other.ClientId)
-                && string.Equals(ClientSecret, other.ClientSecret)
-                && string.Equals(ServicePlanResourceGroup, other.ServicePlanResourceGroup)
-                && string.Equals(SiteSlotName, other.SiteSlotName)
-                && UseIpBasedSsl == other.UseIpBasedSsl
-                && RsaKeyLength == other.RsaKeyLength
-                && Equals(AcmeBaseUri, other.AcmeBaseUri)
-                && RenewXNumberOfDaysBeforeExpiration == other.RenewXNumberOfDaysBeforeExpiration
-                && Equals(AuthenticationUri, other.AuthenticationUri)
-                && Equals(AzureTokenAudience, other.AzureTokenAudience)
-                && Equals(AzureManagementEndpoint, other.AzureManagementEndpoint)
-                && string.Equals(AzureDefaultWebsiteDomainName, other.AzureDefaultWebsiteDomainName);
+                   && string.Equals(TenantId, other.TenantId)
+                   && string.Equals(ResourceGroup, other.ResourceGroup)
+                   && string.Equals(WebApp, other.WebApp)
+                   && Hosts.SequenceEqual(other.Hosts)
+                   && string.Equals(Email, other.Email)
+                   && ClientId.Equals(other.ClientId)
+                   && string.Equals(ClientSecret, other.ClientSecret)
+                   && string.Equals(ServicePlanResourceGroup, other.ServicePlanResourceGroup)
+                   && string.Equals(SiteSlotName, other.SiteSlotName)
+                   && string.Equals(GroupName, other.GroupName)
+                   && UseIpBasedSsl == other.UseIpBasedSsl
+                   && RsaKeyLength == other.RsaKeyLength
+                   && Equals(AcmeBaseUri, other.AcmeBaseUri)
+                   && string.Equals(WebRootPath, other.WebRootPath)
+                   && RenewXNumberOfDaysBeforeExpiration == other.RenewXNumberOfDaysBeforeExpiration
+                   && Equals(AuthenticationUri, other.AuthenticationUri)
+                   && Equals(AzureTokenAudience, other.AzureTokenAudience)
+                   && Equals(AzureManagementEndpoint, other.AzureManagementEndpoint)
+                   && string.Equals(AzureDefaultWebsiteDomainName, other.AzureDefaultWebsiteDomainName);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-
-            return obj is RenewalParameters parameters && Equals(parameters);
+            return obj is RenewalParameters other && Equals(other);
         }
 
         public override int GetHashCode()
@@ -179,9 +182,11 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 hashCode = (hashCode * 397) ^ (ClientSecret != null ? ClientSecret.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (ServicePlanResourceGroup != null ? ServicePlanResourceGroup.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (SiteSlotName != null ? SiteSlotName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (GroupName != null ? GroupName.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ UseIpBasedSsl.GetHashCode();
                 hashCode = (hashCode * 397) ^ RsaKeyLength;
                 hashCode = (hashCode * 397) ^ (AcmeBaseUri != null ? AcmeBaseUri.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (WebRootPath != null ? WebRootPath.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ RenewXNumberOfDaysBeforeExpiration;
                 hashCode = (hashCode * 397) ^ (AuthenticationUri != null ? AuthenticationUri.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (AzureTokenAudience != null ? AzureTokenAudience.GetHashCode() : 0);

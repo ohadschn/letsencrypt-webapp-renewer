@@ -28,6 +28,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         private const string UseIpBasedSslKeySuffix = "useIpBasedSsl";
         private const string RsaKeyLengthKeySuffix = "rsaKeyLength";
         private const string AcmeBaseUriKeySuffix = "acmeBaseUri";
+        private const string WebRootPathKeySuffix = "webRootPath";
         private const string RenewXNumberOfDaysBeforeExpirationKeySuffix = "renewXNumberOfDaysBeforeExpiration";
         private const string AzureAuthenticationEndpointKeySuffix = "azureAuthenticationEndpoint";
         private const string AzureTokenAudienceKeySuffix = "azureTokenAudience";
@@ -54,6 +55,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             { BuildConfigKey(UseIpBasedSslKeySuffix, WebApp1), UseIpBasedSsl1.ToString() },
             { BuildConfigKey(RsaKeyLengthKeySuffix, WebApp1), RsaKeyLength1.ToString(CultureInfo.InvariantCulture) },
             { BuildConfigKey(AcmeBaseUriKeySuffix, WebApp1), AcmeBaseUri1.ToString() },
+            { BuildConfigKey(WebRootPathKeySuffix, WebApp1), WebRootPath1 },
             { BuildConfigKey(ServicePlanResourceGroupKeySuffix, WebApp1), ServicePlanResourceGroup1 },
             { BuildConfigKey(RenewXNumberOfDaysBeforeExpirationKeySuffix, WebApp1), RenewXNumberOfDaysBeforeExpiration1.ToString(CultureInfo.InvariantCulture) },
             { BuildConfigKey(AzureAuthenticationEndpointKeySuffix, WebApp1), AzureAuthenticationEndpoint1.ToString() },
@@ -194,6 +196,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         }
 
         [TestMethod]
+        public void TestInvalidWebRootPath()
+        {
+            AssertInvalidConfig(WebRootPathKeySuffix, WebApp1, String.Empty, "webRootPath", testMissing: false);
+        }
+
+        [TestMethod]
         public async Task TestSingleWebAppConfig()
         {
             m_appSettings[KeyPrefix + WebAppsKey] = WebApp1;
@@ -225,6 +233,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
                 { BuildConfigKey(UseIpBasedSslKeySuffix), UseIpBasedSslShared.ToString() },
                 { BuildConfigKey(RsaKeyLengthKeySuffix), RsaKeyLengthShared.ToString(CultureInfo.InvariantCulture) },
                 { BuildConfigKey(AcmeBaseUriKeySuffix), AcmeBaseUriShared.ToString() },
+                { BuildConfigKey(WebRootPathKeySuffix), WebRootPathShared },
                 { BuildConfigKey(ServicePlanResourceGroupKeySuffix), ServicePlanResourceGroupShared },
                 { BuildConfigKey(RenewXNumberOfDaysBeforeExpirationKeySuffix), RenewXNumberOfDaysBeforeExpirationShared.ToString(CultureInfo.InvariantCulture) },
                 { BuildConfigKey(AzureAuthenticationEndpointKeySuffix), AzureAuthenticationEndpointShared.ToString() },
