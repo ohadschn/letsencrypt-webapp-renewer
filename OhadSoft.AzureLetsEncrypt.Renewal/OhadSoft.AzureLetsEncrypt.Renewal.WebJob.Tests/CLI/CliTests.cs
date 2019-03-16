@@ -27,6 +27,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
             { ("-i", "--useIpBasedSsl"), UseIpBasedSsl1.ToString() },
             { ("-k", "--rsaKeyLength"), RsaKeyLength1.ToString(CultureInfo.InvariantCulture) },
             { ("-a", "--acmeBaseUri"), AcmeBaseUri1.ToString() },
+            { ("-x", "--webRootPath"), WebRootPath1 },
             { ("-n", "--renewXNumberOfDaysBeforeExpiration"), RenewXNumberOfDaysBeforeExpiration1.ToString(CultureInfo.InvariantCulture) },
             { ("-h", "--azureAuthenticationEndpoint"), AzureAuthenticationEndpoint1.ToString() },
             { ("-u", "--azureTokenAudience"), AzureTokenAudience1.ToString() },

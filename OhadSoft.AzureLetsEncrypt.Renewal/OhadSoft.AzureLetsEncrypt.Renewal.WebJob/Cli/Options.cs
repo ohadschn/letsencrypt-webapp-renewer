@@ -21,6 +21,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
             bool useIpBasedSsl,
             int rsaKeyLength,
             Uri acmeBaseUri,
+            string webRootPath,
             int renewXNumberOfDaysBeforeExpiration,
             Uri azureAuthenticationEndpoint,
             Uri azureTokenAudience,
@@ -40,6 +41,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
             UseIpBasedSsl = useIpBasedSsl;
             RsaKeyLength = rsaKeyLength;
             AcmeBaseUri = acmeBaseUri;
+            WebRootPath = webRootPath;
             RenewXNumberOfDaysBeforeExpiration = renewXNumberOfDaysBeforeExpiration;
             AzureAuthenticationEndpoint = azureAuthenticationEndpoint;
             AzureTokenAudience = azureTokenAudience;
@@ -85,6 +87,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
 
         [Option('a', Constants.AcmeBaseUriKey, Required = false, HelpText = "ACME base URI, defaults to: " + RenewalManager.DefaultAcmeBaseUri)]
         public Uri AcmeBaseUri { get; }
+
+        [Option('x', Constants.WebRootPathKey, Required = false, HelpText = "Web Root Path for HTTP challenge answer")]
+        public string WebRootPath { get; }
 
         [Option('n', Constants.RenewXNumberOfDaysBeforeExpirationKey, Required = false, Default = -1, HelpText = "Number of days before certificate expiry to renew, defaults to a negative value meaning renewal will take place regardless of the expiry time")]
         public int RenewXNumberOfDaysBeforeExpiration { get; }
