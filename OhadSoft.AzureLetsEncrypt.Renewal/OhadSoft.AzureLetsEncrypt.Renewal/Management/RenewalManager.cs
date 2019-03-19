@@ -47,7 +47,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
             Trace.TraceInformation("Adding SSL cert for '{0}'...", GetWebAppFullName(renewalParams));
 
-            if (renewalParams.RenewXNumberOfDaysBeforeExpiration > 0)
+            var manager = CertificateManager.CreateKuduWebAppCertificateManager(
+                azureEnvironment,
+
+            if (await HasCertificate(azureEnvironment) && renewalParams.RenewXNumberOfDaysBeforeExpiration > 0)
             {
                 await manager.RenewCertificate(false, renewalParams.RenewXNumberOfDaysBeforeExpiration);
             }
@@ -59,6 +62,18 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             Trace.TraceInformation("SSL cert added successfully to '{0}'", renewalParams.WebApp);
         }
 
+        private static async Task<bool> HasCertificate(AzureWebAppEnvironment azureEnvironment)
+        {
+            using (var webSiteClient = await ArmHelper.GetWebSiteManagementClient(azureEnvironment))
+            {
+                var certs = await webSiteClient.Certificates.ListByResourceGroupWithHttpMessagesAsync(azureEnvironment.ServicePlanResourceGroupName);
+                var site = webSiteClient.WebApps.GetSiteOrSlot(azureEnvironment.ResourceGroupName, azureEnvironment.WebAppName, azureEnvironment.SiteSlotName);
+
+                return certs.Body.Any(s =>
+                    s.Issuer.Contains("Let's Encrypt")
+                    && site.HostNameSslStates.Any(hostNameBindings => hostNameBindings.Thumbprint == s.Thumbprint));
+            }
+        }
         private static IAzureDnsEnvironment GetAzureDnsEnvironment(RenewalParameters renewalParams)
         {
             var zoneName = renewalParams.AzureDnsZoneName;
