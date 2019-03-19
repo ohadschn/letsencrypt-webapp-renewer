@@ -54,6 +54,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                     renewalParams.ServicePlanResourceGroup,
                     renewalParams.SiteSlotName)
             {
+                WebRootPath = renewalParams.WebRootPath,
                 AzureWebSitesDefaultDomainName = renewalParams.AzureDefaultWebsiteDomainName ?? DefaultWebsiteDomainName,
                 AuthenticationEndpoint = renewalParams.AuthenticationUri ?? new Uri(DefaultAuthenticationUri),
                 ManagementEndpoint = renewalParams.AzureManagementEndpoint ?? new Uri(DefaultManagementEndpoint),
