@@ -44,8 +44,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 renewalParams.WebApp,
                 renewalParams.GroupName == null ? String.Empty : $"[{renewalParams.GroupName}]");
 
-            var manager = CertificateManager.CreateKuduWebAppCertificateManager(
-                new AzureWebAppEnvironment(
+            var azureEnvironment = new AzureWebAppEnvironment(
                     renewalParams.TenantId,
                     renewalParams.SubscriptionId,
                     renewalParams.ClientId,
@@ -54,12 +53,15 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                     renewalParams.WebApp,
                     renewalParams.ServicePlanResourceGroup,
                     renewalParams.SiteSlotName)
-                {
-                    AzureWebSitesDefaultDomainName = renewalParams.AzureDefaultWebsiteDomainName ?? DefaultWebsiteDomainName,
-                    AuthenticationEndpoint = renewalParams.AuthenticationUri ?? new Uri(DefaultAuthenticationUri),
-                    ManagementEndpoint = renewalParams.AzureManagementEndpoint ?? new Uri(DefaultManagementEndpoint),
-                    TokenAudience = renewalParams.AzureTokenAudience ?? new Uri(DefaultAzureTokenAudienceService)
-                },
+            {
+                AzureWebSitesDefaultDomainName = renewalParams.AzureDefaultWebsiteDomainName ?? DefaultWebsiteDomainName,
+                AuthenticationEndpoint = renewalParams.AuthenticationUri ?? new Uri(DefaultAuthenticationUri),
+                ManagementEndpoint = renewalParams.AzureManagementEndpoint ?? new Uri(DefaultManagementEndpoint),
+                TokenAudience = renewalParams.AzureTokenAudience ?? new Uri(DefaultAzureTokenAudienceService)
+            };
+
+            var manager = CertificateManager.CreateKuduWebAppCertificateManager(
+                azureEnvironment,
                 new AcmeConfig
                 {
                     Host = renewalParams.Hosts[0],
@@ -72,7 +74,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 new CertificateServiceSettings { UseIPBasedSSL = renewalParams.UseIpBasedSsl },
                 new AuthProviderConfig());
 
-            if (renewalParams.RenewXNumberOfDaysBeforeExpiration > 0)
+            if (await HasCertificate(azureEnvironment) && renewalParams.RenewXNumberOfDaysBeforeExpiration > 0)
             {
                 await manager.RenewCertificate(false, renewalParams.RenewXNumberOfDaysBeforeExpiration);
             }
@@ -82,6 +84,19 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             }
 
             Trace.TraceInformation("SSL cert added successfully to '{0}'", renewalParams.WebApp);
+        }
+
+        private static async Task<bool> HasCertificate(AzureWebAppEnvironment azureEnvironment)
+        {
+            using (var webSiteClient = await ArmHelper.GetWebSiteManagementClient(azureEnvironment))
+            {
+                var certs = await webSiteClient.Certificates.ListByResourceGroupWithHttpMessagesAsync(azureEnvironment.ServicePlanResourceGroupName);
+                var site = webSiteClient.WebApps.GetSiteOrSlot(azureEnvironment.ResourceGroupName, azureEnvironment.WebAppName, azureEnvironment.SiteSlotName);
+
+                return certs.Body.Any(s =>
+                    s.Issuer.Contains("Let's Encrypt")
+                    && site.HostNameSslStates.Any(hostNameBindings => hostNameBindings.Thumbprint == s.Thumbprint));
+            }
         }
     }
 }
