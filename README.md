@@ -125,6 +125,7 @@ When executed outside of a WebJob context (as determined by the [WEBJOBS_NAME](h
 | -i, --useIpBasedSsl |                        (Default: false) Use IP Based SSL
 | -k, --rsaKeyLength |                         (Default: 2048) Certificate RSA key length   
 | -a, --acmeBaseUri |                          ACME base URI, defaults to: https://acme-v01.api.letsencrypt.org/
+| -x, --webRootPath |                          Web Root Path for HTTP challenge answer
 | -n, --renewXNumberOfDaysBeforeExpiration |   (Default: -1) Number of days before certificate expiry to renew, defaults to a negative value meaning renewal will ake place regardless of the expiry time
 | -h, --azureAuthenticationEndpoint |          The Active Directory Authority, defaults to: https://login.windows.net/
 | -u, --azureTokenAudience |                   The Active Directory Service Endpoint Resource ID, defaults to: https://management.core.windows.net/
