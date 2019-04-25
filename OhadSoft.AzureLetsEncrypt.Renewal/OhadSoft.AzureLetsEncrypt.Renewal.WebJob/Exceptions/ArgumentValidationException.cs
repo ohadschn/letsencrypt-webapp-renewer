@@ -8,8 +8,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Exceptions
     [Serializable]
     internal class ArgumentValidationException : ArgumentException
     {
-        public ArgumentValidationException(ArgumentException argumentException)
-            : base(argumentException?.Message, argumentException?.ParamName, argumentException)
+        public ArgumentValidationException(string message, ArgumentException argumentException)
+            : base(message + ": " + argumentException?.Message, argumentException?.ParamName, argumentException)
         {
         }
     }

@@ -89,15 +89,17 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry
                     "CertRenewal",
                     new Dictionary<string, string>
                     {
-                        { "subscriptionId", renewalParams.SubscriptionId.ToString() },
-                        { "tenantId", renewalParams.TenantId },
-                        { "resourceGroup", renewalParams.ResourceGroup },
+                        { "subscriptionId", renewalParams.WebAppEnvironmentParams.SubscriptionId.ToString() },
+                        { "tenantId", renewalParams.WebAppEnvironmentParams.TenantId },
+                        { "resourceGroup", renewalParams.WebAppEnvironmentParams.ResourceGroup },
+                        { "clientId", renewalParams.WebAppEnvironmentParams.ClientId.ToString() },
                         { "webApp", renewalParams.WebApp },
                         { "host", host },
                         { "email", TelemetryHelper.Hash(renewalParams.Email) },
-                        { "clientId", renewalParams.ClientId.ToString() },
                         { "useIpBasedSsl", renewalParams.UseIpBasedSsl.ToString() },
-                        { "acmeBaseUri", renewalParams.AcmeBaseUri == null ? "[DEFAULT]" : renewalParams.AcmeBaseUri.ToString() }
+                        { "acmeBaseUri", renewalParams.AcmeBaseUri == null ? "[DEFAULT]" : renewalParams.AcmeBaseUri.ToString() },
+                        { "azureDnsZoneName", renewalParams.AzureDnsZoneName },
+                        { "azureDnsRelativeRecordSetName", renewalParams.AzureDnsRelativeRecordSetName }
                     },
                     new Dictionary<string, double>
                     {

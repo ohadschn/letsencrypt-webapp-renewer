@@ -29,37 +29,81 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
 
             var parsed = ((Parsed<Options>)parserResult).Value;
 
-            RenewalParameters renewalParameters;
+            AzureEnvironmentParams webAppEnvironmentParams;
             try
             {
-                renewalParameters = new RenewalParameters(
-                    parsed.SubscriptionId,
-                    parsed.TenantId,
-                    parsed.ResourceGroup,
-                    parsed.WebApp,
-                    parsed.Hosts,
-                    parsed.Email,
-                    parsed.ClientId,
-                    parsed.ClientSecret,
-                    parsed.ServicePlanResourceGroup,
-                    groupName: null,
-                    parsed.SiteSlotName,
-                    parsed.UseIpBasedSsl,
-                    parsed.RsaKeyLength,
-                    parsed.AcmeBaseUri,
-                    parsed.WebRootPath,
-                    parsed.RenewXNumberOfDaysBeforeExpiration,
-                    parsed.AzureAuthenticationEndpoint,
-                    parsed.AzureTokenAudience,
-                    parsed.AzureManagementEndpoint,
-                    parsed.AzureDefaultWebsiteDomainName);
+                webAppEnvironmentParams = GetWebAppEnvironmentParams(parsed);
             }
             catch (ArgumentException e)
             {
-                throw new ArgumentValidationException(e);
+                throw new ArgumentValidationException("Error parsing Web App environment parameters", e);
+            }
+
+            AzureEnvironmentParams azureDnsEnvironmentParams;
+            try
+            {
+                azureDnsEnvironmentParams = GetAzureDnsEnvironmentParams(parsed);
+            }
+            catch (ArgumentException e)
+            {
+                throw new ArgumentValidationException("Error parsing Azure DNS environment parameters", e);
+            }
+
+            RenewalParameters renewalParameters;
+            try
+            {
+                renewalParameters = GetRenewalParameters(parsed, webAppEnvironmentParams, azureDnsEnvironmentParams);
+            }
+            catch (ArgumentException e)
+            {
+                throw new ArgumentValidationException("Error parsing renewal parameters", e);
             }
 
             return renewalParameters;
+        }
+
+        private static AzureEnvironmentParams GetWebAppEnvironmentParams(Options parsed)
+        {
+            return new AzureEnvironmentParams(
+                parsed.TenantId,
+                parsed.SubscriptionId,
+                parsed.ClientId,
+                parsed.ClientSecret,
+                parsed.ResourceGroup);
+        }
+
+        private static AzureEnvironmentParams GetAzureDnsEnvironmentParams(Options parsed)
+        {
+            return new AzureEnvironmentParams(
+                parsed.AzureDnsTenantId ?? parsed.TenantId,
+                parsed.AzureDnsSubscriptionId ?? parsed.SubscriptionId,
+                parsed.AzureDnsClientId ?? parsed.ClientId,
+                parsed.AzureDnsClientSecret ?? parsed.ClientSecret,
+                parsed.AzureDnsResourceGroup ?? parsed.ResourceGroup);
+        }
+
+        private static RenewalParameters GetRenewalParameters(Options parsed, AzureEnvironmentParams webAppEnvironmentParams, AzureEnvironmentParams azureDnsEnvironmentParams)
+        {
+            return new RenewalParameters(
+                webAppEnvironmentParams,
+                parsed.WebApp,
+                parsed.Hosts,
+                parsed.Email,
+                parsed.ServicePlanResourceGroup,
+                null,
+                parsed.SiteSlotName,
+                azureDnsEnvironmentParams,
+                parsed.AzureDnsZoneName,
+                parsed.AzureDnsRelativeRecordSetName,
+                parsed.UseIpBasedSsl,
+                parsed.RsaKeyLength,
+                parsed.AcmeBaseUri,
+                parsed.WebRootPath,
+                parsed.RenewXNumberOfDaysBeforeExpiration,
+                parsed.AzureAuthenticationEndpoint,
+                parsed.AzureTokenAudience,
+                parsed.AzureManagementEndpoint,
+                parsed.AzureDefaultWebsiteDomainName);
         }
 
         private static string GetUsage(ParserResult<Options> parserResult)

@@ -7,13 +7,13 @@ The Set-LetsEncryptConfiguration script sets up your letsencrypt-webapp-renewer 
 Renewal web app parameters are documented below, the rest are per https://github.com/ohadschn/letsencrypt-webapp-renewer#configuration.
 
 .PARAMETER LetsEncryptSubscriptionId 
-The ID of the Subscription containg the letsencrypt-webapp-renewer web app.
+The ID of the Subscription containing the letsencrypt-webapp-renewer Web App.
 
 .PARAMETER LetsEncryptResourceGroup
-The name of the resource group containg the letsencrypt-webapp-renewer web app.
+The name of the resource group containing the letsencrypt-webapp-renewer Web App.
 
 .PARAMETER LetsEncryptWebApp
-The name of the letsencrypt-webapp-renewer web app.
+The name of the letsencrypt-webapp-renewer Web App.
 
 #>
 
@@ -27,29 +27,29 @@ Param(
 	[Parameter(Mandatory=$true)]
 	[string]$LetsEncryptWebApp,
 
-	[Parameter(Mandatory=$true)]
-	[string]$SubscriptionId,
-
-	[Parameter(Mandatory=$true)]
-	[string]$ResourceGroup,
-
-	[Parameter(Mandatory=$true)]
+    [Parameter(Mandatory=$true)]
 	[string]$WebApp,
 
-	[Parameter(Mandatory=$false)]
-	[string]$ServicePlanResourceGroup = $ResourceGroup,
+    [Parameter(Mandatory=$false)]
+	[string]$Hosts,
 
-	[Parameter(Mandatory=$true)]
+	[Parameter(Mandatory=$false)]
+	[string]$SubscriptionId,
+
+	[Parameter(Mandatory=$false)]
+	[string]$ResourceGroup,
+
+	[Parameter(Mandatory=$false)]
 	[string]$TenantId,
 
-	[Parameter(Mandatory=$true)]
+	[Parameter(Mandatory=$false)]
 	[string]$ClientId,
 
-	[Parameter(Mandatory=$true)]
+	[Parameter(Mandatory=$false)]
 	[string]$ClientSecret,
 
-	[Parameter(Mandatory=$true)]
-	[string]$Hosts,
+    [Parameter(Mandatory=$false)]
+	[string]$ServicePlanResourceGroup,
 
 	[Parameter(Mandatory=$false)]
 	[string]$Email,
@@ -67,7 +67,28 @@ Param(
     [string]$WebRootPath,
 
 	[Parameter(Mandatory=$false)]
-	[int]$RenewXNumberOfDaysBeforeExpiration = -1
+	[int]$RenewXNumberOfDaysBeforeExpiration,
+
+    [Parameter(Mandatory=$false)]
+    [string]$AzureDnsZoneName,
+
+    [Parameter(Mandatory=$false)]
+    [string]$AzureDnsRelativeRecordSetName,
+
+    [Parameter(Mandatory=$false)]
+	[string]$AzureDnsTenantId,
+
+	[Parameter(Mandatory=$false)]
+	[string]$AzureDnsSubscriptionId,
+
+	[Parameter(Mandatory=$false)]
+	[string]$AzureDnsResourceGroup,
+
+	[Parameter(Mandatory=$false)]
+	[string]$AzureDnsClientId,
+
+	[Parameter(Mandatory=$false)]
+	[string]$AzureDnsClientSecret
 )
 
 $ErrorActionPreference = "Stop"
@@ -132,16 +153,22 @@ else
 }
 
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "subscriptionId" $SubscriptionId
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "azureDnsSubscriptionId" $AzureDnsSubscriptionId
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "resourceGroup" $ResourceGroup
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "azureDnsResourceGroup" $AzureDnsResourceGroup
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "servicePlanResourceGroup" $ServicePlanResourceGroup
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "tenantId" $TenantId
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "azureDnsTenantId" $AzureDnsTenantId
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "clientId" $ClientId
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "azureDnsClientId" $AzureDnsClientId
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "hosts" $Hosts
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "email" $Email
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "useIpBasedSsl" $UseIpBasedSsl
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "rsaKeyLength" $RsaKeyLength
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "acmeBaseUri" $AcmeBaseUri
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "webRootPath" $WebRootPath
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "azureDnsZoneName" $AzureDnsZoneName
+Set-LetsEncryptConfig $updatedAppSettings $WebApp "azureDnsRelativeRecordSetName" $AzureDnsRelativeRecordSetName
 Set-LetsEncryptConfig $updatedAppSettings $WebApp "renewXNumberOfDaysBeforeExpiration" $RenewXNumberOfDaysBeforeExpiration
 
 Write-Information "Copying over existing connection strings..."
@@ -151,7 +178,14 @@ foreach ($connectionString in $letsEncryptWebAppInfo.SiteConfig.ConnectionString
 }
 
 Write-Information "Adding new connection string..."
-$updatedConnectionStrings["$letsEncryptPrefix$WebApp-clientSecret"] = @{ Type = "Custom"; Value = $ClientSecret }
+if ($ClientSecret)
+{
+    $updatedConnectionStrings["$letsEncryptPrefix$WebApp-clientSecret"] = @{ Type = "Custom"; Value = $ClientSecret }
+}
+if ($AzureDnsClientSecret)
+{
+    $updatedConnectionStrings["$letsEncryptPrefix$WebApp-azureDnsClientSecret"] = @{ Type = "Custom"; Value = $AzureDnsClientSecret }
+}
 
 Write-Information "Updating settings..."
 Set-AzureRmWebApp -ResourceGroupName $LetsEncryptResourceGroup -Name $LetsEncryptWebApp -AppSettings $updatedAppSettings -ConnectionStrings $updatedConnectionStrings

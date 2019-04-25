@@ -14,6 +14,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
         private IReadOnlyDictionary<(string shortName, string longName), string> FullValidArgs { get; } = new Dictionary<(string, string), string>
         {
 #pragma warning disable SA1008
+            // ---- Mandatory ----
             { ("-s", "--subscriptionId"), Subscription1.ToString() },
             { ("-t", "--tenantId"), Tenant1 },
             { ("-r", "--resourceGroup"), ResourceGroup1 },
@@ -22,6 +23,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
             { ("-e", "--email"), Email1 },
             { ("-c", "--clientId"), ClientId1.ToString() },
             { ("-l", "--clientSecret"), ClientSecret1 },
+
+            // ---- Optional ----
             { ("-p", "--servicePlanResourceGroup"), ServicePlanResourceGroup1 },
             { ("-d", "--siteSlotName"), SiteSlotName1 },
             { ("-i", "--useIpBasedSsl"), UseIpBasedSsl1.ToString() },
@@ -32,7 +35,16 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
             { ("-h", "--azureAuthenticationEndpoint"), AzureAuthenticationEndpoint1.ToString() },
             { ("-u", "--azureTokenAudience"), AzureTokenAudience1.ToString() },
             { ("-m", "--azureManagementEndpoint"), AzureManagementEndpoint1.ToString() },
-            { ("-b", "--azureDefaultWebSiteDomainName"), AzureDefaultWebsiteDomainName1 }
+            { ("-b", "--azureDefaultWebSiteDomainName"), AzureDefaultWebsiteDomainName1 },
+
+            // -- Azure DNS ---
+            { ("-f", "--azureDnsTenantId"), TenantAzureDns },
+            { ("-g", "--azureDnsSubscriptionId"), SubscriptionAzureDns.ToString() },
+            { ("-j", "--azureDnsResourceGroup"), ResourceGroupAzureDns },
+            { ("-q", "--azureDnsClientId"), ClientIdAzureDns.ToString() },
+            { ("-v", "--azureDnsClientSecret"), ClientSecretAzureDns },
+            { ("-z", "--azureDnsZoneName"), AzureDnsZoneName },
+            { ("-y", "--azureDnsRelativeRecordSetName"), AzureDnsRelativeRecordSetName },
 #pragma warning restore SA1008
         };
 
@@ -45,22 +57,34 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
             m_renewer = new CliRenewer(RenewalManager, new CommandlineRenewalParamsReader());
         }
 
+        /// ------------------ INVALID PARAM TESTS ------------------
+        /// Note - some params don't require testing (absolute Uri, Bool, Int) as they are already enforced by the Commandline parser
         [TestMethod]
         public void InvalidSubscriptionId()
         {
             TestInvalidParameter("-s", Guid.Empty.ToString(), "subscriptionId");
+            TestInvalidParameter("-g", Guid.Empty.ToString(), "subscriptionId", "Azure DNS");
         }
 
         [TestMethod]
         public void InvalidTenant()
         {
             TestInvalidParameter("-t", String.Empty, "tenantId");
+            TestInvalidParameter("-f", " ", "tenantId", "Azure DNS");
         }
 
         [TestMethod]
         public void InvalidResourceGroup()
         {
             TestInvalidParameter("-r", " ", "resourceGroup");
+            TestInvalidParameter("-j", String.Empty, "resourceGroup", "Azure DNS");
+            TestInvalidParameter("--servicePlanResourceGroup", "    ", "servicePlanResourceGroup");
+        }
+
+        [TestMethod]
+        public void InvalidSiteSlotName()
+        {
+            TestInvalidParameter("-d", String.Empty, "siteSlotName");
         }
 
         [TestMethod]
@@ -85,12 +109,14 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
         public void InvalidClientId()
         {
             TestInvalidParameter("-c", Guid.Empty.ToString(), "clientId");
+            TestInvalidParameter("-q", Guid.Empty.ToString(), "clientId", "Azure DNS");
         }
 
         [TestMethod]
         public void InvalidClientSecret()
         {
             TestInvalidParameter("-l", String.Empty, "clientSecret");
+            TestInvalidParameter("-v", " ", "clientSecret", "Azure DNS");
         }
 
         [TestMethod]
@@ -100,14 +126,34 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
         }
 
         [TestMethod]
+        public void InvalidWebRootPath()
+        {
+            TestInvalidParameter("--webRootPath", " ", "webRootPath");
+        }
+
+        [TestMethod]
         public void InvalidDefaultWebsiteDomainName()
         {
             TestInvalidParameter("--azureDefaultWebSiteDomainName", "@", "azureDefaultWebsiteDomainName");
         }
 
-        private void TestInvalidParameter(string name, string value, string expectedText)
+        [TestMethod]
+        public void InvalidAzureDnsZoneName()
         {
-            AssertExtensions.Throws<ArgumentException>(() => m_renewer.Renew(CompleteArgs(new[] { name, value })), e => e.ToString().Contains(expectedText));
+            TestInvalidParameter("--azureDnsZoneName", String.Empty, "azureDnsZoneName");
+        }
+
+        [TestMethod]
+        public void InvalidAzureDnsRelativeRecordSetName()
+        {
+            TestInvalidParameter("--azureDnsRelativeRecordSetName", "   ", "azureDnsRelativeRecordSetName");
+        }
+
+        private void TestInvalidParameter(string name, string value, params string[] expectedTexts)
+        {
+            AssertExtensions.Throws<ArgumentException>(
+                () => m_renewer.Renew(CompleteArgs(new[] { name, value })),
+                e => expectedTexts.All(t => e.Message.Contains(t)));
         }
 
         [TestMethod]

@@ -20,7 +20,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 
         public IReadOnlyCollection<RenewalParameters> Read()
         {
-            Trace.TraceInformation("Parsing Web Apps for SSL renewal from webjob/site configuration...");
+            Trace.TraceInformation("Parsing Web Apps for SSL renewal from WebJob/site configuration...");
             var webApps = m_appSettings.GetDelimitedList(Constants.KeyPrefix + "webApps");
             if (webApps.Any(String.IsNullOrWhiteSpace))
             {
@@ -40,61 +40,111 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
 
         private SharedRenewalParameters GetSharedParams()
         {
-            return new SharedRenewalParameters(
-                GetCommonSetting(Constants.ResourceGroupKey),
-                GetCommonGuidSetting(Constants.SubscriptionIdKey),
-                GetCommonSetting(Constants.TenantIdKey),
-                GetCommonGuidSetting(Constants.ClientIdKey),
-                GetCommonConnectionString(Constants.ClientSecretKey),
-                GetCommonSetting(Constants.EmailKey),
-                GetCommonSetting(Constants.ServicePlanResourceGroupKey),
-                GetCommonBooleanSetting(Constants.UseIpBasedSslKey),
-                GetCommonInt32Setting(Constants.RsaKeyLengthKey),
-                GetCommonUriSetting(Constants.AcmeBaseUriKey),
-                GetCommonSetting(Constants.WebRootPathKey),
-                GetCommonInt32Setting(Constants.RenewXNumberOfDaysBeforeExpirationKey),
-                GetCommonUriSetting(Constants.AzureAuthenticationEndpointKey),
-                GetCommonUriSetting(Constants.AzureTokenAudienceKey),
-                GetCommonUriSetting(Constants.AzureManagementEndpointKey),
-                GetCommonSetting(Constants.AzureDefaultWebSiteDomainNameKey));
+            AzureEnvironmentParams sharedWebAppEnvironment;
+            try
+            {
+                sharedWebAppEnvironment = new AzureEnvironmentParams(
+                    GetCommonSetting(Constants.TenantIdKey),
+                    GetCommonGuidSetting(Constants.SubscriptionIdKey),
+                    GetCommonGuidSetting(Constants.ClientIdKey),
+                    GetCommonConnectionString(Constants.ClientSecretKey),
+                    GetCommonSetting(Constants.ResourceGroupKey),
+                    true);
+            }
+            catch (ArgumentException e)
+            {
+                throw new ConfigurationErrorsException("Error parsing shared Web App environment parameters", e);
+            }
+
+            AzureEnvironmentParams sharedAzureDnsEnvironment;
+            try
+            {
+                sharedAzureDnsEnvironment = new AzureEnvironmentParams(
+                    GetCommonSetting(Constants.AzureDnsTenantIdKey),
+                    GetCommonGuidSetting(Constants.AzureDnsSubscriptionIdKey),
+                    GetCommonGuidSetting(Constants.AzureDnsClientIdKey),
+                    GetCommonConnectionString(Constants.AzureDnsClientSecretKey),
+                    GetCommonSetting(Constants.AzureDnsResourceGroupKey),
+                    true);
+            }
+            catch (ArgumentException e)
+            {
+                throw new ConfigurationErrorsException("Error parsing shared Azure DNS environment parameters", e);
+            }
+
+            try
+            {
+                return new SharedRenewalParameters(
+                    sharedWebAppEnvironment,
+                    GetCommonSetting(Constants.EmailKey),
+                    GetCommonSetting(Constants.ServicePlanResourceGroupKey),
+                    sharedAzureDnsEnvironment,
+                    GetCommonSetting(Constants.AzureDnsZoneNameKey),
+                    GetCommonSetting(Constants.AzureDnsRelativeRecordSetNameKey),
+                    GetCommonBooleanSetting(Constants.UseIpBasedSslKey),
+                    GetCommonInt32Setting(Constants.RsaKeyLengthKey),
+                    GetCommonUriSetting(Constants.AcmeBaseUriKey),
+                    GetCommonSetting(Constants.WebRootPathKey),
+                    GetCommonInt32Setting(Constants.RenewXNumberOfDaysBeforeExpirationKey),
+                    GetCommonUriSetting(Constants.AzureAuthenticationEndpointKey),
+                    GetCommonUriSetting(Constants.AzureTokenAudienceKey),
+                    GetCommonUriSetting(Constants.AzureManagementEndpointKey),
+                    GetCommonSetting(Constants.AzureDefaultWebSiteDomainNameKey));
+            }
+            catch (ArgumentException e)
+            {
+                throw new ConfigurationErrorsException("Error parsing shared renewal parameters", e);
+            }
         }
 
         private RenewalParameters GetWebAppRenewalInfo(string webApp, SharedRenewalParameters sharedRenewalParams)
         {
             Trace.TraceInformation("Parsing SSL renewal parameters for web app '{0}'...", webApp);
+            ParseWebAppToken(webApp, out var webAppName, out var siteSlotName, out var groupName);
 
-            string webAppName = webApp;
-            string siteSlotName = null;
-            string groupName = null;
-
-            var match = Regex.Match(webAppName, @"^(.*)\[(.*)\]$");
-            if (match.Success)
+            AzureEnvironmentParams webAppEnvironment;
+            try
             {
-                webAppName = match.Groups[1].Value;
-                groupName = match.Groups[2].Value;
+                webAppEnvironment = new AzureEnvironmentParams(
+                    ResolveSetting(Constants.TenantIdKey, webApp, sharedRenewalParams.WebAppEnvironment.TenantId),
+                    ResolveGuidSetting(Constants.SubscriptionIdKey, webApp, sharedRenewalParams.WebAppEnvironment.SubscriptionId),
+                    ResolveGuidSetting(Constants.ClientIdKey, webApp, sharedRenewalParams.WebAppEnvironment.ClientId),
+                    ResolveConnectionString(Constants.ClientSecretKey, webApp, sharedRenewalParams.WebAppEnvironment.ClientSecret),
+                    ResolveSetting(Constants.ResourceGroupKey, webApp, sharedRenewalParams.WebAppEnvironment.ResourceGroup));
+            }
+            catch (ArgumentException e)
+            {
+                throw new ConfigurationErrorsException("Error parsing Web App environment parameters for web app: " + webApp, e);
             }
 
-            match = Regex.Match(webAppName, "^(.*){(.*)}$");
-            if (match.Success)
+            AzureEnvironmentParams azureDnsEnvironment;
+            try
             {
-                webAppName = match.Groups[1].Value;
-                siteSlotName = match.Groups[2].Value;
+                azureDnsEnvironment = new AzureEnvironmentParams(
+                    ResolveOptionalSetting(Constants.AzureDnsTenantIdKey, webApp, sharedRenewalParams.AzureDnsEnvironment.TenantId ?? webAppEnvironment.TenantId),
+                    ResolveGuidSetting(Constants.AzureDnsSubscriptionIdKey, webApp, sharedRenewalParams.AzureDnsEnvironment.SubscriptionId ?? webAppEnvironment.SubscriptionId),
+                    ResolveGuidSetting(Constants.AzureDnsClientIdKey, webApp, sharedRenewalParams.AzureDnsEnvironment.ClientId ?? webAppEnvironment.ClientId),
+                    ResolveConnectionString(Constants.AzureDnsClientSecretKey, webApp, sharedRenewalParams.AzureDnsEnvironment.ClientSecret ?? webAppEnvironment.ClientSecret),
+                    ResolveSetting(Constants.AzureDnsResourceGroupKey, webApp, sharedRenewalParams.AzureDnsEnvironment.ResourceGroup ?? webAppEnvironment.ResourceGroup));
+            }
+            catch (ArgumentException e)
+            {
+                throw new ConfigurationErrorsException("Error parsing Azure DNS environment parameters for web app: " + webApp, e);
             }
 
             try
             {
                 return new RenewalParameters(
-                    ResolveGuidSetting(Constants.SubscriptionIdKey, webApp, sharedRenewalParams.SubscriptionId),
-                    ResolveSetting(Constants.TenantIdKey, webApp, sharedRenewalParams.TenantId),
-                    ResolveSetting(Constants.ResourceGroupKey, webApp, sharedRenewalParams.ResourceGroup),
+                    webAppEnvironment,
                     webAppName,
                     m_appSettings.GetDelimitedList(BuildConfigKey(Constants.HostsKey, webApp)),
                     ResolveSetting(Constants.EmailKey, webApp, sharedRenewalParams.Email),
-                    ResolveGuidSetting(Constants.ClientIdKey, webApp, sharedRenewalParams.ClientId),
-                    ResolveConnectionString(Constants.ClientSecretKey, webApp, sharedRenewalParams.ClientSecret),
                     ResolveOptionalSetting(Constants.ServicePlanResourceGroupKey, webApp, sharedRenewalParams.ServicePlanResourceGroup),
                     groupName,
                     siteSlotName,
+                    azureDnsEnvironment,
+                    ResolveOptionalSetting(Constants.AzureDnsZoneNameKey, webApp, sharedRenewalParams.AzureDnsZoneName),
+                    ResolveOptionalSetting(Constants.AzureDnsRelativeRecordSetNameKey, webApp, sharedRenewalParams.AzureDnsRelativeRecordSetName),
                     ResolveOptionalBooleanSetting(Constants.UseIpBasedSslKey, webApp, sharedRenewalParams.UseIpBasedSsl, false),
                     ResolveOptionalInt32Setting(Constants.RsaKeyLengthKey, webApp, sharedRenewalParams.RsaKeyLength, 2048),
                     ResolveOptionalUriSetting(Constants.AcmeBaseUriKey, webApp, sharedRenewalParams.AcmeBaseUri),
@@ -108,6 +158,27 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
             catch (ArgumentException e)
             {
                 throw new ConfigurationErrorsException("Error parsing SSL renewal parameters for web app: " + webApp, e);
+            }
+        }
+
+        private static void ParseWebAppToken(string webApp, out string webAppName, out string siteSlotName, out string groupName)
+        {
+            webAppName = webApp;
+            siteSlotName = null;
+            groupName = null;
+
+            var match = Regex.Match(webAppName, @"^(.*)\[(.*)\]$");
+            if (match.Success)
+            {
+                webAppName = match.Groups[1].Value;
+                groupName = match.Groups[2].Value;
+            }
+
+            match = Regex.Match(webAppName, "^(.*){(.*)}$");
+            if (match.Success)
+            {
+                webAppName = match.Groups[1].Value;
+                siteSlotName = match.Groups[2].Value;
             }
         }
 

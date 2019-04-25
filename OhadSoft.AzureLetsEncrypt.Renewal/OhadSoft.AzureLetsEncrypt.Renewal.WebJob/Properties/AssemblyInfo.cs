@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using CommandLine.Text;
 
 [assembly: InternalsVisibleTo("OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests")]
 
@@ -14,6 +15,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("OhadSoft.AzureLetsEncrypt.Renewal.WebJob")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("All Rights Reserved Ohad Schneider © 2017")]
+[assembly: AssemblyLicense("Apache 2.0")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible

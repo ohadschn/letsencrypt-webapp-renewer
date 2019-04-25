@@ -4,14 +4,15 @@
     {
         public const string KeyPrefix = "letsencrypt:";
 
-        public const string SubscriptionIdKey = "subscriptionId";
         public const string TenantIdKey = "tenantId";
+        public const string SubscriptionIdKey = "subscriptionId";
         public const string ResourceGroupKey = "resourceGroup";
-        public const string HostsKey = "hosts";
-        public const string EmailKey = "email";
+        public const string ServicePlanResourceGroupKey = "servicePlanResourceGroup";
         public const string ClientIdKey = "clientId";
         public const string ClientSecretKey = "clientSecret";
-        public const string ServicePlanResourceGroupKey = "servicePlanResourceGroup";
+
+        public const string HostsKey = "hosts";
+        public const string EmailKey = "email";
         public const string SiteSlotNameKey = "siteSlotName";
         public const string UseIpBasedSslKey = "useIpBasedSsl";
         public const string RsaKeyLengthKey = "rsaKeyLength";
@@ -23,5 +24,13 @@
         public const string AzureManagementEndpointKey = "azureManagementEndpoint";
         public const string AzureDefaultWebSiteDomainNameKey = "azureDefaultWebSiteDomainName";
         public const string SendGridApiKey = "SendGridApiKey";
+
+        public const string AzureDnsTenantIdKey = "azureDnsTenantId";
+        public const string AzureDnsSubscriptionIdKey = "azureDnsSubscriptionId";
+        public const string AzureDnsResourceGroupKey = "azureDnsResourceGroup";
+        public const string AzureDnsClientIdKey = "azureDnsClientId";
+        public const string AzureDnsClientSecretKey = "azureDnsClientSecret";
+        public const string AzureDnsZoneNameKey = "azureDnsZoneName";
+        public const string AzureDnsRelativeRecordSetNameKey = "azureDnsRelativeRecordSetName";
     }
 }
