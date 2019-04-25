@@ -80,6 +80,7 @@
     <Compile Include="WebJob\AppSettingsTests.cs" />
     <Compile Include="Util\AssertExtensions.cs" />
     <Compile Include="CLI\CliTests.cs" />
+    <Compile Include="WebJob\AzureEnvironmentParamsComparer.cs" />
     <Compile Include="WebJob\RenewalParametersComparer.cs" />
     <Compile Include="RenewalTestBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

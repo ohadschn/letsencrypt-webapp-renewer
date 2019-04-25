@@ -17,6 +17,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
             Guid clientId,
             string clientSecret,
             string servicePlanResourceGroup,
+            string azureDnsTenantId,
+            Guid? azureDnsSubscriptionId,
+            string azureDnsResourceGroup,
+            Guid? azureDnsClientId,
+            string azureDnsClientSecret,
+            string azureDnsZoneName,
+            string azureDnsRelativeRecordSetName,
             string siteSlotName,
             bool useIpBasedSsl,
             int rsaKeyLength,
@@ -37,6 +44,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
             ClientId = clientId;
             ClientSecret = clientSecret;
             ServicePlanResourceGroup = servicePlanResourceGroup;
+            AzureDnsTenantId = azureDnsTenantId;
+            AzureDnsSubscriptionId = azureDnsSubscriptionId;
+            AzureDnsResourceGroup = azureDnsResourceGroup;
+            AzureDnsClientId = azureDnsClientId;
+            AzureDnsClientSecret = azureDnsClientSecret;
+            AzureDnsZoneName = azureDnsZoneName;
+            AzureDnsRelativeRecordSetName = azureDnsRelativeRecordSetName;
             SiteSlotName = siteSlotName;
             UseIpBasedSsl = useIpBasedSsl;
             RsaKeyLength = rsaKeyLength;
@@ -76,6 +90,27 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
         [Option('p', Constants.ServicePlanResourceGroupKey, Required = false, HelpText = "Service Plan Resource Group (if not specified, the provided Web App resource group will be used)")]
         public string ServicePlanResourceGroup { get; }
 
+        [Option('f', Constants.AzureDnsTenantIdKey, Required = false, HelpText = "Azure DNS Tenant ID, defaults to Web App Tenant ID")]
+        public string AzureDnsTenantId { get; }
+
+        [Option('g', Constants.AzureDnsSubscriptionIdKey, Required = false, HelpText = "Azure DNS Subscription ID, defaults to Web App Subscription ID")]
+        public Guid? AzureDnsSubscriptionId { get; }
+
+        [Option('j', Constants.AzureDnsResourceGroupKey, Required = false, HelpText = "Azure DNS Resource Group, defaults to Web App Resource Group")]
+        public string AzureDnsResourceGroup { get; }
+
+        [Option('q', Constants.AzureDnsClientIdKey, Required = false, HelpText = "Azure DNS Client ID, defaults to Web App Client ID")]
+        public Guid? AzureDnsClientId { get; }
+
+        [Option('v', Constants.AzureDnsClientSecretKey, Required = false, HelpText = "Azure DNS Client Secret, defaults to Web App Client Secret")]
+        public string AzureDnsClientSecret { get; }
+
+        [Option('z', Constants.AzureDnsZoneNameKey, Required = false, HelpText = "Azure DNS Zone Name (e.g. 'yourDomain.com')")]
+        public string AzureDnsZoneName { get; }
+
+        [Option('y', Constants.AzureDnsRelativeRecordSetNameKey, Required = false, HelpText = "Azure DNS Relative Record Set Name (e.g. 'yourSubDomain')")]
+        public string AzureDnsRelativeRecordSetName { get; }
+
         [Option('d', Constants.SiteSlotNameKey, Required = false, HelpText = "Site Deployment Slot")]
         public string SiteSlotName { get; }
 
@@ -85,7 +120,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
         [Option('k', Constants.RsaKeyLengthKey, Required = false, Default = 2048, HelpText = "Certificate RSA key length")]
         public int RsaKeyLength { get; }
 
-        [Option('a', Constants.AcmeBaseUriKey, Required = false, HelpText = "ACME base URI, defaults to: " + RenewalManager.DefaultAcmeBaseUri)]
+        [Option('a', Constants.AcmeBaseUriKey, Required = false, HelpText = "ACME base URI, defaults to: " + RenewalManager.DefaultAcmeBaseUri + " (for staging use https://acme-staging.api.letsencrypt.org/)")]
         public Uri AcmeBaseUri { get; }
 
         [Option('x', Constants.WebRootPathKey, Required = false, HelpText = "Web Root Path for HTTP challenge answer")]

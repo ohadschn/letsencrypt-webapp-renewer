@@ -7,10 +7,14 @@
       <Word>Renewer</Word>
       <Word>webApp</Word>
       <Word>Params</Word>
+      <Word>Param</Word>
       <Word>CLI</Word>
       <Word>Notifier</Word>
       <Word>Api</Word>
       <Word>Util</Word>
+      <Word>Whitespace</Word>
+      <Word>Str</Word>
+      <Word>Num</Word>
     </Recognized>
     <Compound>
       <Term CompoundAlternate="WebApp">webApp</Term>

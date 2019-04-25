@@ -14,9 +14,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected const string Tenant1 = "foo-tenant";
         protected const string Tenant2 = "bar-tenant";
         protected const string TenantShared = "shared-tenant";
+        protected const string TenantAzureDns = "azure-dns-tenant";
         protected const string ResourceGroup1 = "foo-resource-group";
         protected const string ResourceGroup2 = "bar-resource-group";
         protected const string ResourceGroupShared = "shared-resource-group";
+        protected const string ResourceGroupAzureDns = "azure-dns-resource-group";
+        protected const string ResourceGroupAzureDnsShared = "azure-dns-resource-group-shared";
         protected const string SiteSlotName1 = "foo-slot";
         protected const string WebApp1Name = "fooApp";
         protected const string WebApp1 = WebApp1Name + "{" + SiteSlotName1 + "}";
@@ -30,10 +33,14 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected const string ClientSecret1 = "foo-secret123";
         protected const string ClientSecret2 = "bar-verySecret321";
         protected const string ClientSecretShared = "shared-secret4real";
+        protected const string ClientSecretAzureDns = "azure-dns-client-secret";
         protected const string ServicePlanResourceGroup1 = "foo-service-plan-resource-group";
         protected const string ServicePlanResourceGroupShared = "shared-service-plan-resource-group";
         protected const string WebRootPath1 = "D:\\home";
         protected const string WebRootPathShared = "C:\\wwroot";
+        protected const string AzureDnsRelativeRecordSetName = "le";
+        protected const string AzureDnsZoneName = "azuredns.site";
+        protected const string AzureDnsZoneNameShared = "azuredns.com";
         protected const bool UseIpBasedSsl1 = true;
         protected const bool UseIpBasedSslShared = true;
         protected const int RsaKeyLength1 = 1024;
@@ -41,6 +48,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected static readonly Guid Subscription1 = Guid.Parse("964bbd07-a237-489d-b060-53b027f56d35");
         protected static readonly Guid Subscription2 = Guid.Parse("c6068e1b-27a8-473d-9113-d443d1ae8859");
         protected static readonly Guid SubscriptionShared = Guid.Parse("53c40909-2b5c-49e9-8f2d-f32957ecfcf0");
+        protected static readonly Guid SubscriptionAzureDns = Guid.Parse("ebf8621c-5bd1-4a36-9251-cae62496973e");
         protected static readonly IReadOnlyList<string> Hosts1 = new[] { "www.foo.com" };
         protected static readonly IReadOnlyList<string> Hosts2 = new[] { "www.bar.com", "bar.com" };
         protected static readonly IReadOnlyList<string> Hosts3 = new[] { "www.shared.com" };
@@ -48,6 +56,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected static readonly Guid ClientId1 = Guid.Parse("89e5c1ee-a37b-4af7-89fc-217a4b99652c");
         protected static readonly Guid ClientId2 = Guid.Parse("618a929b-d9c9-4ec1-b8dc-66f55d949d52");
         protected static readonly Guid ClientIdShared = Guid.Parse("a06ff82d-7964-45a0-920f-22897ab9f9cb");
+        protected static readonly Guid ClientIdAzureDns = Guid.Parse("e50f05c4-2386-43fe-99a1-4306086aa227");
+        protected static readonly Guid ClientIdAzureDnsShared = Guid.Parse("5ef592f7-c291-4c82-adde-80e46d2e05a0");
         protected static readonly Uri AcmeBaseUri1 = new Uri("http://foo.example.com");
         protected static readonly Uri AcmeBaseUriShared = new Uri("http://shared.example.com");
         protected static readonly int RenewXNumberOfDaysBeforeExpiration1 = 22;
@@ -62,17 +72,16 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected static readonly string AzureDefaultWebsiteDomainNameShared = "shared.websites.com";
 
         protected static readonly RenewalParameters ExpectedFullRenewalParameters1 = new RenewalParameters(
-            Subscription1,
-            Tenant1,
-            ResourceGroup1,
+            new AzureEnvironmentParams(Tenant1, Subscription1, ClientId1, ClientSecret1, ResourceGroup1),
             WebApp1Name,
             Hosts1,
             Email1,
-            ClientId1,
-            ClientSecret1,
             ServicePlanResourceGroup1,
             null,
             SiteSlotName1,
+            new AzureEnvironmentParams(TenantAzureDns, SubscriptionAzureDns, ClientIdAzureDns, ClientSecretAzureDns, ResourceGroupAzureDns),
+            AzureDnsZoneName,
+            AzureDnsRelativeRecordSetName,
             UseIpBasedSsl1,
             RsaKeyLength1,
             AcmeBaseUri1,
@@ -84,36 +93,27 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             AzureDefaultWebsiteDomainName1);
 
         protected static readonly RenewalParameters ExpectedPartialRenewalParameters1 = new RenewalParameters(
-            Subscription1,
-            Tenant1,
-            ResourceGroup1,
+            new AzureEnvironmentParams(Tenant1, Subscription1, ClientId1, ClientSecret1, ResourceGroup1),
             WebApp1Name,
             Hosts1,
-            Email1,
-            ClientId1,
-            ClientSecret1);
+            Email1);
 
         protected static readonly RenewalParameters ExpectedPartialRenewalParameters2 = new RenewalParameters(
-            Subscription2,
-            Tenant2,
-            ResourceGroup2,
+            new AzureEnvironmentParams(Tenant2, Subscription2, ClientId2, ClientSecret2, ResourceGroup2),
             WebApp2,
             Hosts2,
-            Email2,
-            ClientId2,
-            ClientSecret2);
+            Email2);
 
         protected static readonly RenewalParameters ExpectedPartialRenewalParameters3 = new RenewalParameters(
-            SubscriptionShared,
-            TenantShared,
-            ResourceGroupShared,
+            new AzureEnvironmentParams(TenantShared, SubscriptionShared, ClientIdShared, ClientSecretShared, ResourceGroupShared),
             WebApp3,
             Hosts3,
             EmailShared,
-            ClientIdShared,
-            ClientSecretShared,
             ServicePlanResourceGroupShared,
             null,
+            null,
+            new AzureEnvironmentParams(TenantShared, SubscriptionShared, ClientIdAzureDnsShared, ClientSecretShared, ResourceGroupAzureDnsShared),
+            AzureDnsZoneNameShared,
             null,
             UseIpBasedSslShared,
             RsaKeyLengthShared,
@@ -126,14 +126,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             AzureDefaultWebsiteDomainNameShared);
 
         protected static readonly RenewalParameters ExpectedPartialRenewalParameters4 = new RenewalParameters(
-            Subscription1,
-            Tenant1,
-            ResourceGroup1,
+            new AzureEnvironmentParams(Tenant1, Subscription1, ClientId1, ClientSecret1, ResourceGroup1),
             WebApp1Name,
             Hosts4,
             Email1,
-            ClientId1,
-            ClientSecret1,
             groupName: GroupName4);
 
         protected RenewalManagerMock RenewalManager { get; } = new RenewalManagerMock();

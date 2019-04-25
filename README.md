@@ -77,6 +77,16 @@ The following settings are required in order to renew certificates on sovereign 
 
 You can run the `Get-AzureEnvironment` PowerShell cmdlet to get the required values. For more information about configuring sovereign clouds see: https://github.com/sjkp/letsencrypt-siteextension/wiki/Azure-Germany,-US-or-China.
 
+### DNS Challenge
+You may use the ACME DNS challenge instead of the HTTP challenge. Currently only Azure DNS is supported, and it can be activated using the following configuration:
+1. `letsencrypt:webAppName-azureDnsZoneName` (e.g. `yourDomain.com`)
+2. `letsencrypt:webAppName-azureDnsRelativeRecordSetName` (e.g. `yourSubDomain`)
+3. `letsencrypt:webAppName-azureDnsTenantId` (optional, defaults to Web App Tenant ID)
+4. `letsencrypt:webAppName-azureDnsSubscriptionId` (optional, defaults to Web App Subscription ID)
+5. `letsencrypt:webAppName-azureDnsResourceGroup` (optional, defaults to Web App Resource Group)
+6. `letsencrypt:webAppName-azureDnsClientId` (optional, defaults to Web App Client ID)
+7. `letsencrypt:webAppName-azureDnsClientSecret` (optional, defaults to Web App Client Secret)
+
 ### Site Deployment Slots
 In order to specify a Site Deployment Slot for a given web app, use the following syntax for the web app's name: `webAppName{siteSlotName}`. For example, if you have a `foo` site with no deployment slots and a `bar` site with `staging` and `prod` deployment slots, configure `letsencrypt:webApps` to be `foo;bar{staging};bar{prod}`. Different deployment slots are treated as different web apps and the normal setting rules apply, so you would still need to configure the regular settings for each of them (e.g. `letsencrypt:foo-subscriptionId`, `letsencrypt:bar{staging}-subscriptionId`, `letsencrypt:bar{prod}-subscriptionId` and so forth). 
 
@@ -110,36 +120,43 @@ Note that Let's Encrypt will send out expiration e-mails if anything went wrong 
 Test the WebJob by [triggering it manually](https://pragmaticdevs.wordpress.com/2016/10/24/triggering-azure-web-jobs-manually/). **You should see a new certificate served when you visit your site**.
 
 ## Command Line usage
-When executed outside of a WebJob context (as determined by the [WEBJOBS_NAME](https://github.com/projectkudu/kudu/wiki/WebJobs#environment-settings) environment variable), the WebJob executable (`AzureLetsEncryptRenewer.exe`) functions as a standalone command-line tool with the following options:
+When executed outside of a WebJob context (as determined by the absence of the [WEBJOBS_NAME](https://github.com/projectkudu/kudu/wiki/WebJobs#environment-settings) environment variable), the WebJob executable (`AzureLetsEncryptRenewer.exe`) functions as a standalone command-line tool with the following options:
 
 | Flag | Details |
 | - | - |
-| -s, --subscriptionId | Required. Subscription ID |
-| -t, --tenantId |                             Required. Tenant ID
-| -r, --resourceGroup |                        Required. Resource Group
-| -w, --webApp |                               Required. Web App
-| -o, --hosts |                                Required. Semicolon-delimited list of hosts to include in the certificate - the first will comprise the Subject Name SN) and the rest will comprise the Subject Alternative Names (SANs) 
-| -e, --email |                                Required. E-mail for Let's Encrypt registration and expiry notifications
-| -c, --clientId |                             Required. Client ID
-| -l, --clientSecret |                         Required. Client Secret
-| -p, --servicePlanResourceGroup |             Service Plan Resource Group (if not specified, the provided Web App resource group will be used)
-| -d, --siteSlotName |                         Site Deployment Slot 
-| -i, --useIpBasedSsl |                        (Default: false) Use IP Based SSL
-| -k, --rsaKeyLength |                         (Default: 2048) Certificate RSA key length   
-| -a, --acmeBaseUri |                          ACME base URI, defaults to: https://acme-v01.api.letsencrypt.org/
-| -x, --webRootPath |                          Web Root Path for HTTP challenge answer
-| -n, --renewXNumberOfDaysBeforeExpiration |   (Default: -1) Number of days before certificate expiry to renew, defaults to a negative value meaning renewal will ake place regardless of the expiry time
-| -h, --azureAuthenticationEndpoint |          The Active Directory Authority, defaults to: https://login.windows.net/
-| -u, --azureTokenAudience |                   The Active Directory Service Endpoint Resource ID, defaults to: https://management.core.windows.net/
-| -m, --azureManagementEndpoint |              The Resource Manager URL, defaults to: https://management.azure.com
-| -b, --azureDefaultWebSiteDomainName  |       The Azure Web Sites default domain name, defaults to: azurewebsites.net
---help  |                                    Display this help screen.
---version  |                                 Display version information.
+| -s, --subscriptionId                        | Required. Subscription ID
+| -t, --tenantId                              | Required. Tenant ID
+| -r, --resourceGroup                         | Required. Resource Group
+| -w, --webApp                                | Required. Web App
+| -o, --hosts                                 | Required. Semicolon-delimited list of hosts to include in the certificate - the first will comprise the Subject Name (SN) and the rest will comprise the Subject Alternative Names (SANs)
+| -e, --email                                 | Required. E-mail for Let's Encrypt registration and expiry notifications 
+| -c, --clientId                              | Required. Client ID
+| -l, --clientSecret                          | Required. Client Secret
+| -p, --servicePlanResourceGroup              | Service Plan Resource Group (if not specified, the provided Web App resource group will be used)
+| -f, --azureDnsTenantId                      | Azure DNS Tenant ID, defaults to Web App Tenant ID
+| -g, --azureDnsSubscriptionId                | Azure DNS Subscription ID, defaults to Web App Subscription ID
+| -j, --azureDnsResourceGroup                 | Azure DNS Resource Group, defaults to Web App Resource Group
+| -q, --azureDnsClientId                      | Azure DNS Client ID, defaults to Web App Client ID
+| -v, --azureDnsClientSecret                  | Azure DNS Client Secret, defaults to Web App Client Secret
+| -z, --azureDnsZoneName                      | Azure DNS Zone Name (e.g. `yourDomain.com`)
+| -y, --azureDnsRelativeRecordSetName         | Azure DNS Relative Record Set Name (e.g. `yourSubDomain`)
+| -d, --siteSlotName                          | Site Deployment Slot
+| -i, --useIpBasedSsl                         | (Default: false) Use IP Based SSL
+| -k, --rsaKeyLength                          | (Default: 2048) Certificate RSA key length
+| -a, --acmeBaseUri                           | ACME base URI, defaults to: `https://acme-v01.api.letsencrypt.org/` (for staging use `https://acme-staging.api.letsencrypt.org/`)
+| -x, --webRootPath                           | Web Root Path for HTTP challenge answer
+| -n, --renewXNumberOfDaysBeforeExpiration    | (Default: -1) Number of days before certificate expiry to renew, defaults to a negative value meaning renewal will take place regardless of the expiry time
+| -h, --azureAuthenticationEndpoint           | The Active Directory Authority, defaults to: `https://login.windows.net/`
+| -u, --azureTokenAudience                    | The Active Directory Service Endpoint Resource ID, defaults to: `https://management.core.windows.net/`
+| -m, --azureManagementEndpoint               | The Resource Manager URL, defaults to: `https://management.azure.com`
+| -b, --azureDefaultWebSiteDomainName         | The Azure Web Sites default domain name, defaults to: `azurewebsites.net`
+| --help                                      | Display the help screen.
+| --version                                   | Display version information.
 
 ### Exit codes
-- 0 - Success
-- 1 - Bad argument(s)
-- 2 - Unexpected error
+- `0` - Success
+- `1` - Bad argument(s)
+- `2` - Unexpected error
 
 ## Telemetry
 `letsencrypt-webapp-renewer` gathers anonymous telemetry for usage analysis and error reporting. You can disable it by setting the `LETSENCRYPT_DISABLE_TELEMETRY` environment variable to any non-empty value.

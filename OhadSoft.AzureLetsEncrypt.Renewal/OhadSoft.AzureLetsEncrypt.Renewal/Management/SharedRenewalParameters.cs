@@ -6,13 +6,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
     public sealed class SharedRenewalParameters
     {
         public SharedRenewalParameters(
-            string resourceGroup,
-            Guid? subscriptionId,
-            string tenantId,
-            Guid? clientId,
-            string clientSecret,
+            AzureEnvironmentParams webAppEnvironment,
             string email,
             string servicePlanResourceGroup,
+            AzureEnvironmentParams azureDnsEnvironment,
+            string azureDnsZoneName,
+            string azureDnsRelativeRecordSetName,
             bool? useIpBasedSsl,
             int? rsaKeyLength,
             Uri acmeBaseUri,
@@ -23,13 +22,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             Uri azureManagementEndpoint,
             string azureDefaultWebsiteDomainName)
         {
-            ResourceGroup = resourceGroup;
-            SubscriptionId = subscriptionId;
-            TenantId = tenantId;
-            ClientId = clientId;
-            ClientSecret = clientSecret;
+            WebAppEnvironment = webAppEnvironment;
             Email = email;
             ServicePlanResourceGroup = servicePlanResourceGroup;
+            AzureDnsEnvironment = azureDnsEnvironment;
+            AzureDnsZoneName = azureDnsZoneName;
+            AzureDnsRelativeRecordSetName = azureDnsRelativeRecordSetName;
             UseIpBasedSsl = useIpBasedSsl;
             RsaKeyLength = rsaKeyLength;
             AcmeBaseUri = acmeBaseUri;
@@ -41,13 +39,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             AzureDefaultWebsiteDomainName = azureDefaultWebsiteDomainName;
         }
 
-        public string ResourceGroup { get; }
-        public Guid? SubscriptionId { get; }
-        public string TenantId { get; }
-        public Guid? ClientId { get; }
-        public string ClientSecret { get; }
+        public AzureEnvironmentParams WebAppEnvironment { get; }
         public string Email { get; }
         public string ServicePlanResourceGroup { get; }
+        public AzureEnvironmentParams AzureDnsEnvironment { get; }
+        public string AzureDnsZoneName { get; }
+        public string AzureDnsRelativeRecordSetName { get; }
         public bool? UseIpBasedSsl { get; }
         public int? RsaKeyLength { get; }
         public Uri AcmeBaseUri { get; }
@@ -60,7 +57,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
         public override string ToString()
         {
-            return Invariant($"{nameof(ResourceGroup)}: {ResourceGroup}, {nameof(SubscriptionId)}: {SubscriptionId}, {nameof(TenantId)}: {TenantId}, {nameof(ClientId)}: {ClientId}, {nameof(ClientSecret)}: <SCRUBBED>, {nameof(Email)}: {Email}, {nameof(ServicePlanResourceGroup)}: {ServicePlanResourceGroup}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBaseUri)}: {AcmeBaseUri}, {nameof(RenewXNumberOfDaysBeforeExpiration)}: {RenewXNumberOfDaysBeforeExpiration}, {nameof(AuthenticationUri)}: {AuthenticationUri}, {nameof(AzureTokenAudience)}: {AzureTokenAudience}, {nameof(AzureManagementEndpoint)}: {AzureManagementEndpoint}, {nameof(AzureDefaultWebsiteDomainName)}: {AzureDefaultWebsiteDomainName}");
+            return Invariant($"{nameof(WebAppEnvironment)}: {WebAppEnvironment}, {nameof(Email)}: {Email}, {nameof(ServicePlanResourceGroup)}: {ServicePlanResourceGroup}, {nameof(AzureDnsEnvironment)}: {AzureDnsEnvironment}, {nameof(AzureDnsZoneName)}: {AzureDnsZoneName}, {nameof(AzureDnsRelativeRecordSetName)}: {AzureDnsRelativeRecordSetName}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBaseUri)}: {AcmeBaseUri}, {nameof(WebRootPath)}: {WebRootPath}, {nameof(RenewXNumberOfDaysBeforeExpiration)}: {RenewXNumberOfDaysBeforeExpiration}, {nameof(AuthenticationUri)}: {AuthenticationUri}, {nameof(AzureTokenAudience)}: {AzureTokenAudience}, {nameof(AzureManagementEndpoint)}: {AzureManagementEndpoint}, {nameof(AzureDefaultWebsiteDomainName)}: {AzureDefaultWebsiteDomainName}");
         }
     }
 }
