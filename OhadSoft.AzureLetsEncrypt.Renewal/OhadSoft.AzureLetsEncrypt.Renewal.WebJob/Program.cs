@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli;
@@ -16,6 +17,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
     {
         private const string DisableTelemetryEnvVarName = "LETSENCRYPT_DISABLE_TELEMETRY";
 
+        [SuppressMessage("Sonar", "S4210:Windows Forms entry points should be marked with STAThread", Justification = "Transitive from System.Web, not used")]
         private static int Main(string[] args)
         {
             if (Environment.GetEnvironmentVariable(DisableTelemetryEnvVarName) == null)
