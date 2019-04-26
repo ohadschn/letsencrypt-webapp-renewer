@@ -88,6 +88,8 @@
     <Compile Include="Management\RenewalParameters.cs" />
     <Compile Include="Management\RenewalManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\CertificateHelper.cs" />
+    <Compile Include="Util\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json">

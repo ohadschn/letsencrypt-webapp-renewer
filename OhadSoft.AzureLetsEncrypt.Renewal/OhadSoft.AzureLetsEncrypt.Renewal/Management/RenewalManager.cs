@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using LetsEncrypt.Azure.Core;
 using LetsEncrypt.Azure.Core.Models;
 using OhadSoft.AzureLetsEncrypt.Renewal.Configuration;
+using OhadSoft.AzureLetsEncrypt.Renewal.Util;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 {
@@ -47,42 +49,37 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
             Trace.TraceInformation("Adding SSL cert for '{0}'...", GetWebAppFullName(renewalParams));
 
-            if (renewalParams.RenewXNumberOfDaysBeforeExpiration > 0 && await HasCertificateSafe(webAppEnvironment))
+            bool addNewCert = true;
+            if (renewalParams.RenewXNumberOfDaysBeforeExpiration > 0)
             {
-                await manager.RenewCertificate(false, renewalParams.RenewXNumberOfDaysBeforeExpiration);
+                var staging = acmeConfig.BaseUri.Contains("staging", StringComparison.OrdinalIgnoreCase);
+                var letsEncryptHostNames = await CertificateHelper.GetLetsEncryptHostNames(webAppEnvironment, staging);
+                Trace.TraceInformation("Let's Encrypt host names (staging: {0}): {1}", staging, String.Join(", ", letsEncryptHostNames));
+
+                ICollection<string> missingHostNames = acmeConfig.Hostnames.Except(letsEncryptHostNames, StringComparer.OrdinalIgnoreCase).ToArray();
+                if (missingHostNames.Count > 0)
+                {
+                    Trace.TraceInformation(
+                        "Detected host name(s) with no associated Let's Encrypt certificates, will add a new certificate: {0}",
+                        String.Join(", ", missingHostNames));
+                }
+                else
+                {
+                    Trace.TraceInformation("All host names associated with Let's Encrypt certificates, will perform cert renewal");
+                    addNewCert = false;
+                }
             }
-            else
+
+            if (addNewCert)
             {
                 await manager.AddCertificate();
             }
-
-            Trace.TraceInformation("SSL cert added successfully to '{0}'", renewalParams.WebApp);
-        }
-
-        private static async Task<bool> HasCertificateSafe(AzureWebAppEnvironment webAppEnvironment)
-        {
-            try
+            else
             {
-                return await HasCertificate(webAppEnvironment);
+                await manager.RenewCertificate(false, renewalParams.RenewXNumberOfDaysBeforeExpiration);
             }
-            catch (Exception e)
-            {
-                Trace.TraceWarning("Could not determine whether certificate is installed - assuming it is: {0}", e);
-                return true;
-            }
-        }
 
-        private static async Task<bool> HasCertificate(AzureWebAppEnvironment azureEnvironment)
-        {
-            using (var webSiteClient = await ArmHelper.GetWebSiteManagementClient(azureEnvironment))
-            {
-                var certs = await webSiteClient.Certificates.ListByResourceGroupWithHttpMessagesAsync(azureEnvironment.ResourceGroupName);
-                var site = webSiteClient.WebApps.GetSiteOrSlot(azureEnvironment.ResourceGroupName, azureEnvironment.WebAppName, azureEnvironment.SiteSlotName);
-
-                return certs.Body.Any(s =>
-                    s.Issuer.Contains("Let's Encrypt")
-                    && site.HostNameSslStates.Any(hostNameBindings => hostNameBindings.Thumbprint == s.Thumbprint));
-            }
+            Trace.TraceInformation("Let's Encrypt SSL certs & bindings renewed for '{0}'", renewalParams.WebApp);
         }
 
         private static IAzureDnsEnvironment GetAzureDnsEnvironment(RenewalParameters renewalParams)
