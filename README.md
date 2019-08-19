@@ -26,7 +26,7 @@ Enter [Let's Encrypt](https://letsencrypt.org/) - a free, automated, and open Ce
 - Can be executed as a plain command-line tool from any environment.
 
 ## Walkthrough
-Microsoft MVP Dixin Yan wrote an end-to-end guide for using `letsencrypt-webapp-renewer` which you can find [here](https://weblogs.asp.net/dixin/end-to-end-setup-free-ssl-certificate-to-secure-azure-web-app-with-https). Feel free to follow it for your convenience, but it is still recommended to read and understand the full documentation as detailed in the secionts below.
+Microsoft MVP Dixin Yan wrote an end-to-end guide for using `letsencrypt-webapp-renewer` which you can find [here](https://weblogs.asp.net/dixin/end-to-end-setup-free-ssl-certificate-to-secure-azure-web-app-with-https). Feel free to follow it for your convenience, but it is still recommended to read and understand the full documentation as detailed in the sections below.
 
 ## Preparation
 Create an AAD service principal with the proper permissions, as explained [here](https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install) and [here](https://www.troyhunt.com/everything-you-need-to-know-about-loading-a-free-lets-encrypt-certificate-into-an-azure-website/). You can skip the parts about configuring the Azure Storage account and the site extension, but while you're there note down the parameters you'll need for the WebJob configuration below: `SubscriptionId`, `TenantId`, `ResourceGroup`, `WebApp`, `ClientId`, and `ClientSecret`.
