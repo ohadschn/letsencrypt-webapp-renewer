@@ -47,8 +47,6 @@ The `letsencrypt-webapp-renewer` WebJob is configured via [Web App Settings](htt
    1. `letsencrypt:webAppName-rsaKeyLength` (optional, defaults to `2048`)
    1. `letsencrypt:webAppName-acmeBaseUri` (optional, defaults to `https://acme-v01.api.letsencrypt.org`)
    1. `letsencrypt:webAppName-webRootPath` (optional, defaults to `%HOME%\site\wwwroot` or in case of running from package: `%HOME%\site\letsencrypt`)
-      1. When using ASP.NET Core, enable `ServeUnknownFileTypes` for the `/.well-known/acme-challenge` request path of your Web App.
-      1. When targeting a Linux based ASP.NET Core Web App, you'll want to set this to the relative path: `./site/wwwroot/wwwroot`
    1. `letsencrypt:webAppName-renewXNumberOfDaysBeforeExpiration` (optional, defaults to `-1` which means renewal will take place regardless of the expiry time)
 
 For more information about the various renewal settings see: https://github.com/sjkp/letsencrypt-siteextension.
@@ -110,6 +108,10 @@ There is a PowerShell configuration-script [Set-LetsEncryptConfiguration.ps1](Oh
    1. [CRON based](https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-create-web-jobs#CreateScheduledCRON) is simple to set up but **REQUIRES YOUR CERT RENEWAL WEB APP (THE ONE WHERE THE `letsencrypt-webapp-renewer` WEBJOB WILL BE RUNNING) TO BE CONFIGURED AS "ALWAYS ON"**. Note that a `settings.job` file as described in the docs is unnecessary - when you [upload the WebJob in the portal](https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-create-web-jobs#CreateOnDemand) simply select **Triggered** in the _Type_ field and **Scheduled** in the _Triggers_ field to be given an option to specify a CRON expression. The [recommended Let's Encrypt renewal period is 60 days](https://letsencrypt.org/docs/faq/), so you could use a CRON expression that fires once every two months, for example: `0 0 0 1 1,3,5,7,9,11 *`.
    1. [Azure Function based](https://github.com/eformedpartners/AzureWebJobScheduler/) is a good option if your App Service plan does not support _Always On_ (_Free_ or _Shared_).
    1. [Azure Scheduler based](http://blog.davidebbo.com/2015/05/scheduled-webjob.html) is slightly more complex to set up but does not require your site to be configured as _Always On_. Note that the instructions in the link mostly explain the process for the old (classic) Azure portal, but it's pretty easy to do the same in the new one (portal.azure.com). At the time of writing, there is no free Azure Scheulder plan.
+
+### ASP.NET Core
+1. Enable `ServeUnknownFileTypes` for the `/.well-known/acme-challenge` request path of your Web App.
+1. When targeting a Linux based ASP.NET Core Web App, set the `webRootPath` to the following (relative) path: `./site/wwwroot/wwwroot`.
 
 ### Notifications
 The following are optional but **highly recommended**.
