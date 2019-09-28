@@ -87,6 +87,11 @@ You may use the ACME DNS challenge instead of the HTTP challenge. Currently only
 6. `letsencrypt:webAppName-azureDnsClientId` (optional, defaults to Web App Client ID)
 7. `letsencrypt:webAppName-azureDnsClientSecret` (optional, defaults to Web App Client Secret)
 
+### Remarks about Internationalized Domain Names (IDNs)
+If you use an Internationalized Domain Name (IDN), here are additional information:
+- You'll have to enter your hostnames with special characters into  `letsencrypt:webAppName-hosts` (e.g. `myümlautdomain.de,www.myümlautdomain.de`).
+- You'll have to enter your encoded hostname into `letsencrypt:webAppName-azureDnsZoneName` (e.g `xn--mymlautdomain-xob.de`)
+
 ### Site Deployment Slots
 In order to specify a Site Deployment Slot for a given web app, use the following syntax for the web app's name: `webAppName{siteSlotName}`. For example, if you have a `foo` site with no deployment slots and a `bar` site with `staging` and `prod` deployment slots, configure `letsencrypt:webApps` to be `foo;bar{staging};bar{prod}`. Different deployment slots are treated as different web apps and the normal setting rules apply, so you would still need to configure the regular settings for each of them (e.g. `letsencrypt:foo-subscriptionId`, `letsencrypt:bar{staging}-subscriptionId`, `letsencrypt:bar{prod}-subscriptionId` and so forth). 
 
