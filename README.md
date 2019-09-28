@@ -90,7 +90,7 @@ You may use the ACME DNS challenge instead of the HTTP challenge. Currently only
 ### Remarks about Internationalized Domain Names (IDNs)
 If you use an Internationalized Domain Name (IDN), note these remarks:
 - You will have to enter your IDN hostnames (i.e. with special characters) into `letsencrypt:webAppName-hosts` (e.g. `myümlautdomain.de;www.myümlautdomain.de`).
-- You will have to enter your ACN encoded domain name into `letsencrypt:webAppName-azureDnsZoneName` (e.g `xn--mymlautdomain-xob.de`)
+- You will have to enter your ACE-prefixed punycode-encoded domain name into `letsencrypt:webAppName-azureDnsZoneName` (e.g `xn--mymlautdomain-xob.de`)
 
 ### Site Deployment Slots
 In order to specify a Site Deployment Slot for a given web app, use the following syntax for the web app's name: `webAppName{siteSlotName}`. For example, if you have a `foo` site with no deployment slots and a `bar` site with `staging` and `prod` deployment slots, configure `letsencrypt:webApps` to be `foo;bar{staging};bar{prod}`. Different deployment slots are treated as different web apps and the normal setting rules apply, so you would still need to configure the regular settings for each of them (e.g. `letsencrypt:foo-subscriptionId`, `letsencrypt:bar{staging}-subscriptionId`, `letsencrypt:bar{prod}-subscriptionId` and so forth). 
