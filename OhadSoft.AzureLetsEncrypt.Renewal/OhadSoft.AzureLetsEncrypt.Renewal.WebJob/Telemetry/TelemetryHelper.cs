@@ -42,8 +42,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry
                     "core.cloudapi.de",
                     "core.usgovcloudapi.net",
                     "localhost",
-                    "127.0.0.1"
-                }
+                    "127.0.0.1",
+                },
             });
 #pragma warning restore S1313
 

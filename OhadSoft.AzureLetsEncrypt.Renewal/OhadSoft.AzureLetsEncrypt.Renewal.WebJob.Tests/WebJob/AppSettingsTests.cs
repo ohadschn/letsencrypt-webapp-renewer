@@ -83,7 +83,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             { BuildConfigKey(ResourceGroupKeySuffix, WebApp2), ResourceGroup2 },
             { BuildConfigKey(HostsKeySuffix, WebApp2), String.Join(";", Hosts2) },
             { BuildConfigKey(EmailKeySuffix, WebApp2), Email2 },
-            { BuildConfigKey(ClientIdKeySuffix, WebApp2), ClientId2.ToString() } // override shared
+            { BuildConfigKey(ClientIdKeySuffix, WebApp2), ClientId2.ToString() }, // override shared
         };
 
         private readonly ConnectionStringSettingsCollection m_connectionStrings = new ConnectionStringSettingsCollection
@@ -94,7 +94,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             // override
             new ConnectionStringSettings(BuildConfigKey(ClientSecretKeySuffix, WebApp1), ClientSecret1),
             new ConnectionStringSettings(BuildConfigKey(AzureDnsClientSecretKeySuffix, WebApp1), ClientSecretAzureDns),
-            new ConnectionStringSettings(BuildConfigKey(ClientSecretKeySuffix, WebApp2), ClientSecret2)
+            new ConnectionStringSettings(BuildConfigKey(ClientSecretKeySuffix, WebApp2), ClientSecret2),
         };
 
         public AppSettingsTests()

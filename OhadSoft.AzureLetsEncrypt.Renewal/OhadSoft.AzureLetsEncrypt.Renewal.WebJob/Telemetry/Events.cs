@@ -99,11 +99,11 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry
                         { "useIpBasedSsl", renewalParams.UseIpBasedSsl.ToString() },
                         { "acmeBaseUri", renewalParams.AcmeBaseUri == null ? "[DEFAULT]" : renewalParams.AcmeBaseUri.ToString() },
                         { "azureDnsZoneName", renewalParams.AzureDnsZoneName },
-                        { "azureDnsRelativeRecordSetName", renewalParams.AzureDnsRelativeRecordSetName }
+                        { "azureDnsRelativeRecordSetName", renewalParams.AzureDnsRelativeRecordSetName },
                     },
                     new Dictionary<string, double>
                     {
-                        { "rsaKeyLength", renewalParams.RsaKeyLength }
+                        { "rsaKeyLength", renewalParams.RsaKeyLength },
                     });
             }
         }
