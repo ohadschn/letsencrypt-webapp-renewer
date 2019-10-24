@@ -57,99 +57,99 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
             m_renewer = new CliRenewer(RenewalManager, new CommandlineRenewalParamsReader());
         }
 
-        /// ------------------ INVALID PARAM TESTS ------------------
-        /// Note - some params don't require testing (absolute Uri, Bool, Int) as they are already enforced by the Commandline parser
+        // ------------------ INVALID PARAM TESTS ------------------
+        // Note - some params don't require testing (absolute Uri, Bool, Int) as they are already enforced by the Commandline parser
         [TestMethod]
         public void InvalidSubscriptionId()
         {
-            TestInvalidParameter("-s", Guid.Empty.ToString(), "subscriptionId");
-            TestInvalidParameter("-g", Guid.Empty.ToString(), "subscriptionId", "Azure DNS");
+            AssertInvalidParameter("-s", Guid.Empty.ToString(), "subscriptionId");
+            AssertInvalidParameter("-g", Guid.Empty.ToString(), "subscriptionId", "Azure DNS");
         }
 
         [TestMethod]
         public void InvalidTenant()
         {
-            TestInvalidParameter("-t", String.Empty, "tenantId");
-            TestInvalidParameter("-f", " ", "tenantId", "Azure DNS");
+            AssertInvalidParameter("-t", String.Empty, "tenantId");
+            AssertInvalidParameter("-f", " ", "tenantId", "Azure DNS");
         }
 
         [TestMethod]
         public void InvalidResourceGroup()
         {
-            TestInvalidParameter("-r", " ", "resourceGroup");
-            TestInvalidParameter("-j", String.Empty, "resourceGroup", "Azure DNS");
-            TestInvalidParameter("--servicePlanResourceGroup", "    ", "servicePlanResourceGroup");
+            AssertInvalidParameter("-r", " ", "resourceGroup");
+            AssertInvalidParameter("-j", String.Empty, "resourceGroup", "Azure DNS");
+            AssertInvalidParameter("--servicePlanResourceGroup", "    ", "servicePlanResourceGroup");
         }
 
         [TestMethod]
         public void InvalidSiteSlotName()
         {
-            TestInvalidParameter("-d", String.Empty, "siteSlotName");
+            AssertInvalidParameter("-d", String.Empty, "siteSlotName");
         }
 
         [TestMethod]
         public void InvalidWebApp()
         {
-            TestInvalidParameter("-w", "     ", "webApp");
+            AssertInvalidParameter("-w", "     ", "webApp");
         }
 
         [TestMethod]
         public void InvalidHosts()
         {
-            TestInvalidParameter("-o", "/", "hosts");
+            AssertInvalidParameter("-o", "/", "hosts");
         }
 
         [TestMethod]
         public void InvalidEmail()
         {
-            TestInvalidParameter("-e", "@notAnEmail", "email");
+            AssertInvalidParameter("-e", "@notAnEmail", "email");
         }
 
         [TestMethod]
         public void InvalidClientId()
         {
-            TestInvalidParameter("-c", Guid.Empty.ToString(), "clientId");
-            TestInvalidParameter("-q", Guid.Empty.ToString(), "clientId", "Azure DNS");
+            AssertInvalidParameter("-c", Guid.Empty.ToString(), "clientId");
+            AssertInvalidParameter("-q", Guid.Empty.ToString(), "clientId", "Azure DNS");
         }
 
         [TestMethod]
         public void InvalidClientSecret()
         {
-            TestInvalidParameter("-l", String.Empty, "clientSecret");
-            TestInvalidParameter("-v", " ", "clientSecret", "Azure DNS");
+            AssertInvalidParameter("-l", String.Empty, "clientSecret");
+            AssertInvalidParameter("-v", " ", "clientSecret", "Azure DNS");
         }
 
         [TestMethod]
         public void InvalidRsaKeyLength()
         {
-            TestInvalidParameter("-k", "-1", "rsaKeyLength");
+            AssertInvalidParameter("-k", "-1", "rsaKeyLength");
         }
 
         [TestMethod]
         public void InvalidWebRootPath()
         {
-            TestInvalidParameter("--webRootPath", " ", "webRootPath");
+            AssertInvalidParameter("--webRootPath", " ", "webRootPath");
         }
 
         [TestMethod]
         public void InvalidDefaultWebsiteDomainName()
         {
-            TestInvalidParameter("--azureDefaultWebSiteDomainName", "@", "azureDefaultWebsiteDomainName");
+            AssertInvalidParameter("--azureDefaultWebSiteDomainName", "@", "azureDefaultWebsiteDomainName");
         }
 
         [TestMethod]
         public void InvalidAzureDnsZoneName()
         {
-            TestInvalidParameter("--azureDnsZoneName", String.Empty, "azureDnsZoneName");
+            AssertInvalidParameter("--azureDnsZoneName", String.Empty, "azureDnsZoneName");
         }
 
         [TestMethod]
         public void InvalidAzureDnsRelativeRecordSetName()
         {
-            TestInvalidParameter("--azureDnsRelativeRecordSetName", "   ", "azureDnsRelativeRecordSetName");
+            AssertInvalidParameter("--azureDnsRelativeRecordSetName", "   ", "azureDnsRelativeRecordSetName");
         }
 
-        private void TestInvalidParameter(string name, string value, params string[] expectedTexts)
+        private void AssertInvalidParameter(string name, string value, params string[] expectedTexts)
         {
             AssertExtensions.Throws<ArgumentException>(
                 () => m_renewer.Renew(CompleteArgs(new[] { name, value })),
