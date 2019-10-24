@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -43,10 +44,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             var certificateServiceSettings = new CertificateServiceSettings { UseIPBasedSSL = renewalParams.UseIpBasedSsl };
             var azureDnsEnvironment = GetAzureDnsEnvironment(renewalParams);
 
-            var manager = azureDnsEnvironment == null
-                ? CertificateManager.CreateKuduWebAppCertificateManager(webAppEnvironment, acmeConfig, certificateServiceSettings, new AuthProviderConfig())
-                : CertificateManager.CreateAzureDnsWebAppCertificateManager(webAppEnvironment, acmeConfig, certificateServiceSettings, azureDnsEnvironment);
+            if (azureDnsEnvironment != null)
+            {
+                throw new ConfigurationErrorsException("Azure DNS challenge currently not supported");
+            }
 
+            var manager = CertificateManager.CreateKuduWebAppCertificateManager(webAppEnvironment, acmeConfig, certificateServiceSettings, new AuthProviderConfig());
             Trace.TraceInformation("Adding SSL cert for '{0}'...", GetWebAppFullName(renewalParams));
 
             bool addNewCert = true;
