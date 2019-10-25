@@ -120,7 +120,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
         [Option('k', Constants.RsaKeyLengthKey, Required = false, Default = 2048, HelpText = "Certificate RSA key length")]
         public int RsaKeyLength { get; }
 
-        [Option('a', Constants.AcmeBaseUriKey, Required = false, HelpText = "ACME base URI, defaults to: " + RenewalManager.DefaultAcmeBaseUri + " (for staging use https://acme-staging.api.letsencrypt.org/)")]
+        [Option('a', Constants.AcmeBaseUriKey, Required = false, HelpText = "ACME base URI, defaults to: " + RenewalManager.DefaultAcmeBaseUri + " (for staging use https://acme-staging-v02.api.letsencrypt.org/directory)")]
         public Uri AcmeBaseUri { get; }
 
         [Option('x', Constants.WebRootPathKey, Required = false, HelpText = "Web Root Path for HTTP challenge answer")]
