@@ -107,7 +107,7 @@
       <Version>1.8.5</Version>
     </PackageReference>
     <PackageReference Include="letsencrypt.azure.core">
-      <Version>0.9.6</Version>
+      <Version>1.0.4</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Azure.Management.Dns">
       <Version>3.0.1</Version>
