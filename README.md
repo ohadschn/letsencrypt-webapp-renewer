@@ -45,7 +45,7 @@ The `letsencrypt-webapp-renewer` WebJob is configured via [Web App Settings](htt
    1. `letsencrypt:webAppName-servicePlanResourceGroup` (optional, defaults to the Web App Resource Group)
    1. `letsencrypt:webAppName-useIpBasedSsl` (optional, defaults to `false`)
    1. `letsencrypt:webAppName-rsaKeyLength` (optional, defaults to `2048`)
-   1. `letsencrypt:webAppName-acmeBaseUri` (optional, defaults to `https://acme-v01.api.letsencrypt.org`)
+   1. `letsencrypt:webAppName-acmeBaseUri` (optional, defaults to `https://acme-v02.api.letsencrypt.org/directory`)
    1. `letsencrypt:webAppName-webRootPath` (optional, defaults to `%HOME%\site\wwwroot` or in case of running from package: `%HOME%\site\letsencrypt`)
    1. `letsencrypt:webAppName-renewXNumberOfDaysBeforeExpiration` (optional, defaults to `-1` which means renewal will take place regardless of the expiry time)
 
@@ -147,7 +147,7 @@ When executed outside of a WebJob context (as determined by the absence of the [
 | -d, --siteSlotName                          | Site Deployment Slot
 | -i, --useIpBasedSsl                         | (Default: false) Use IP Based SSL
 | -k, --rsaKeyLength                          | (Default: 2048) Certificate RSA key length
-| -a, --acmeBaseUri                           | ACME base URI, defaults to: `https://acme-v01.api.letsencrypt.org/` (for staging use `https://acme-staging.api.letsencrypt.org/`)
+| -a, --acmeBaseUri                           | ACME base URI, defaults to: `https://acme-v02.api.letsencrypt.org/directory` (for staging use `https://acme-staging-v02.api.letsencrypt.org/directory`)
 | -x, --webRootPath                           | Web Root Path for HTTP challenge answer
 | -n, --renewXNumberOfDaysBeforeExpiration    | (Default: -1) Number of days before certificate expiry to renew, defaults to a negative value meaning renewal will take place regardless of the expiry time
 | -h, --azureAuthenticationEndpoint           | The Active Directory Authority, defaults to: `https://login.windows.net/`
