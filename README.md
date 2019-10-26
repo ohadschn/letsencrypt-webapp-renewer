@@ -56,7 +56,7 @@ For more information about the various renewal settings see: https://github.com/
 - `letsencrypt:ohadsoft-subscriptionId`: `e432f869-4777-4380-a654-3440216992a2`
 - `letsencrypt:ohadsoft-tenantId`: `ohadsoft.onmicrosoft.com`
 - `letsencrypt:ohadsoft-resourceGroup`: `ohadsoft-rg`
-- `letsencrypt:ohadsoft-hosts`: `www.ohadsoft.com;ohadsoft.com`
+- `letsencrypt:ohadsoft-hosts`: `www.ohadsoft.com;ohadsoft.com;myümlautdomain.de` (note the Internationalized Domain Name [IDN] support)
 - `letsencrypt:ohadsoft-email`: `renewal@ohadsoft.com`
 - `letsencrypt:ohadsoft-clientId`: `5e1346b6-7db5-4eae-b9fa-7b3d5e42e6c7`
 - (**connection string**) `letsencrypt:ohadsoft-clientSecret`: `MySecretPassword123`
@@ -78,8 +78,10 @@ The following settings are required in order to renew certificates on sovereign 
 You can run the `Get-AzureEnvironment` PowerShell cmdlet to get the required values. For more information about configuring sovereign clouds see: https://github.com/sjkp/letsencrypt-siteextension/wiki/Azure-Germany,-US-or-China.
 
 ### DNS Challenge
+#### NOTE: DNS CHALLENGE IS CURRENLY DISABLED (pending support from the underlying library): https://github.com/ohadschn/letsencrypt-webapp-renewer/issues/91
+
 You may use the ACME DNS challenge instead of the HTTP challenge. Currently only Azure DNS is supported, and it can be activated using the following configuration:
-1. `letsencrypt:webAppName-azureDnsZoneName` (e.g. `yourDomain.com`)
+1. `letsencrypt:webAppName-azureDnsZoneName` (e.g. `yourDomain.com`, note that for Internationalized Domain Names [IDNs] you must use the punycode name e.g `xn--mymlautdomain-xob.de`)
 2. `letsencrypt:webAppName-azureDnsRelativeRecordSetName` (e.g. `yourSubDomain`)
 3. `letsencrypt:webAppName-azureDnsTenantId` (optional, defaults to Web App Tenant ID)
 4. `letsencrypt:webAppName-azureDnsSubscriptionId` (optional, defaults to Web App Subscription ID)
