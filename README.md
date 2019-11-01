@@ -101,7 +101,7 @@ All settings except `hosts`may be shared.
 If you have a site that supports many domain names, it can be useful to group them into separate certificates. In order to handle renewing multiple certificates associated with a single site, use the following syntax for the web app's name: `webAppName[groupName]` or `webAppName{siteSlotName}[groupName]`. For example, if you have a `foo` site that has two certificates that need to be updated, configure `letsencrypt:webApps` to be `foo;foo[Group2]`. You would still need to configure the regular settings for each of them (e.g. `letsencrypt:foo-subscriptionId`, `letsencrypt:foo[Group2]-subscriptionId` and so forth).
 
 ### Using the configuration script
-There is a PowerShell configuration-script [Set-LetsEncryptConfiguration.ps1](OhadSoft.AzureLetsEncrypt.Renewal/Scripts/Set-LetsEncryptConfiguration.ps1) which can be used to streamline the configuration of multiple Web Apps. Running the script is straightfoward, and further documentation resides inside it.
+There is a PowerShell configuration-script [Set-LetsEncryptConfiguration.ps1](src/Scripts/Set-LetsEncryptConfiguration.ps1) which can be used to streamline the configuration of multiple Web Apps. Running the script is straightfoward, and further documentation resides inside it.
 
 ## Installation
 1. (**optional but highly recommended**) Create a new dedicated Web App for cert renewal, to which you will deploy the `letsencrypt-webapp-renewer` WebJob. This will drastically decrease the likelihood of accidental deletion of the renewal WebJob  (e.g. upon deployment of a different app to the same Web App using _Delete Existing files_)
