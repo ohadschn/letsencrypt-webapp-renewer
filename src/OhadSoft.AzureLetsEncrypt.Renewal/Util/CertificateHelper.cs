@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,13 +20,21 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
             Site site;
             using (var client = await ArmHelper.GetWebSiteManagementClient(webAppEnvironment))
             {
+                var webAppName = webAppEnvironment.WebAppName;
+                var resourceGroupName = webAppEnvironment.ResourceGroupName;
+                var siteSlotName = webAppEnvironment.SiteSlotName;
                 Trace.TraceInformation(
                     "Getting Web App '{0}' (slot '{1}') from resource group '{2}'",
-                    webAppEnvironment.WebAppName,
-                    webAppEnvironment.SiteSlotName,
-                    webAppEnvironment.ResourceGroupName);
+                    webAppName,
+                    siteSlotName,
+                    resourceGroupName);
 
-                site = client.WebApps.GetSiteOrSlot(webAppEnvironment.ResourceGroupName, webAppEnvironment.WebAppName, webAppEnvironment.SiteSlotName);
+                site = client.WebApps.GetSiteOrSlot(resourceGroupName, webAppName, siteSlotName);
+                if (site == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Could not find web app '{webAppName}' (slot '{siteSlotName}') under Resource Groups '{resourceGroupName}'");
+                }
             }
 
             using (var httpClient = await ArmHelper.GetHttpClient(webAppEnvironment))
