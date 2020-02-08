@@ -11,7 +11,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
     [TestClass]
     public class CliTests : RenewalTestBase
     {
-        private IReadOnlyDictionary<(string shortName, string longName), string> FullValidArgs { get; } = new Dictionary<(string, string), string>
+        private IReadOnlyDictionary<(string ShortName, string LongName), string> FullValidArgs { get; } = new Dictionary<(string, string), string>
         {
 #pragma warning disable SA1008
             // ---- Mandatory ----
@@ -48,7 +48,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
 #pragma warning restore SA1008
         };
 
-        private IEnumerable<KeyValuePair<(string shortName, string longName), string>> GetMinimalValidArgs() => FullValidArgs.Take(8);
+        private IEnumerable<KeyValuePair<(string ShortName, string LongName), string>> GetMinimalValidArgs() => FullValidArgs.Take(8);
 
         private readonly CliRenewer m_renewer;
 
@@ -159,14 +159,14 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
         [TestMethod]
         public void MinimalProperParametersShouldSucceed()
         {
-            m_renewer.Renew(GetMinimalValidArgs().SelectMany(kvp => new[] { kvp.Key.shortName, kvp.Value }).ToArray());
+            m_renewer.Renew(GetMinimalValidArgs().SelectMany(kvp => new[] { kvp.Key.ShortName, kvp.Value }).ToArray());
             VerifySuccessfulRenewal(ExpectedPartialRenewalParameters1);
         }
 
         [TestMethod]
         public void MaximalProperParametersShouldSucceed()
         {
-            m_renewer.Renew(FullValidArgs.SelectMany(kvp => new[] { kvp.Key.longName, kvp.Value }).ToArray());
+            m_renewer.Renew(FullValidArgs.SelectMany(kvp => new[] { kvp.Key.LongName, kvp.Value }).ToArray());
             VerifySuccessfulRenewal(ExpectedFullRenewalParameters1);
         }
 
@@ -175,9 +175,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
             var list = new List<string>(args);
 
             var argNames = new HashSet<string>(args.Where((value, index) => index % 2 == 0)); // the even indices are the parameter names
-            foreach (var kvp in GetMinimalValidArgs().Where(kvp => !argNames.Contains(kvp.Key.shortName) && !argNames.Contains(kvp.Key.longName)))
+            foreach (var kvp in GetMinimalValidArgs().Where(kvp => !argNames.Contains(kvp.Key.ShortName) && !argNames.Contains(kvp.Key.LongName)))
             {
-                list.Add(kvp.Key.longName);
+                list.Add(kvp.Key.LongName);
                 list.Add(kvp.Value);
             }
 
