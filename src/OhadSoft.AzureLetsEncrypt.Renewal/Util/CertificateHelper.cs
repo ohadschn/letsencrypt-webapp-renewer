@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using LetsEncrypt.Azure.Core;
 using LetsEncrypt.Azure.Core.Models;
@@ -13,8 +15,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
 {
     public static class CertificateHelper
     {
+        private static readonly RNGCryptoServiceProvider s_randomGenerator = new RNGCryptoServiceProvider(); // thread-safe
+
         // https://github.com/sjkp/letsencrypt-siteextension/blob/8e758579b21b0dac5269337e30ac88b629818889/LetsEncrypt.SiteExtension.Core/CertificateManager.cs#L146
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Task")]
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Task")]
         public static async Task<IReadOnlyList<string>> GetLetsEncryptHostNames(IAzureWebAppEnvironment webAppEnvironment, bool staging)
         {
             Site site;
@@ -62,6 +66,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
             return json.Type == JTokenType.Object && json["value"] != null
                 ? JsonConvert.DeserializeObject<Certificate[]>(json["value"].ToString(), JsonHelper.DefaultSerializationSettings)
                 : JsonConvert.DeserializeObject<Certificate[]>(body, JsonHelper.DefaultSerializationSettings);
+        }
+
+        public static string GenerateSecurePassword()
+        {
+            var pfxPassData = new byte[32];
+            s_randomGenerator.GetBytes(pfxPassData);
+            return Convert.ToBase64String(pfxPassData);
         }
     }
 }
