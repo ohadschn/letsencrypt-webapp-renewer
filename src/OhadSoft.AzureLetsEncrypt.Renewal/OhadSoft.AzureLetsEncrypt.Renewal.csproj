@@ -109,6 +109,9 @@
     <PackageReference Include="letsencrypt.azure.core">
       <Version>1.0.5</Version>
     </PackageReference>
+    <PackageReference Include="LetsEncrypt.Azure.Core.V2">
+      <Version>1.0.132</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Azure.Management.Dns">
       <Version>3.0.1</Version>
     </PackageReference>
@@ -136,7 +139,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="StyleCop.Analyzers">
-      <Version>1.1.118</Version>
+      <Version>1.2.0-beta.113</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
