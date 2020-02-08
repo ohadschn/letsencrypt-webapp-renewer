@@ -4,10 +4,15 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using LetsEncrypt.Azure.Core;
 using LetsEncrypt.Azure.Core.Models;
+using LetsEncrypt.Azure.Core.V2;
+using LetsEncrypt.Azure.Core.V2.CertificateStores;
+using LetsEncrypt.Azure.Core.V2.DnsProviders;
+using LetsEncrypt.Azure.Core.V2.Models;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.TraceSource;
 using OhadSoft.AzureLetsEncrypt.Renewal.Configuration;
 using OhadSoft.AzureLetsEncrypt.Renewal.Util;
 
@@ -23,7 +28,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public const string DefaultManagementEndpoint = "https://management.azure.com";
 #pragma warning restore S1075 // URIs should not be hardcoded
 
-        private static readonly RNGCryptoServiceProvider s_randomGenerator = new RNGCryptoServiceProvider(); // thread-safe
+        private static readonly LoggerFactory s_loggerFactory = new LoggerFactory(new[]
+        {
+            new TraceSourceLoggerProvider(
+                new SourceSwitch("letsencrypt-azure", "All"),
+                new ConsoleTraceListener { Filter = new EventTypeFilter(SourceLevels.Information), TraceOutputOptions = TraceOptions.DateTime }),
+        });
 
         public Task Renew(RenewalParameters renewalParams)
         {
@@ -39,40 +49,29 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         {
             Trace.TraceInformation("Generating SSL certificate with parameters: {0}", renewalParams);
 
-            var acmeConfig = GetAcmeConfig(renewalParams);
+            var acmeConfig = GetAcmeConfig(renewalParams, CertificateHelper.GenerateSecurePassword());
             var webAppEnvironment = GetWebAppEnvironment(renewalParams);
             var certificateServiceSettings = new CertificateServiceSettings { UseIPBasedSSL = renewalParams.UseIpBasedSsl };
             var azureDnsEnvironment = GetAzureDnsEnvironment(renewalParams);
 
+            Trace.TraceInformation("Adding / renewing SSL cert for '{0}'...", GetWebAppFullName(renewalParams));
+            bool staging = acmeConfig.BaseUri.Contains("staging", StringComparison.OrdinalIgnoreCase);
+
             if (azureDnsEnvironment != null)
             {
-                throw new ConfigurationErrorsException("Azure DNS challenge currently not supported");
+                // NOTE: RenewXNumberOfDaysBeforeExpiration will be ignored as long as NullCertificateStore is used
+                await GetDnsRenewalService(renewalParams, azureDnsEnvironment, webAppEnvironment).Run(
+                    new AcmeDnsRequest
+                    {
+                        AcmeEnvironment = staging ? (AcmeEnvironment)new LetsEncryptStagingV2() : new LetsEncryptV2(),
+                        RegistrationEmail = acmeConfig.RegistrationEmail,
+                        Host = acmeConfig.Host,
+                        PFXPassword = CertificateHelper.GenerateSecurePassword(),
+                    }, renewalParams.RenewXNumberOfDaysBeforeExpiration);
             }
 
             var manager = CertificateManager.CreateKuduWebAppCertificateManager(webAppEnvironment, acmeConfig, certificateServiceSettings, new AuthProviderConfig());
-            Trace.TraceInformation("Adding SSL cert for '{0}'...", GetWebAppFullName(renewalParams));
-
-            bool addNewCert = true;
-            if (renewalParams.RenewXNumberOfDaysBeforeExpiration > 0)
-            {
-                var staging = acmeConfig.BaseUri.Contains("staging", StringComparison.OrdinalIgnoreCase);
-                var letsEncryptHostNames = await CertificateHelper.GetLetsEncryptHostNames(webAppEnvironment, staging);
-                Trace.TraceInformation("Let's Encrypt host names (staging: {0}): {1}", staging, String.Join(", ", letsEncryptHostNames));
-
-                ICollection<string> missingHostNames = acmeConfig.Hostnames.Except(letsEncryptHostNames, StringComparer.OrdinalIgnoreCase).ToArray();
-                if (missingHostNames.Count > 0)
-                {
-                    Trace.TraceInformation(
-                        "Detected host name(s) with no associated Let's Encrypt certificates, will add a new certificate: {0}",
-                        String.Join(", ", missingHostNames));
-                }
-                else
-                {
-                    Trace.TraceInformation("All host names associated with Let's Encrypt certificates, will perform cert renewal");
-                    addNewCert = false;
-                }
-            }
-
+            var addNewCert = await CheckCertAddition(renewalParams, webAppEnvironment, acmeConfig, staging);
             if (addNewCert)
             {
                 await manager.AddCertificate();
@@ -83,6 +82,110 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             }
 
             Trace.TraceInformation("Let's Encrypt SSL certs & bindings renewed for '{0}'", renewalParams.WebApp);
+        }
+
+        private static async Task<bool> CheckCertAddition(
+            RenewalParameters renewalParams,
+            AzureWebAppEnvironment webAppEnvironment,
+            AcmeConfig acmeConfig,
+            bool staging)
+        {
+            if (renewalParams.RenewXNumberOfDaysBeforeExpiration <= 0)
+            {
+                return true;
+            }
+
+            var letsEncryptHostNames = await CertificateHelper.GetLetsEncryptHostNames(webAppEnvironment, staging);
+            Trace.TraceInformation("Let's Encrypt host names (staging: {0}): {1}", staging, String.Join(", ", letsEncryptHostNames));
+
+            ICollection<string> missingHostNames = acmeConfig.Hostnames.Except(letsEncryptHostNames, StringComparer.OrdinalIgnoreCase).ToArray();
+            if (missingHostNames.Count > 0)
+            {
+                Trace.TraceInformation(
+                    "Detected host name(s) with no associated Let's Encrypt certificates, will add a new certificate: {0}",
+                    String.Join(", ", missingHostNames));
+                return true;
+            }
+
+            Trace.TraceInformation("All host names associated with Let's Encrypt certificates, will perform cert renewal");
+            return false;
+        }
+
+        private static LetsencryptService GetDnsRenewalService(RenewalParameters renewalParams, IAzureDnsEnvironment azureDnsEnvironment, AzureWebAppEnvironment webAppEnvironment)
+        {
+            return new LetsencryptService(
+                new AcmeClient(
+                    new AzureDnsProvider(
+                        new AzureDnsSettings(
+                            azureDnsEnvironment.ResourceGroupName,
+                            azureDnsEnvironment.ZoneName,
+                            GetAzureServicePrincipal(azureDnsEnvironment),
+                            GetAzureSubscription(azureDnsEnvironment),
+                            azureDnsEnvironment.RelativeRecordSetName)),
+                    new DnsLookupService(new Logger<DnsLookupService>(s_loggerFactory)),
+                    new NullCertificateStore(),
+                    new Logger<AcmeClient>(s_loggerFactory)),
+                new NullCertificateStore(),
+                new AzureWebAppService(
+                    new[]
+                    {
+                        new AzureWebAppSettings(
+                            webAppEnvironment.WebAppName,
+                            webAppEnvironment.ResourceGroupName,
+                            GetAzureServicePrincipal(webAppEnvironment),
+                            GetAzureSubscription(webAppEnvironment),
+                            webAppEnvironment.SiteSlotName,
+                            webAppEnvironment.ServicePlanResourceGroupName,
+                            renewalParams.UseIpBasedSsl),
+                    },
+                    new Logger<AzureWebAppService>(s_loggerFactory)),
+                new Logger<LetsencryptService>(s_loggerFactory));
+        }
+
+        private static AzureSubscription GetAzureSubscription(IAzureEnvironment azureDnsEnvironment)
+        {
+            return new AzureSubscription
+            {
+                AzureRegion = GetAzureCloud(azureDnsEnvironment.TokenAudience?.ToString()),
+                SubscriptionId = azureDnsEnvironment.SubscriptionId.ToString(),
+                Tenant = azureDnsEnvironment.Tenant,
+            };
+        }
+
+        private static AzureServicePrincipal GetAzureServicePrincipal(IAzureEnvironment azureDnsEnvironment)
+        {
+            return new AzureServicePrincipal
+            {
+                ClientId = azureDnsEnvironment.ClientId.ToString(),
+                ClientSecret = azureDnsEnvironment.ClientSecret,
+            };
+        }
+
+        private static string GetAzureCloud(string tokenAudience)
+        {
+            tokenAudience = tokenAudience ?? "https://management.core.windows.net/";
+
+            if (tokenAudience.Contains(".de", StringComparison.OrdinalIgnoreCase))
+            {
+                return "AzureGermanCloud";
+            }
+
+            if (tokenAudience.Contains(".cn", StringComparison.OrdinalIgnoreCase))
+            {
+                return "AzureChinaCloud";
+            }
+
+            if (tokenAudience.Contains(".usgov", StringComparison.OrdinalIgnoreCase))
+            {
+                return "AzureUSGovernment";
+            }
+
+            if (tokenAudience.Contains("windows.net", StringComparison.OrdinalIgnoreCase))
+            {
+                return "AzureGlobalCloud";
+            }
+
+            throw new ConfigurationErrorsException($"Unknown token audience: {tokenAudience}");
         }
 
         private static IAzureDnsEnvironment GetAzureDnsEnvironment(RenewalParameters renewalParams)
@@ -132,11 +235,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             };
         }
 
-        private static AcmeConfig GetAcmeConfig(RenewalParameters renewalParams)
+        private static AcmeConfig GetAcmeConfig(RenewalParameters renewalParams, string pfxPassData)
         {
             Trace.TraceInformation("Generating secure PFX password for '{0}'...", renewalParams.WebApp);
-            var pfxPassData = new byte[32];
-            s_randomGenerator.GetBytes(pfxPassData);
 
             return new AcmeConfig
             {
@@ -144,7 +245,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 AlternateNames = renewalParams.Hosts.Skip(1).ToList(),
                 RegistrationEmail = renewalParams.Email,
                 RSAKeyLength = renewalParams.RsaKeyLength,
-                PFXPassword = Convert.ToBase64String(pfxPassData),
+                PFXPassword = pfxPassData,
                 BaseUri = (renewalParams.AcmeBaseUri ?? new Uri(DefaultAcmeBaseUri)).ToString(),
             };
         }
