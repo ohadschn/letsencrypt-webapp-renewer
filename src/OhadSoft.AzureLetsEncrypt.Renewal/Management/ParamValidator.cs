@@ -27,11 +27,19 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 : throw new ArgumentException("String must be either null or non-whitespace", name);
         }
 
-        public static IReadOnlyList<string> VerifyHosts(IReadOnlyList<string> hosts, string name)
+        public static IReadOnlyList<string> VerifyHosts(IReadOnlyList<string> hosts, bool enforceWildcard, string name)
         {
-            return hosts != null && hosts.Count > 0 && hosts.All(h => Uri.CheckHostName(h?.Replace('*', 'x')) != UriHostNameType.Unknown)
-                ? hosts
-                : throw new ArgumentException("Host collection must be non-null, contain at least one element, and contain valid host names", name);
+            if (hosts == null || hosts.Count == 0 || hosts.Any(h => Uri.CheckHostName(h?.Replace('*', 'x')) == UriHostNameType.Unknown))
+            {
+                throw new ArgumentException("Host collection must be non-null, contain at least one element, and contain valid host names", name);
+            }
+
+            if (enforceWildcard && hosts.Any(h => !h.StartsWith("*.", StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new ArgumentException("Only wildcard host names are supported for the DNS challenge (must begin with '*.'", name);
+            }
+
+            return hosts;
         }
 
         public static string VerifyEmail(string email, string name)
