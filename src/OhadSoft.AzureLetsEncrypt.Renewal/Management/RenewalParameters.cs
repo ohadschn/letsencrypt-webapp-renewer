@@ -50,7 +50,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         {
             WebAppEnvironmentParams = ParamValidator.VerifyNonNull(webAppEnvironmentParams, nameof(webAppEnvironmentParams));
             WebApp = ParamValidator.VerifyString(webApp, nameof(webApp));
-            Hosts = ParamValidator.VerifyHosts(hosts, nameof(hosts));
+            Hosts = ParamValidator.VerifyHosts(hosts, azureDnsZoneName != null && azureDnsRelativeRecordSetName != null, nameof(hosts));
             Email = ParamValidator.VerifyEmail(email, nameof(email));
             ServicePlanResourceGroup = ParamValidator.VerifyOptionalString(servicePlanResourceGroup, nameof(servicePlanResourceGroup));
             GroupName = ParamValidator.VerifyOptionalString(groupName, nameof(groupName));
