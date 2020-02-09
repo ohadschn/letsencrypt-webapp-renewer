@@ -18,7 +18,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
         {
             var renewalParameters = m_renewalParamsReader.Read(args);
             Events.RenewalInProgress(renewalParameters);
-            m_renewalManager.Renew(renewalParameters).Wait();
+            m_renewalManager.Renew(renewalParameters).GetAwaiter().GetResult();
         }
     }
 }

@@ -29,6 +29,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
                 Trace.TraceInformation("{0} environment variable detected - telemetry disabled", DisableTelemetryEnvVarName);
             }
 
+            if (Environment.GetEnvironmentVariable("DEBUG_MODE") != null)
+            {
+                Trace.TraceInformation("*** DEBUG MODE ENABLED (all exceptions will crash process) ***");
+                ExceptionHelper.DebugMode = true;
+            }
+
             try
             {
                 var webjobName = Environment.GetEnvironmentVariable("WEBJOBS_NAME");
@@ -37,6 +43,11 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             finally
             {
                 TelemetryHelper.Client.Flush();
+                if (Debugger.IsAttached)
+                {
+                    Console.WriteLine("Press [Enter] to continue");
+                    Console.ReadLine();
+                }
             }
         }
 
