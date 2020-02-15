@@ -49,9 +49,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected static readonly Guid Subscription2 = Guid.Parse("c6068e1b-27a8-473d-9113-d443d1ae8859");
         protected static readonly Guid SubscriptionShared = Guid.Parse("53c40909-2b5c-49e9-8f2d-f32957ecfcf0");
         protected static readonly Guid SubscriptionAzureDns = Guid.Parse("ebf8621c-5bd1-4a36-9251-cae62496973e");
-        protected static readonly IReadOnlyList<string> Hosts1 = new[] { "www.foo.com" };
+        protected static readonly IReadOnlyList<string> Hosts1 = new[] { "*.foo.com" };
         protected static readonly IReadOnlyList<string> Hosts2 = new[] { "www.bar.com", "bar.com" };
-        protected static readonly IReadOnlyList<string> Hosts3 = new[] { "www.shared.com" };
+        protected static readonly IReadOnlyList<string> Hosts3 = new[] { "*.shared.com" };
         protected static readonly IReadOnlyList<string> Hosts4 = new[] { "www.barbaz.com", "barbaz.com" };
         protected static readonly Guid ClientId1 = Guid.Parse("89e5c1ee-a37b-4af7-89fc-217a4b99652c");
         protected static readonly Guid ClientId2 = Guid.Parse("618a929b-d9c9-4ec1-b8dc-66f55d949d52");
