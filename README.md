@@ -78,7 +78,6 @@ The following settings are required in order to renew certificates on sovereign 
 You can run the `Get-AzureEnvironment` PowerShell cmdlet to get the required values. For more information about configuring sovereign clouds see: https://github.com/sjkp/letsencrypt-siteextension/wiki/Azure-Germany,-US-or-China.
 
 ### DNS Challenge
-#### NOTE: DNS CHALLENGE IS CURRENLY DISABLED (pending support from the underlying library): https://github.com/ohadschn/letsencrypt-webapp-renewer/issues/91
 
 You may use the ACME DNS challenge instead of the HTTP challenge. Currently only Azure DNS is supported, and it can be activated using the following configuration:
 1. `letsencrypt:webAppName-azureDnsZoneName` (e.g. `yourDomain.com`, note that for Internationalized Domain Names [IDNs] you must use the punycode name e.g `xn--mymlautdomain-xob.de`)
@@ -88,6 +87,10 @@ You may use the ACME DNS challenge instead of the HTTP challenge. Currently only
 5. `letsencrypt:webAppName-azureDnsResourceGroup` (optional, defaults to Web App Resource Group)
 6. `letsencrypt:webAppName-azureDnsClientId` (optional, defaults to Web App Client ID)
 7. `letsencrypt:webAppName-azureDnsClientSecret` (optional, defaults to Web App Client Secret)
+
+#### DNS Challenge Limitations
+* Only wildcard host names are supported (must begin with `*.`)
+* App Service Plan and App Service must reside in the same resource group
 
 ### Site Deployment Slots
 In order to specify a Site Deployment Slot for a given web app, use the following syntax for the web app's name: `webAppName{siteSlotName}`. For example, if you have a `foo` site with no deployment slots and a `bar` site with `staging` and `prod` deployment slots, configure `letsencrypt:webApps` to be `foo;bar{staging};bar{prod}`. Different deployment slots are treated as different web apps and the normal setting rules apply, so you would still need to configure the regular settings for each of them (e.g. `letsencrypt:foo-subscriptionId`, `letsencrypt:bar{staging}-subscriptionId`, `letsencrypt:bar{prod}-subscriptionId` and so forth). 
