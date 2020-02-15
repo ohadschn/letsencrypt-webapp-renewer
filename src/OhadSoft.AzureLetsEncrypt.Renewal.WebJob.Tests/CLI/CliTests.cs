@@ -100,6 +100,18 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
         }
 
         [TestMethod]
+        public void TestInvalidAzureDnsHosts()
+        {
+            AssertInvalidParameters(
+                CompleteArgs(new[]
+                {
+                    "-o", "www.example.com",
+                    "--azureDnsZoneName", "example.com",
+                    "--azureDnsRelativeRecordSetName", "www",
+                }), "wildcard");
+        }
+
+        [TestMethod]
         public void InvalidEmail()
         {
             AssertInvalidParameter("-e", "@notAnEmail", "email");
@@ -151,8 +163,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
 
         private void AssertInvalidParameter(string name, string value, params string[] expectedTexts)
         {
+            AssertInvalidParameters(CompleteArgs(new[] { name, value }), expectedTexts);
+        }
+
+        private void AssertInvalidParameters(string[] args, params string[] expectedTexts)
+        {
             AssertExtensions.Throws<ArgumentException>(
-                () => m_renewer.Renew(CompleteArgs(new[] { name, value })),
+                () => m_renewer.Renew(args),
                 e => expectedTexts.All(t => e.Message.Contains(t)));
         }
 

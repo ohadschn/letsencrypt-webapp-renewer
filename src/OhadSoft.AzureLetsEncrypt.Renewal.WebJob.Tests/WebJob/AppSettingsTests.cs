@@ -160,6 +160,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         }
 
         [TestMethod]
+        public void TestInvalidAzureDnsHosts()
+        {
+            AssertInvalidConfig(HostsKeySuffix, WebApp1, "www.foo.com", "wildcard", testMissing: false, testShared: false);
+        }
+
+        [TestMethod]
         public void TestInvalidEmail()
         {
             AssertInvalidConfig(EmailKeySuffix, WebApp1, "mail@", "email");
