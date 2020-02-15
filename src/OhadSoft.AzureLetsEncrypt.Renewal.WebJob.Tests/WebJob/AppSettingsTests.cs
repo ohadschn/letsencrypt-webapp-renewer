@@ -156,7 +156,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         [TestMethod]
         public void TestInvalidHosts()
         {
-            AssertInvalidConfig(HostsKeySuffix, WebApp2, "www.foo.com;not/valid", "hosts", testMissing: true, testShared: false);
+            AssertInvalidConfig(HostsKeySuffix, WebApp2, "www.foo.com;not/valid", "hosts", testMissing: false, testShared: false);
         }
 
         [TestMethod]
