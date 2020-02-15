@@ -47,19 +47,16 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
         private static async Task RenewCore(RenewalParameters renewalParams)
         {
-            Trace.TraceInformation("Generating SSL certificate with parameters: {0}", renewalParams);
+            Trace.TraceInformation("Adding / renewing SSL cert for '{0}' with parameters: {1}", GetWebAppFullName(renewalParams), renewalParams);
 
             var acmeConfig = GetAcmeConfig(renewalParams, CertificateHelper.GenerateSecurePassword());
             var webAppEnvironment = GetWebAppEnvironment(renewalParams);
             var certificateServiceSettings = new CertificateServiceSettings { UseIPBasedSSL = renewalParams.UseIpBasedSsl };
             var azureDnsEnvironment = GetAzureDnsEnvironment(renewalParams);
 
-            Trace.TraceInformation("Adding / renewing SSL cert for '{0}'...", GetWebAppFullName(renewalParams));
             bool staging = acmeConfig.BaseUri.Contains("staging", StringComparison.OrdinalIgnoreCase);
-
             if (azureDnsEnvironment != null)
             {
-                // NOTE: RenewXNumberOfDaysBeforeExpiration will be ignored as long as NullCertificateStore is used
                 await GetDnsRenewalService(renewalParams, azureDnsEnvironment, webAppEnvironment).Run(
                     new AcmeDnsRequest
                     {
@@ -67,27 +64,21 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                         RegistrationEmail = acmeConfig.RegistrationEmail,
                         Host = acmeConfig.Host,
                         PFXPassword = CertificateHelper.GenerateSecurePassword(),
-                        CsrInfo = new CsrInfo
-                        {
-                            CommonName = acmeConfig.Host,
-                            Organization = acmeConfig.Host,
-                            OrganizationUnit = acmeConfig.Host,
-                            CountryName = "US",
-                            State = "California",
-                            Locality = "San Francisco",
-                        },
+                        CsrInfo = new CsrInfo(),
                     }, renewalParams.RenewXNumberOfDaysBeforeExpiration);
-            }
-
-            var manager = CertificateManager.CreateKuduWebAppCertificateManager(webAppEnvironment, acmeConfig, certificateServiceSettings, new AuthProviderConfig());
-            var addNewCert = await CheckCertAddition(renewalParams, webAppEnvironment, acmeConfig, staging);
-            if (addNewCert)
-            {
-                await manager.AddCertificate();
             }
             else
             {
-                await manager.RenewCertificate(false, renewalParams.RenewXNumberOfDaysBeforeExpiration);
+                var manager = CertificateManager.CreateKuduWebAppCertificateManager(webAppEnvironment, acmeConfig, certificateServiceSettings, new AuthProviderConfig());
+                var addNewCert = await CheckCertAddition(renewalParams, webAppEnvironment, acmeConfig, staging);
+                if (addNewCert)
+                {
+                    await manager.AddCertificate();
+                }
+                else
+                {
+                    await manager.RenewCertificate(false, renewalParams.RenewXNumberOfDaysBeforeExpiration);
+                }
             }
 
             Trace.TraceInformation("Let's Encrypt SSL certs & bindings renewed for '{0}'", renewalParams.WebApp);
