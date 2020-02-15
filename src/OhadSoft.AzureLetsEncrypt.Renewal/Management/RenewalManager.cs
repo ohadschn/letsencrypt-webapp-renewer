@@ -67,7 +67,15 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                         RegistrationEmail = acmeConfig.RegistrationEmail,
                         Host = acmeConfig.Host,
                         PFXPassword = CertificateHelper.GenerateSecurePassword(),
-                        CsrInfo = new CsrInfo(),
+                        CsrInfo = new CsrInfo
+                        {
+                            CommonName = acmeConfig.Host,
+                            Organization = acmeConfig.Host,
+                            OrganizationUnit = acmeConfig.Host,
+                            CountryName = "US",
+                            State = "California",
+                            Locality = "San Francisco",
+                        },
                     }, renewalParams.RenewXNumberOfDaysBeforeExpiration);
             }
 
