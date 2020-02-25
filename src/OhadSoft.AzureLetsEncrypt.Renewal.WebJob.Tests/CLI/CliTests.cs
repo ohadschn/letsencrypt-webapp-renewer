@@ -112,6 +112,18 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
         }
 
         [TestMethod]
+        public void TestInvalidAzureDnsHostsExpirationAwareRenewal()
+        {
+            AssertInvalidParameters(
+                CompleteArgs(new[]
+                {
+                    "-z", "example.com",    // --azureDnsZoneName
+                    "-y", "www",            // --azureDnsRelativeRecordSetName
+                    "-n", "42",             // --renewXNumberOfDaysBeforeExpiration
+                }), "expir");
+        }
+
+        [TestMethod]
         public void InvalidEmail()
         {
             AssertInvalidParameter("-e", "@notAnEmail", "email");
@@ -170,7 +182,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
         {
             AssertExtensions.Throws<ArgumentException>(
                 () => m_renewer.Renew(args),
-                e => expectedTexts.All(t => e.Message.Contains(t)));
+                e => expectedTexts.All(t => e.Message.IndexOf(t, StringComparison.OrdinalIgnoreCase) >= 0));
         }
 
         [TestMethod]

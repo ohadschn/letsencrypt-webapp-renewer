@@ -60,7 +60,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected static readonly Guid ClientIdAzureDnsShared = Guid.Parse("5ef592f7-c291-4c82-adde-80e46d2e05a0");
         protected static readonly Uri AcmeBaseUri1 = new Uri("http://foo.example.com");
         protected static readonly Uri AcmeBaseUriShared = new Uri("http://shared.example.com");
-        protected static readonly int RenewXNumberOfDaysBeforeExpiration1 = 22;
+        protected static readonly int RenewXNumberOfDaysBeforeExpiration1 = -1;
         protected static readonly int RenewXNumberOfDaysBeforeExpirationShared = 60;
         protected static readonly Uri AzureAuthenticationEndpoint1 = new Uri("https://authenticate.com");
         protected static readonly Uri AzureAuthenticationEndpointShared = new Uri("https://shared.authentication.com");
