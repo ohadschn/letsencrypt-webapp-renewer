@@ -294,6 +294,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         }
 
         [TestMethod]
+        public void TestInvalidAzureDnsHostsExpirationAwareRenewal()
+        {
+            AssertInvalidConfig(RenewXNumberOfDaysBeforeExpirationKeySuffix, WebApp1, "1", "expir", false, false);
+        }
+
+        [TestMethod]
         public void TestInvalidAzureDnsRelativeRecordSetName()
         {
             AssertInvalidConfig(AzureDnsRelativeRecordSetNameKeySuffix, WebApp2, "  ", "azureDnsRelativeRecordSetName", false);
@@ -405,7 +411,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
                 () => m_renewer.Renew().GetAwaiter().GetResult(),
                 e => expectedText == null || expectedText.Split(',')
                          .Select(et => et.Trim())
-                         .All(et => (e.Message + e.InnerException?.Message).Contains(et)));
+                         .All(et => (e.Message + e.InnerException?.Message).IndexOf(et, StringComparison.OrdinalIgnoreCase) >= 0));
         }
 
         private static string BuildConfigKey(string key, string webApp = null)
