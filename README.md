@@ -91,6 +91,7 @@ You may use the ACME DNS challenge instead of the HTTP challenge. Currently only
 #### DNS Challenge Limitations
 * Only wildcard host names are supported (must begin with `*.`)
 * App Service Plan and App Service must reside in the same resource group
+* `renewXNumberOfDaysBeforeExpiration` is not supported
 
 ### Site Deployment Slots
 In order to specify a Site Deployment Slot for a given web app, use the following syntax for the web app's name: `webAppName{siteSlotName}`. For example, if you have a `foo` site with no deployment slots and a `bar` site with `staging` and `prod` deployment slots, configure `letsencrypt:webApps` to be `foo;bar{staging};bar{prod}`. Different deployment slots are treated as different web apps and the normal setting rules apply, so you would still need to configure the regular settings for each of them (e.g. `letsencrypt:foo-subscriptionId`, `letsencrypt:bar{staging}-subscriptionId`, `letsencrypt:bar{prod}-subscriptionId` and so forth). 

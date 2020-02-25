@@ -48,10 +48,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             Uri azureManagementEndpoint = null,
             string azureDefaultWebsiteDomainName = null)
         {
+            bool dnsChallenge = azureDnsZoneName != null && azureDnsRelativeRecordSetName != null;
+
             WebAppEnvironmentParams = ParamValidator.VerifyNonNull(webAppEnvironmentParams, nameof(webAppEnvironmentParams));
             WebApp = ParamValidator.VerifyString(webApp, nameof(webApp));
-            Hosts = ParamValidator.VerifyHosts(hosts, azureDnsZoneName != null && azureDnsRelativeRecordSetName != null, nameof(hosts));
-            Email = ParamValidator.VerifyEmail(email, nameof(email));
+            Hosts = VerifyHosts(hosts, dnsChallenge, nameof(hosts));
+            Email = VerifyEmail(email, nameof(email));
             ServicePlanResourceGroup = ParamValidator.VerifyOptionalString(servicePlanResourceGroup, nameof(servicePlanResourceGroup));
             GroupName = ParamValidator.VerifyOptionalString(groupName, nameof(groupName));
             SiteSlotName = ParamValidator.VerifyOptionalString(siteSlotName, nameof(siteSlotName));
@@ -62,11 +64,42 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             RsaKeyLength = ParamValidator.VerifyPositiveInteger(rsaKeyLength, nameof(rsaKeyLength));
             AcmeBaseUri = ParamValidator.VerifyOptionalUri(acmeBaseUri, nameof(acmeBaseUri));
             WebRootPath = ParamValidator.VerifyOptionalString(webRootPath, nameof(webRootPath));
-            RenewXNumberOfDaysBeforeExpiration = renewXNumberOfDaysBeforeExpiration;
+            RenewXNumberOfDaysBeforeExpiration =
+                VerifyRenewXNumberOfDaysBeforeExpiration(renewXNumberOfDaysBeforeExpiration, !dnsChallenge, nameof(renewXNumberOfDaysBeforeExpiration));
             AuthenticationUri = ParamValidator.VerifyOptionalUri(authenticationUri, nameof(authenticationUri));
             AzureTokenAudience = ParamValidator.VerifyOptionalUri(azureTokenAudience, nameof(azureTokenAudience));
             AzureManagementEndpoint = ParamValidator.VerifyOptionalUri(azureManagementEndpoint, nameof(azureManagementEndpoint));
             AzureDefaultWebsiteDomainName = ParamValidator.VerifyOptionalHostName(azureDefaultWebsiteDomainName, nameof(azureDefaultWebsiteDomainName));
+        }
+
+        public static IReadOnlyList<string> VerifyHosts(IReadOnlyList<string> hosts, bool enforceWildcard, string name)
+        {
+            if (hosts == null || hosts.Count == 0 || hosts.Any(h => Uri.CheckHostName(h?.Replace('*', 'x')) == UriHostNameType.Unknown))
+            {
+                throw new ArgumentException("Host collection must be non-null, contain at least one element, and contain valid host names", name);
+            }
+
+            if (enforceWildcard && hosts.Any(h => !h.StartsWith("*.", StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new ArgumentException("Only wildcard host names are supported for the DNS challenge (must begin with '*.'", name);
+            }
+
+            return hosts;
+        }
+
+        public static string VerifyEmail(string email, string name)
+        {
+            return !String.IsNullOrWhiteSpace(email) && email.Contains("@") && email.Length >= 3 && email.Length <= 254
+                   && !email.StartsWith("@", StringComparison.OrdinalIgnoreCase) && !email.EndsWith("@", StringComparison.OrdinalIgnoreCase)
+                ? email
+                : throw new ArgumentException("E-mail address must not be null and must be valid", name);
+        }
+
+        public static int VerifyRenewXNumberOfDaysBeforeExpiration(int renewXNumberOfDaysBeforeExpiration, bool supported, string name)
+        {
+            return supported || renewXNumberOfDaysBeforeExpiration <= 0
+                ? renewXNumberOfDaysBeforeExpiration
+                : throw new ArgumentException("Expiration aware renewal not supported by DNS challenge", name);
         }
 
         public override string ToString()
