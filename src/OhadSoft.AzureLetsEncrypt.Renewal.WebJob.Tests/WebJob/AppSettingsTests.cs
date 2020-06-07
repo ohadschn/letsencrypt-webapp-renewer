@@ -64,7 +64,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             { BuildConfigKey(EmailKeySuffix, WebApp1), Email1 },
             { BuildConfigKey(ClientIdKeySuffix, WebApp1), ClientId1.ToString() }, // override shared
             { BuildConfigKey(AzureDnsClientIdKeySuffix, WebApp1), ClientIdAzureDns.ToString() },
-            { BuildConfigKey(UseIpBasedSslKeySuffix, WebApp1), UseIpBasedSsl1.ToString() },
+            { BuildConfigKey(UseIpBasedSslKeySuffix, WebApp1), UseIpBasedSsl1.ToString(CultureInfo.InvariantCulture) },
             { BuildConfigKey(RsaKeyLengthKeySuffix, WebApp1), RsaKeyLength1.ToString(CultureInfo.InvariantCulture) },
             { BuildConfigKey(AcmeBaseUriKeySuffix, WebApp1), AcmeBaseUri1.ToString() },
             { BuildConfigKey(WebRootPathKeySuffix, WebApp1), WebRootPath1 },
@@ -309,7 +309,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         public async Task TestSingleWebAppConfig()
         {
             m_appSettings[KeyPrefix + WebAppsKey] = WebApp1;
-            await m_renewer.Renew();
+            await m_renewer.Renew().ConfigureAwait(false);
             VerifySuccessfulRenewal(ExpectedFullRenewalParameters1);
             VerifySuccessfulNotification(ExpectedFullRenewalParameters1);
         }
@@ -317,7 +317,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         [TestMethod]
         public async Task TestDoubleWebAppConfig()
         {
-            await m_renewer.Renew();
+            await m_renewer.Renew().ConfigureAwait(false);
             VerifySuccessfulRenewal(ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2);
             VerifySuccessfulNotification(ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2);
         }
@@ -336,7 +336,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
                 { BuildConfigKey(EmailKeySuffix), EmailShared },
                 { BuildConfigKey(ClientIdKeySuffix), ClientIdShared.ToString() },
                 { BuildConfigKey(AzureDnsClientIdKeySuffix), ClientIdAzureDnsShared.ToString() },
-                { BuildConfigKey(UseIpBasedSslKeySuffix), UseIpBasedSslShared.ToString() },
+                { BuildConfigKey(UseIpBasedSslKeySuffix), UseIpBasedSslShared.ToString(CultureInfo.InvariantCulture) },
                 { BuildConfigKey(RsaKeyLengthKeySuffix), RsaKeyLengthShared.ToString(CultureInfo.InvariantCulture) },
                 { BuildConfigKey(AcmeBaseUriKeySuffix), AcmeBaseUriShared.ToString() },
                 { BuildConfigKey(WebRootPathKeySuffix), WebRootPathShared },
@@ -359,7 +359,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
                 new AppSettingsRenewalParamsReader(new AppSettingsReader(appSettings, connectionStrings)),
                 EmailNotifier);
 
-            await renewer.Renew();
+            await renewer.Renew().ConfigureAwait(false);
 
             VerifySuccessfulRenewal(ExpectedPartialRenewalParameters3);
             VerifySuccessfulNotification(ExpectedPartialRenewalParameters3);
@@ -377,7 +377,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             m_appSettings[BuildConfigKey(HostsKeySuffix, WebApp4)] = String.Join(";", Hosts4);
             m_appSettings[BuildConfigKey(EmailKeySuffix, WebApp4)] = Email1;
 
-            await m_renewer.Renew();
+            await m_renewer.Renew().ConfigureAwait(false);
 
             VerifySuccessfulRenewal(ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2, ExpectedPartialRenewalParameters4);
             VerifySuccessfulNotification(ExpectedFullRenewalParameters1, ExpectedPartialRenewalParameters2, ExpectedPartialRenewalParameters4);
