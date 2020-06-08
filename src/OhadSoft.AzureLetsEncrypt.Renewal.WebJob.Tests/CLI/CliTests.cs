@@ -27,7 +27,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
             // ---- Optional ----
             { ("-p", "--servicePlanResourceGroup"), ServicePlanResourceGroup1 },
             { ("-d", "--siteSlotName"), SiteSlotName1 },
-            { ("-i", "--useIpBasedSsl"), UseIpBasedSsl1.ToString() },
+            { ("-i", "--useIpBasedSsl"), UseIpBasedSsl1.ToString(CultureInfo.InvariantCulture) },
             { ("-k", "--rsaKeyLength"), RsaKeyLength1.ToString(CultureInfo.InvariantCulture) },
             { ("-a", "--acmeBaseUri"), AcmeBaseUri1.ToString() },
             { ("-x", "--webRootPath"), WebRootPath1 },

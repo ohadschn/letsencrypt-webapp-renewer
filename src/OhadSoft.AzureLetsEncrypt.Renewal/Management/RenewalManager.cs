@@ -65,19 +65,19 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                         Host = acmeConfig.Host,
                         PFXPassword = CertificateHelper.GenerateSecurePassword(),
                         CsrInfo = new CsrInfo(),
-                    }, renewalParams.RenewXNumberOfDaysBeforeExpiration);
+                    }, renewalParams.RenewXNumberOfDaysBeforeExpiration).ConfigureAwait(false);
             }
             else
             {
                 var manager = CertificateManager.CreateKuduWebAppCertificateManager(webAppEnvironment, acmeConfig, certificateServiceSettings, new AuthProviderConfig());
-                var addNewCert = await CheckCertAddition(renewalParams, webAppEnvironment, acmeConfig, staging);
+                var addNewCert = await CheckCertAddition(renewalParams, webAppEnvironment, acmeConfig, staging).ConfigureAwait(false);
                 if (addNewCert)
                 {
-                    await manager.AddCertificate();
+                    await manager.AddCertificate().ConfigureAwait(false);
                 }
                 else
                 {
-                    await manager.RenewCertificate(false, renewalParams.RenewXNumberOfDaysBeforeExpiration);
+                    await manager.RenewCertificate(false, renewalParams.RenewXNumberOfDaysBeforeExpiration).ConfigureAwait(false);
                 }
             }
 
@@ -95,7 +95,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 return true;
             }
 
-            var letsEncryptHostNames = await CertificateHelper.GetLetsEncryptHostNames(webAppEnvironment, staging);
+            var letsEncryptHostNames = await CertificateHelper.GetLetsEncryptHostNames(webAppEnvironment, staging).ConfigureAwait(false);
             Trace.TraceInformation("Let's Encrypt host names (staging: {0}): {1}", staging, String.Join(", ", letsEncryptHostNames));
 
             ICollection<string> missingHostNames = acmeConfig.Hostnames.Except(letsEncryptHostNames, StringComparer.OrdinalIgnoreCase).ToArray();
