@@ -88,7 +88,7 @@
     <Compile Include="Cli\CliRenewer.cs" />
     <Compile Include="Cli\CommandlineRenewalParamsReader.cs" />
     <Compile Include="Cli\ICommandlineRenewalParamsReader.cs" />
-    <Compile Include="Cli\Options.cs" />
+    <Compile Include="Cli\CliOptions.cs" />
     <Compile Include="Cli\ExitCodes.cs" />
     <Compile Include="Email\IEmailNotifier.cs" />
     <Compile Include="Email\SendGridNotifier.cs" />

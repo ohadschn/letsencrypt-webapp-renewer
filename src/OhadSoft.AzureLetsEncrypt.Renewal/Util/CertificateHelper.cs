@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
 {
-    public static class CertificateHelper
+    internal static class CertificateHelper
     {
         private static readonly RNGCryptoServiceProvider s_randomGenerator = new RNGCryptoServiceProvider(); // thread-safe
 
@@ -45,7 +45,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
             {
                 var certRequestUri = $"/subscriptions/{webAppEnvironment.SubscriptionId}/providers/Microsoft.Web/certificates?api-version=2016-03-01";
                 Trace.TraceInformation("GET {0}", certRequestUri);
-                var response = await ArmHelper.ExponentialBackoff().ExecuteAsync(() => httpClient.GetAsync(certRequestUri)).ConfigureAwait(false);
+                var response = await ArmHelper.ExponentialBackoff().ExecuteAsync(() => httpClient.GetAsync(new Uri(certRequestUri, UriKind.Relative))).ConfigureAwait(false);
 
                 Trace.TraceInformation("Reading ARM certificate query response");
                 var body = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync().ConfigureAwait(false);

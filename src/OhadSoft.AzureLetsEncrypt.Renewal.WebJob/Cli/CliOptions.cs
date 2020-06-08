@@ -5,9 +5,9 @@ using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
 {
-    public class Options
+    public class CliOptions
     {
-        public Options(
+        public CliOptions(
             Guid subscriptionId,
             string tenantId,
             string resourceGroup,
