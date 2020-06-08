@@ -107,15 +107,15 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>2.9.6</Version>
+      <Version>3.0.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="MSTest.TestAdapter">
-      <Version>2.1.1</Version>
+      <Version>2.1.2</Version>
     </PackageReference>
     <PackageReference Include="MSTest.TestFramework">
-      <Version>2.1.1</Version>
+      <Version>2.1.2</Version>
     </PackageReference>
     <PackageReference Include="SonarAnalyzer.CSharp">
       <Version>8.8.0.18411</Version>
