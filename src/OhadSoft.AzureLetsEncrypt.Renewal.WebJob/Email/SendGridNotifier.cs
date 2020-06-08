@@ -51,7 +51,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email
                 null);
 
             Trace.TraceInformation("Sending e-mail notification for {0}... ", renewalParams.WebApp);
-            await new SendGridClient(m_apiKey).SendEmailAsync(message);
+            await new SendGridClient(m_apiKey).SendEmailAsync(message).ConfigureAwait(false);
             Trace.TraceInformation("Finished sending e-mail notification for: {0}", renewalParams.WebApp);
         }
     }

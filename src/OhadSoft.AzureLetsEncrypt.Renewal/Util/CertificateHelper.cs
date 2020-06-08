@@ -22,7 +22,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
         public static async Task<IReadOnlyList<string>> GetLetsEncryptHostNames(IAzureWebAppEnvironment webAppEnvironment, bool staging)
         {
             Site site;
-            using (var client = await ArmHelper.GetWebSiteManagementClient(webAppEnvironment))
+            using (var client = await ArmHelper.GetWebSiteManagementClient(webAppEnvironment).ConfigureAwait(false))
             {
                 var webAppName = webAppEnvironment.WebAppName;
                 var resourceGroupName = webAppEnvironment.ResourceGroupName;
@@ -41,14 +41,14 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
                 }
             }
 
-            using (var httpClient = await ArmHelper.GetHttpClient(webAppEnvironment))
+            using (var httpClient = await ArmHelper.GetHttpClient(webAppEnvironment).ConfigureAwait(false))
             {
                 var certRequestUri = $"/subscriptions/{webAppEnvironment.SubscriptionId}/providers/Microsoft.Web/certificates?api-version=2016-03-01";
                 Trace.TraceInformation("GET {0}", certRequestUri);
-                var response = await ArmHelper.ExponentialBackoff().ExecuteAsync(async () => await httpClient.GetAsync(certRequestUri));
+                var response = await ArmHelper.ExponentialBackoff().ExecuteAsync(() => httpClient.GetAsync(certRequestUri)).ConfigureAwait(false);
 
                 Trace.TraceInformation("Reading ARM certificate query response");
-                var body = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync();
+                var body = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 var letsEncryptCerts = ExtractCertificates(body).Where(s => s.Issuer.Contains(staging ? "Fake LE" : "Let's Encrypt"));
 
