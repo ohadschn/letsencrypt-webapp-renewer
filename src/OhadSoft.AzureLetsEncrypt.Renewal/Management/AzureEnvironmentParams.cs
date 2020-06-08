@@ -58,11 +58,11 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return string.Equals(TenantId, other.TenantId)
+            return string.Equals(TenantId, other.TenantId, StringComparison.OrdinalIgnoreCase)
                    && SubscriptionId.Equals(other.SubscriptionId)
-                   && string.Equals(ResourceGroup, other.ResourceGroup)
+                   && string.Equals(ResourceGroup, other.ResourceGroup, StringComparison.OrdinalIgnoreCase)
                    && ClientId.Equals(other.ClientId)
-                   && string.Equals(ClientSecret, other.ClientSecret);
+                   && string.Equals(ClientSecret, other.ClientSecret, StringComparison.Ordinal);
         }
 
         public override bool Equals(object obj)

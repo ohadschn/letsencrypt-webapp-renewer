@@ -112,25 +112,25 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return string.Equals(WebApp, other.WebApp)
+            return string.Equals(WebApp, other.WebApp, StringComparison.OrdinalIgnoreCase)
                    && Hosts.SequenceEqual(other.Hosts)
-                   && string.Equals(Email, other.Email)
-                   && string.Equals(ServicePlanResourceGroup, other.ServicePlanResourceGroup)
-                   && string.Equals(SiteSlotName, other.SiteSlotName)
-                   && string.Equals(GroupName, other.GroupName)
+                   && string.Equals(Email, other.Email, StringComparison.OrdinalIgnoreCase)
+                   && string.Equals(ServicePlanResourceGroup, other.ServicePlanResourceGroup, StringComparison.OrdinalIgnoreCase)
+                   && string.Equals(SiteSlotName, other.SiteSlotName, StringComparison.OrdinalIgnoreCase)
+                   && string.Equals(GroupName, other.GroupName, StringComparison.OrdinalIgnoreCase)
                    && Equals(WebAppEnvironmentParams, other.WebAppEnvironmentParams)
                    && Equals(AzureDnsEnvironmentParams, other.AzureDnsEnvironmentParams)
-                   && string.Equals(AzureDnsZoneName, other.AzureDnsZoneName)
-                   && string.Equals(AzureDnsRelativeRecordSetName, other.AzureDnsRelativeRecordSetName)
+                   && string.Equals(AzureDnsZoneName, other.AzureDnsZoneName, StringComparison.OrdinalIgnoreCase)
+                   && string.Equals(AzureDnsRelativeRecordSetName, other.AzureDnsRelativeRecordSetName, StringComparison.OrdinalIgnoreCase)
                    && UseIpBasedSsl == other.UseIpBasedSsl
                    && RsaKeyLength == other.RsaKeyLength
                    && Equals(AcmeBaseUri, other.AcmeBaseUri)
-                   && string.Equals(WebRootPath, other.WebRootPath)
+                   && string.Equals(WebRootPath, other.WebRootPath, StringComparison.OrdinalIgnoreCase)
                    && RenewXNumberOfDaysBeforeExpiration == other.RenewXNumberOfDaysBeforeExpiration
                    && Equals(AuthenticationUri, other.AuthenticationUri)
                    && Equals(AzureTokenAudience, other.AzureTokenAudience)
                    && Equals(AzureManagementEndpoint, other.AzureManagementEndpoint)
-                   && string.Equals(AzureDefaultWebsiteDomainName, other.AzureDefaultWebsiteDomainName);
+                   && string.Equals(AzureDefaultWebsiteDomainName, other.AzureDefaultWebsiteDomainName, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry
@@ -96,7 +97,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry
                         { "webApp", renewalParams.WebApp },
                         { "host", host },
                         { "email", TelemetryHelper.Hash(renewalParams.Email) },
-                        { "useIpBasedSsl", renewalParams.UseIpBasedSsl.ToString() },
+                        { "useIpBasedSsl", renewalParams.UseIpBasedSsl.ToString(CultureInfo.InvariantCulture) },
                         { "acmeBaseUri", renewalParams.AcmeBaseUri == null ? "[DEFAULT]" : renewalParams.AcmeBaseUri.ToString() },
                         { "azureDnsZoneName", renewalParams.AzureDnsZoneName },
                         { "azureDnsRelativeRecordSetName", renewalParams.AzureDnsRelativeRecordSetName },

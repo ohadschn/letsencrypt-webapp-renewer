@@ -16,10 +16,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
                 throw new ArgumentNullException(nameof(args));
             }
 
-            ParserResult<Options> parserResult;
+            ParserResult<CliOptions> parserResult;
             using (var parser = new Parser())
             {
-                parserResult = parser.ParseArguments<Options>(args);
+                parserResult = parser.ParseArguments<CliOptions>(args);
             }
 
             if (parserResult.Tag != ParserResultType.Parsed)
@@ -27,7 +27,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
                 throw new ArgumentParsingException("Could not parse command-line arguments", GetUsage(parserResult));
             }
 
-            var parsed = ((Parsed<Options>)parserResult).Value;
+            var parsed = ((Parsed<CliOptions>)parserResult).Value;
 
             AzureEnvironmentParams webAppEnvironmentParams;
             try
@@ -62,7 +62,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
             return renewalParameters;
         }
 
-        private static AzureEnvironmentParams GetWebAppEnvironmentParams(Options parsed)
+        private static AzureEnvironmentParams GetWebAppEnvironmentParams(CliOptions parsed)
         {
             return new AzureEnvironmentParams(
                 parsed.TenantId,
@@ -72,7 +72,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
                 parsed.ResourceGroup);
         }
 
-        private static AzureEnvironmentParams GetAzureDnsEnvironmentParams(Options parsed)
+        private static AzureEnvironmentParams GetAzureDnsEnvironmentParams(CliOptions parsed)
         {
             return new AzureEnvironmentParams(
                 parsed.AzureDnsTenantId ?? parsed.TenantId,
@@ -82,7 +82,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
                 parsed.AzureDnsResourceGroup ?? parsed.ResourceGroup);
         }
 
-        private static RenewalParameters GetRenewalParameters(Options parsed, AzureEnvironmentParams webAppEnvironmentParams, AzureEnvironmentParams azureDnsEnvironmentParams)
+        private static RenewalParameters GetRenewalParameters(CliOptions parsed, AzureEnvironmentParams webAppEnvironmentParams, AzureEnvironmentParams azureDnsEnvironmentParams)
         {
             return new RenewalParameters(
                 webAppEnvironmentParams,
@@ -106,7 +106,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
                 parsed.AzureDefaultWebsiteDomainName);
         }
 
-        private static string GetUsage(ParserResult<Options> parserResult)
+        private static string GetUsage(ParserResult<CliOptions> parserResult)
         {
             var autoBuild = HelpText.AutoBuild(parserResult);
 

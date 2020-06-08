@@ -90,7 +90,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Telemetry
             }
 
             // https://security.stackexchange.com/questions/17994/with-pbkdf2-what-is-an-optimal-hash-size-in-bytes-what-about-the-size-of-the-s
-            using (var rfc2898DeriveBytes = new Rfc2898DeriveBytes(str, Pepper, 10000))
+            using (var rfc2898DeriveBytes = new Rfc2898DeriveBytes(str, Pepper, 10000, HashAlgorithmName.SHA256))
             {
                 return Convert.ToBase64String(rfc2898DeriveBytes.GetBytes(20));
             }
