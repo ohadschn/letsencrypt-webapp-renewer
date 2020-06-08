@@ -1,11 +1,12 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/3fwuiks1yq4oro4v/branch/master?svg=true)](https://ci.appveyor.com/project/ohadschn/letsencrypt-webapp-renewer/branch/master)
 
 # letsencrypt-webapp-renewer
-A WebJob-ready console application for renewing Azure Web App TLS/SSL certificates (based on [letsencrypt-siteextension](https://github.com/sjkp/letsencrypt-siteextension)). Officially [recommended by Microsoft](https://feedback.azure.com/forums/169385-web-apps/suggestions/6737285-add-support-for-free-ssl-certs-like-those-from-let) for Web App Let's Encrypt integration.
+A WebJob-ready console application for renewing Azure Web App TLS/SSL certificates (based on [letsencrypt-siteextension](https://github.com/sjkp/letsencrypt-siteextension) and[letsencrypt-azure](https://github.com/sjkp/letsencrypt-azure)). Officially [recommended by Microsoft](https://feedback.azure.com/forums/169385-web-apps/suggestions/6737285-add-support-for-free-ssl-certs-like-those-from-let) for Web App Let's Encrypt integration (prior to native feature availability).
+
 ## Motivation
 HTTPS is the pervasive standard for all websites, regardless of size or field. 
 The Mozilla foundation has gone so far as to [announce their intent to completely phase out HTTP](https://blog.mozilla.org/security/2015/04/30/deprecating-non-secure-http/). 
-Unfortunately, the procurement, maintenance, and renewal of SSL/TLS certificates has been an expensive and manual process for many.
+Unfortunately, the procurement, maintenance, and renewal of SSL/TLS certificates has been an expensive and manual process for many. Microsoft have recently added [built-in support for free SSL certificate renewal](https://docs.microsoft.com/en-us/azure/app-service/configure-ssl-certificate#create-a-free-certificate-preview) (in preview), but at the time of writing it is not available for naked (AKA bare/root/apex) domains. So unless you're OK with your clients encountering a certificate error navigating to https://yoursite.com, that won't be good enough for you.
 
 Enter [Let's Encrypt](https://letsencrypt.org/) - a free, automated, and open Certificate Authority. Shortly after its release, Simon J.K. Pedersen created the excellent [letsencrypt-siteextension](https://github.com/sjkp/letsencrypt-siteextension) Azure Web App extension for easy integration with Azure Web Apps. However, at the time of writing it suffers from several issues:
 
