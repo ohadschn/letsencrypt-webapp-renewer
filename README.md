@@ -166,6 +166,9 @@ When executed outside of a WebJob context (as determined by the absence of the [
 | --help                                      | Display the help screen.
 | --version                                   | Display version information.
 
+#### Example
+`AzureLetsEncryptRenewer.exe -s e432f869-4777-4380-a654-3440216992a2 -t ohadsoft.onmicrosoft.com -r ohadsoft-rg -w ohadsoft -o "www.ohadsoft.com;ohadsoft.com" -e renewal@ohadsoft.com -c 5e1346b6-7db5-4eae-b9fa-7b3d5e42e6c7 -l MySecretPassword123`
+
 ### Exit codes
 - `0` - Success
 - `1` - Bad argument(s)
