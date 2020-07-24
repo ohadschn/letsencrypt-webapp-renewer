@@ -13,6 +13,7 @@ Enter [Let's Encrypt](https://letsencrypt.org/) - a free, automated, and open Ce
 - The extension must be installed on the same web app as your site.
   - This means you must install the extension on each and every Web App you own.
   - Worse, if you happen to publish your Web App with the "Delete Existing files", it will silently delete the WebJob created by the extension, effectively nullifying it.
+- The extension setup wizard has been known to fall out of sync with the underlying WebJob it's installing (e.g. fail on missing Web App configuraion)
 - There are no e-mail notifications (you could set some basic ones with Zapier but they won't contain details on the actual renewals that took place).
 - It relies on an Azure Storage account which has to be [configured in a certain way](https://github.com/sjkp/letsencrypt-siteextension/issues/148), which is an unneeded possible point of failure.
 - The extension can only be run in the context of a web app. You might want to run it as a command-line tool (e.g. from your CI system).
@@ -22,6 +23,7 @@ Enter [Let's Encrypt](https://letsencrypt.org/) - a free, automated, and open Ce
 - Install on any Web App (doesn't have to be the same web app for which you want to manage SSL certs).
   - Multiple Web App management is supported.
   - Publishing with "Delete Existing files" has no effect when the WebJob is deployed to a different (preferably dedicated) Web App.
+- Trade off a little convenience (no extension with a setup wizrad) for a higher degree of consistency and reliability
 - E-mail notifications are built in (via SendGrid).
 - No external dependencies other than Let's Encrypt.
 - Can be executed as a plain command-line tool from any environment.
