@@ -318,7 +318,7 @@ Set-LetsEncryptConfig -AppSettings $UpdatedAppSettings -WebApp $WebApp -Name "te
 Set-LetsEncryptConfig -AppSettings $UpdatedAppSettings -WebApp $WebApp -Name "useIpBasedSsl"                      -Value $UseIpBasedSsl
 Set-LetsEncryptConfig -AppSettings $UpdatedAppSettings -WebApp $WebApp -Name "webRootPath"                        -Value $WebRootPath
 
-Write-Information "Copying over existing connection strings..."
+Write-Information "Updating existing connection strings..."
 
 $UpdatedConnectionStrings = @{}
 
