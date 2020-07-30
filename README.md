@@ -1,7 +1,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/3fwuiks1yq4oro4v/branch/master?svg=true)](https://ci.appveyor.com/project/ohadschn/letsencrypt-webapp-renewer/branch/master)
 
 # letsencrypt-webapp-renewer
-A WebJob-ready console application for renewing Azure Web App TLS/SSL certificates (based on [letsencrypt-siteextension](https://github.com/sjkp/letsencrypt-siteextension) and[letsencrypt-azure](https://github.com/sjkp/letsencrypt-azure)). Officially [recommended by Microsoft](https://feedback.azure.com/forums/169385-web-apps/suggestions/6737285-add-support-for-free-ssl-certs-like-those-from-let) for Web App Let's Encrypt integration (prior to native feature availability).
+A WebJob-ready console application for renewing Azure Web App TLS/SSL certificates (based on [letsencrypt-siteextension](https://github.com/sjkp/letsencrypt-siteextension) and [letsencrypt-azure](https://github.com/sjkp/letsencrypt-azure)). Officially [recommended by Microsoft](https://feedback.azure.com/forums/169385-web-apps/suggestions/6737285-add-support-for-free-ssl-certs-like-those-from-let) for Web App Let's Encrypt integration (prior to native feature availability).
 
 ## Motivation
 HTTPS is the pervasive standard for all websites, regardless of size or field. 
