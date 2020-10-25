@@ -140,7 +140,6 @@
     </None>
     <None Include="ApplicationInsights.config" />
     <None Include="OhadSoft.AzureLetsEncrypt.Renewal.WebJob_TemporaryKey.pfx" />
-    <None Include="Properties\PublishProfiles\ohadsoft-ssl-renewer - Web Deploy.pubxml" />
     <None Include="Properties\webjob-publish-settings.json" />
     <None Condition="'$(BuildingInsideVisualStudio)' == 'true'" Include="settings.job">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -251,6 +250,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

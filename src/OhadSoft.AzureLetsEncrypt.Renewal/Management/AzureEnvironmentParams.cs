@@ -1,5 +1,5 @@
 ﻿using System;
-using static System.FormattableString;
+using Newtonsoft.Json;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 {
@@ -8,9 +8,14 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public bool AllowNull { get; }
 
         public string TenantId { get; }
+
         public Guid? SubscriptionId { get; }
+
         public string ResourceGroup { get; }
+
         public Guid? ClientId { get; }
+
+        [JsonIgnore]
         public string ClientSecret { get; }
 
         public AzureEnvironmentParams(string tenantId, Guid? subscriptionId, Guid? clientId, string clientSecret, string resourceGroup, bool allowNull = false)
@@ -46,11 +51,6 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             }
 
             return validator((T)nullable, name);
-        }
-
-        public override string ToString()
-        {
-            return Invariant($"{nameof(TenantId)}: {TenantId}, {nameof(SubscriptionId)}: {SubscriptionId}, {nameof(ResourceGroup)}: {ResourceGroup}, {nameof(ClientId)}: {ClientId}");
         }
 
         public bool Equals(AzureEnvironmentParams other)

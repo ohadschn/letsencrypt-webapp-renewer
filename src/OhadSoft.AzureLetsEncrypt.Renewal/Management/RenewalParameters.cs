@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management.Util;
-using static System.FormattableString;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 {
@@ -104,7 +104,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
         public override string ToString()
         {
-            return Invariant($"{nameof(WebApp)}: {WebApp}, {nameof(Hosts)}: {String.Join(", ", Hosts)}, {nameof(ServicePlanResourceGroup)}: {ServicePlanResourceGroup}, {nameof(SiteSlotName)}: {SiteSlotName}, {nameof(GroupName)}: {GroupName}, {nameof(WebAppEnvironmentParams)}: {WebAppEnvironmentParams}, {nameof(AzureDnsEnvironmentParams)}: {AzureDnsEnvironmentParams}, {nameof(AzureDnsZoneName)}: {AzureDnsZoneName}, {nameof(AzureDnsRelativeRecordSetName)}: {AzureDnsRelativeRecordSetName}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBaseUri)}: {AcmeBaseUri}, {nameof(WebRootPath)}: {WebRootPath}, {nameof(RenewXNumberOfDaysBeforeExpiration)}: {RenewXNumberOfDaysBeforeExpiration}, {nameof(AuthenticationUri)}: {AuthenticationUri}, {nameof(AzureTokenAudience)}: {AzureTokenAudience}, {nameof(AzureManagementEndpoint)}: {AzureManagementEndpoint}, {nameof(AzureDefaultWebsiteDomainName)}: {AzureDefaultWebsiteDomainName}");
+            return JsonConvert.SerializeObject(
+                this,
+                new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    Formatting = Formatting.Indented,
+                });
         }
 
         public bool Equals(RenewalParameters other)
