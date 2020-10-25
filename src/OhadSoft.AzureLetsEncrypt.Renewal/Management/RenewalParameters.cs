@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using OhadSoft.AzureLetsEncrypt.Renewal.Management.Util;
 using static System.FormattableString;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
@@ -89,8 +90,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
         public static string VerifyEmail(string email, string name)
         {
-            return !String.IsNullOrWhiteSpace(email) && email.Contains("@") && email.Length >= 3 && email.Length <= 254
-                   && !email.StartsWith("@", StringComparison.OrdinalIgnoreCase) && !email.EndsWith("@", StringComparison.OrdinalIgnoreCase)
+            return EmailHelper.IsValidEmail(email)
                 ? email
                 : throw new ArgumentException("E-mail address must not be null and must be valid", name);
         }

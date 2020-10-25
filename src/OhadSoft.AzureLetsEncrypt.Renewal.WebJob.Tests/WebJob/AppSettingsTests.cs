@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings;
+using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Util;
 using AppSettingsReader = OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings.AppSettingsReader;
 
@@ -169,6 +170,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         public void TestInvalidEmail()
         {
             AssertInvalidConfig(EmailKeySuffix, WebApp1, "mail@", "email");
+        }
+
+        [TestMethod]
+        public void TestInvalidFromEmail()
+        {
+            Assert.ThrowsException<ArgumentException>(() => new SendGridNotifier(string.Empty, "@address"));
         }
 
         [TestMethod]
