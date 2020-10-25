@@ -57,13 +57,16 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             Events.WebJobRenewalStarted(webjobName);
 
             Trace.TraceInformation("Web App SSL renewal job ({0}) started", webjobName);
-            var renewr = new AppSettingsRenewer(
+
+            var renewer = new AppSettingsRenewer(
                 new RenewalManager(),
                 new AppSettingsRenewalParamsReader(new AppSettingsReader(ConfigurationManager.AppSettings, ConfigurationManager.ConnectionStrings)),
-                new SendGridNotifier(ConfigurationManager.ConnectionStrings[Constants.KeyPrefix + Constants.SendGridApiKey]?.ConnectionString));
+                new SendGridNotifier(
+                    ConfigurationManager.ConnectionStrings[Constants.KeyPrefix + Constants.SendGridApiKey]?.ConnectionString,
+                    ConfigurationManager.AppSettings[Constants.KeyPrefix + Constants.FromEmailKey]));
             try
             {
-                renewr.Renew().GetAwaiter().GetResult();
+                renewer.Renew().GetAwaiter().GetResult();
             }
             catch (Exception e) when (!ExceptionHelper.IsCriticalException(e))
             {

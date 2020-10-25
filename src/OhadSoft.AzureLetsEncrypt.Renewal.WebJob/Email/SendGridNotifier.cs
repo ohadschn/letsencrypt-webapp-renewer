@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using OhadSoft.AzureLetsEncrypt.Renewal.Management;
+using OhadSoft.AzureLetsEncrypt.Renewal.Management.Util;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
@@ -11,15 +12,22 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email
     internal class SendGridNotifier : IEmailNotifier
     {
         private readonly string m_apiKey;
+        private readonly string m_fromAddress;
 
-        public SendGridNotifier(string apiKey)
+        public SendGridNotifier(string apiKey, string fromAddress)
         {
             if (apiKey != null && apiKey.All(Char.IsWhiteSpace))
             {
                 throw new ArgumentException("SendGrid API key cannot be whitespace", nameof(apiKey));
             }
 
+            if (!EmailHelper.IsValidEmail(fromAddress))
+            {
+                throw new ArgumentException("Invalid email address", nameof(fromAddress));
+            }
+
             m_apiKey = apiKey;
+            m_fromAddress = fromAddress;
         }
 
         public Task NotifyAsync(RenewalParameters renewalParams)
@@ -44,7 +52,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email
             }
 
             var message = MailHelper.CreateSingleEmail(
-                new EmailAddress("letsencrypt-webapp-renewer@ohadsoft.com", "Azure Web App Let's Encrypt Renewer"),
+                new EmailAddress(m_fromAddress, $"Azure Web App Let's Encrypt Renewer"),
                 new EmailAddress(renewalParams.Email),
                 "SSL Certificate renewal complete for web app: " + renewalParams.WebApp,
                 "Renewal parameters:" + Environment.NewLine + renewalParams,
