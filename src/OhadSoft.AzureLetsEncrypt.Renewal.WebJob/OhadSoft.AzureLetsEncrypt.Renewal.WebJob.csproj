@@ -14,25 +14,6 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
-    <IsWebBootstrapper>true</IsWebBootstrapper>
-    <PublishUrl>C:\Users\lelando\Desktop\olneylabs\next\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Web</InstallFrom>
-    <UpdateEnabled>true</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>http://localhost:8080/</InstallUrl>
-    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
-    <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>2</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <PublishWizardCompleted>true</PublishWizardCompleted>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -83,18 +64,6 @@
     <Prefer32Bit>true</Prefer32Bit>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
-  <PropertyGroup>
-    <ManifestCertificateThumbprint>D9474AE5959C064E8A528A13D1844BC32FDC489D</ManifestCertificateThumbprint>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestKeyFile>OhadSoft.AzureLetsEncrypt.Renewal.WebJob_TemporaryKey.pfx</ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignManifests>true</SignManifests>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -139,7 +108,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="ApplicationInsights.config" />
-    <None Include="OhadSoft.AzureLetsEncrypt.Renewal.WebJob_TemporaryKey.pfx" />
+    <None Include="Properties\PublishProfiles\ohadsoft-ssl-renewer - Web Deploy.pubxml" />
     <None Include="Properties\webjob-publish-settings.json" />
     <None Condition="'$(BuildingInsideVisualStudio)' == 'true'" Include="settings.job">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -238,21 +207,6 @@
     <PackageReference Include="System.Security.Cryptography.Algorithms">
       <Version>4.3.1</Version>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
