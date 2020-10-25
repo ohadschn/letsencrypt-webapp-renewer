@@ -51,6 +51,9 @@ The `letsencrypt-webapp-renewer` WebJob is configured via [Web App Settings](htt
    1. `letsencrypt:webAppName-acmeBaseUri` (optional, defaults to `https://acme-v02.api.letsencrypt.org/directory`)
    1. `letsencrypt:webAppName-webRootPath` (optional, defaults to `%HOME%\site\wwwroot` or in case of running from package: `%HOME%\site\letsencrypt`)
    1. `letsencrypt:webAppName-renewXNumberOfDaysBeforeExpiration` (optional, defaults to `-1` which means renewal will take place regardless of the expiry time)
+   1. `letsencrypt:SendGridApiKey` (optional, should be set as a **connection string**, note this does not include the webAppName)
+   1. `letsencrypt:fromEmail` (mandatory if SendGridApiKey is defined, note this does not include the webAppName)
+
 
 For more information about the various renewal settings see: https://github.com/sjkp/letsencrypt-siteextension.
 
@@ -70,6 +73,8 @@ For more information about the various renewal settings see: https://github.com/
 - `letsencrypt:howlongtobeatsteam-email`: `renewal@howlongtobeatsteam.com`
 - `letsencrypt:howlongtobeatsteam-clientId`: `5e1346b6-7db5-4eae-b9fa-7b3d5e42e6c7`
 - (**connection string**) `letsencrypt:howlongtobeatsteam-clientSecret`: `MySecretPassword123`
+- (**connection string**) `letsencrypt:SendGridApiKey`: `MySecretSendGridKey123`
+- `letsencrypt:fromEmail`: `me@ohadsoft.com`
 
 ### Sovereign Cloud (Mooncake, BlackForest, etc.)
 The following settings are required in order to renew certificates on sovereign clouds:
@@ -116,7 +121,10 @@ There is a PowerShell configuration-script [Set-LetsEncryptConfiguration.ps1](sr
 1. Deploy the WebJob zip file you downloaded above to the Web App where you want cert renewal to execute using one of the following scheduling methods:
    1. [CRON based](https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-create-web-jobs#CreateScheduledCRON) is simple to set up but **REQUIRES YOUR CERT RENEWAL WEB APP (THE ONE WHERE THE `letsencrypt-webapp-renewer` WEBJOB WILL BE RUNNING) TO BE CONFIGURED AS "ALWAYS ON"**. Note that a `settings.job` file as described in the docs is unnecessary - when you [upload the WebJob in the portal](https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-create-web-jobs#CreateOnDemand) simply select **Triggered** in the _Type_ field and **Scheduled** in the _Triggers_ field to be given an option to specify a CRON expression. The [recommended Let's Encrypt renewal period is 60 days](https://letsencrypt.org/docs/faq/), so you could use a CRON expression that fires once every two months, for example: `0 0 0 1 1,3,5,7,9,11 *`.
    1. [Azure Function based](https://github.com/eformedpartners/AzureWebJobScheduler/) is a good option if your App Service plan does not support _Always On_ (_Free_ or _Shared_).
-   1. [Azure Scheduler based](http://blog.davidebbo.com/2015/05/scheduled-webjob.html) is slightly more complex to set up but does not require your site to be configured as _Always On_. Note that the instructions in the link mostly explain the process for the old (classic) Azure portal, but it's pretty easy to do the same in the new one (portal.azure.com). At the time of writing, there is no free Azure Scheulder plan.
+   1. [Azure Logic App based](https://docs.microsoft.com/en-us/azure/scheduler/migrate-from-scheduler-to-logic-apps) is another good option that does not require _Always On_
+      1. Logic Apps can be configured to run periodically (e.g every 60 days)
+      2. Allows easy configuration of notifications (send O365 email, Twilio SMS, etc), as an alternative (or in addition) to SendGrid
+      3. Requires one-time configuration of user/password authentication to initiate the WebJob, see [intructions here](https://dzone.com/articles/schedule-azure-webjobs-using-azure-logic-apps).
 
 ### ASP.NET Core
 1. Enable `ServeUnknownFileTypes` for the `/.well-known/acme-challenge` request path of your Web App.
@@ -124,10 +132,19 @@ There is a PowerShell configuration-script [Set-LetsEncryptConfiguration.ps1](sr
 
 ### Notifications
 The following are optional but **highly recommended**.
-1. In order to receive notifications on successful renewals, set the `letsencrypt:SendGridApiKey` connection string to your [SendGrid API key](https://sendgrid.com/docs/Classroom/Send/How_Emails_Are_Sent/api_keys.html). At the time of writing, SendGrid offer a free plan in the [Azure Marketplace](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/SendGrid.SendGrid) which should easily suffice for any reasonable SSL renewal notification needs.
+1. Set up [SendGrid](https://app.sendgrid.com/) email notifications to notify you of successful renewals:
+   1. Set the `letsencrypt:SendGridApiKey` connection string to your [SendGrid API key](https://sendgrid.com/docs/Classroom/Send/How_Emails_Are_Sent/api_keys.html). At the time of writing, SendGrid offer a free plan in the [Azure Marketplace](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/SendGrid.SendGrid) which should easily suffice for this use case.
+   1. Configure [Single Sender Verification](https://app.sendgrid.com/settings/sender_auth) for the email address that SendGrid should send email as.
+   1. Set the `letsencrypt:fromEmail` setting to a verified sender from the previous step.
 1. Set up [Zapier](https://zapier.com/help/windows-azure-web-sites/) to send you notifications on `letsencrypt-webapp-renewer` WebJob runs. While e-mail notifications are supported as described above, **they will not be fired when the WebJob has failed for any reason** (this is intentional - a WebJob cannot reliably handle any possible failure it might encounter). By contrast, Zapier operates externally to the WebJob and should be able to report any error that might have caused the WebJob to fail. At the time of writing, Zapier offer a free account which should easily suffice for any reasonable SSL renewal notification needs.
+1. If you created a Logic App to schedule the Web Job, set up notifications using any number of connectors 
+   1. [Gmail](https://docs.microsoft.com/en-us/connectors/gmail/)
+   1. [Office 365](https://blog.sandro-pereira.com/2020/01/26/logic-apps-how-to-send-a-well-formatted-html-email-notification-with-office-365-outlook-connector/)
+   1. [Twilio](https://docs.microsoft.com/en-us/azure/connectors/connectors-create-api-twilio) 
+   1. Or choose [another](https://docs.microsoft.com/en-us/connectors/connector-reference/connector-reference-logicapps-connectors) something connector
 
 Note that Let's Encrypt will send out expiration e-mails if anything went wrong with the cert renewal process: https://letsencrypt.org/docs/expiration-emails/. However, Let's Encrypt are not aware of Azure Web Apps, so if the cert was renewed successfully but some failure prevented it from actually being installed to your Web App, they would not know and hence no expiration e-mail would be sent from their system. This highlights the importance of the Zapier configuration above.
+
 
 ## Verification
 Test the WebJob by [triggering it manually](https://pragmaticdevs.wordpress.com/2016/10/24/triggering-azure-web-jobs-manually/). **You should see a new certificate served when you visit your site**.
