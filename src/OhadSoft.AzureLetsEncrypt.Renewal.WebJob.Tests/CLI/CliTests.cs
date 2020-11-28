@@ -20,7 +20,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
             { ("-r", "--resourceGroup"), ResourceGroup1 },
             { ("-w", "--webApp"), WebApp1Name },
             { ("-o", "--hosts"), String.Join(";", Hosts1) },
-            { ("-e", "--email"), Email1 },
+            { ("-e", "--email"), ToEmail1 },
+            { ("--fromEmail", "--fromEmail"), FromEmail1 },
             { ("-c", "--clientId"), ClientId1.ToString() },
             { ("-l", "--clientSecret"), ClientSecret1 },
 
@@ -48,7 +49,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
 #pragma warning restore SA1008
         };
 
-        private IEnumerable<KeyValuePair<(string ShortName, string LongName), string>> GetMinimalValidArgs() => FullValidArgs.Take(8);
+        private IEnumerable<KeyValuePair<(string ShortName, string LongName), string>> GetMinimalValidArgs() => FullValidArgs.Take(9);
 
         private readonly CliRenewer m_renewer;
 
@@ -127,6 +128,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Cli
         public void InvalidEmail()
         {
             AssertInvalidParameter("-e", "@notAnEmail", "email");
+        }
+
+        [TestMethod]
+        public void InvalidFromEmail()
+        {
+            AssertInvalidParameter("--fromEmail", "bademail@", "fromEmail");
         }
 
         [TestMethod]

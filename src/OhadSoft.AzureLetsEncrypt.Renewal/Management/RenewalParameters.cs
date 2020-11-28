@@ -10,7 +10,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
     {
         public string WebApp { get; }
         public IReadOnlyList<string> Hosts { get; }
-        public string Email { get; }
+        public string ToEmail { get; }
+        public string FromEmail { get; }
         public string ServicePlanResourceGroup { get; }
         public string SiteSlotName { get; }
         public string GroupName { get; }
@@ -32,7 +33,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             AzureEnvironmentParams webAppEnvironmentParams,
             string webApp,
             IReadOnlyList<string> hosts,
-            string email,
+            string toEmail,
+            string fromEmail,
             string servicePlanResourceGroup = null,
             string groupName = null,
             string siteSlotName = null,
@@ -54,7 +56,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             WebAppEnvironmentParams = ParamValidator.VerifyNonNull(webAppEnvironmentParams, nameof(webAppEnvironmentParams));
             WebApp = ParamValidator.VerifyString(webApp, nameof(webApp));
             Hosts = VerifyHosts(hosts, dnsChallenge, nameof(hosts));
-            Email = VerifyEmail(email, nameof(email));
+            ToEmail = VerifyEmail(toEmail, nameof(toEmail));
+            FromEmail = VerifyEmail(fromEmail, nameof(fromEmail));
             ServicePlanResourceGroup = ParamValidator.VerifyOptionalString(servicePlanResourceGroup, nameof(servicePlanResourceGroup));
             GroupName = ParamValidator.VerifyOptionalString(groupName, nameof(groupName));
             SiteSlotName = ParamValidator.VerifyOptionalString(siteSlotName, nameof(siteSlotName));
@@ -120,7 +123,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
             return string.Equals(WebApp, other.WebApp, StringComparison.OrdinalIgnoreCase)
                    && Hosts.SequenceEqual(other.Hosts)
-                   && string.Equals(Email, other.Email, StringComparison.OrdinalIgnoreCase)
+                   && string.Equals(ToEmail, other.ToEmail, StringComparison.OrdinalIgnoreCase)
+                   && string.Equals(FromEmail, other.FromEmail, StringComparison.OrdinalIgnoreCase)
                    && string.Equals(ServicePlanResourceGroup, other.ServicePlanResourceGroup, StringComparison.OrdinalIgnoreCase)
                    && string.Equals(SiteSlotName, other.SiteSlotName, StringComparison.OrdinalIgnoreCase)
                    && string.Equals(GroupName, other.GroupName, StringComparison.OrdinalIgnoreCase)
@@ -153,7 +157,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             {
                 var hashCode = WebApp != null ? WebApp.GetHashCode() : 0;
                 hashCode = (hashCode * 397) ^ (Hosts != null ? Hosts.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Email != null ? Email.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (ToEmail != null ? ToEmail.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (FromEmail != null ? FromEmail.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (ServicePlanResourceGroup != null ? ServicePlanResourceGroup.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (SiteSlotName != null ? SiteSlotName.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (GroupName != null ? GroupName.GetHashCode() : 0);

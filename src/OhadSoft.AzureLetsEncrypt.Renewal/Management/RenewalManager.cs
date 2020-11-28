@@ -243,7 +243,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             {
                 Host = renewalParams.Hosts[0],
                 AlternateNames = renewalParams.Hosts.Skip(1).ToList(),
-                RegistrationEmail = renewalParams.Email,
+                RegistrationEmail = renewalParams.ToEmail,
                 RSAKeyLength = renewalParams.RsaKeyLength,
                 PFXPassword = pfxPassData,
                 BaseUri = (renewalParams.AcmeBaseUri ?? new Uri(DefaultAcmeBaseUri)).ToString(),

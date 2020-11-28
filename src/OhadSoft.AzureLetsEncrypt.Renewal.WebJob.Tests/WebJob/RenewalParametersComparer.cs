@@ -21,8 +21,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             if (azureDnsEnvironmentParamsComparison != 0) return azureDnsEnvironmentParamsComparison;
             var webAppComparison = string.Compare(x.WebApp, y.WebApp, StringComparison.Ordinal);
             if (webAppComparison != 0) return webAppComparison;
-            var emailComparison = string.Compare(x.Email, y.Email, StringComparison.Ordinal);
-            if (emailComparison != 0) return emailComparison;
+            var toEmailComparison = string.Compare(x.ToEmail, y.ToEmail, StringComparison.Ordinal);
+            if (toEmailComparison != 0) return toEmailComparison;
+            var fromEmailComparison = string.Compare(x.FromEmail, y.FromEmail, StringComparison.Ordinal);
+            if (fromEmailComparison != 0) return fromEmailComparison;
             var servicePlanResourceGroupComparison = string.Compare(x.ServicePlanResourceGroup, y.ServicePlanResourceGroup, StringComparison.Ordinal);
             if (servicePlanResourceGroupComparison != 0) return servicePlanResourceGroupComparison;
             var siteSlotNameComparison = string.Compare(x.SiteSlotName, y.SiteSlotName, StringComparison.Ordinal);
