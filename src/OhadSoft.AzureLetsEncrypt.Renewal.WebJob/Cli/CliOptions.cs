@@ -14,6 +14,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
             string webApp,
             IReadOnlyList<string> hosts,
             string email,
+            string fromEmail,
             Guid clientId,
             string clientSecret,
             string servicePlanResourceGroup,
@@ -41,6 +42,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
             WebApp = webApp;
             Hosts = hosts;
             Email = email;
+            FromEmail = fromEmail;
             ClientId = clientId;
             ClientSecret = clientSecret;
             ServicePlanResourceGroup = servicePlanResourceGroup;
@@ -78,8 +80,11 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
         [Option('o', Constants.HostsKey, Required = true, Separator = ';', HelpText = "Semicolon-delimited list of hosts to include in the certificate - the first will comprise the Subject Name (SN) and the rest will comprise the Subject Alternative Names (SANs)")]
         public IReadOnlyList<string> Hosts { get; }
 
-        [Option('e', Constants.EmailKey, Required = true, HelpText = "E-mail for Let's Encrypt registration and expiry notifications")]
+        [Option('e', Constants.EmailKey, Required = true, HelpText = "Recipient (to:) e-mail for Let's Encrypt registration and expiry notifications")]
         public string Email { get; }
+
+        [Option(Constants.FromEmailKey, Required = true, HelpText = "Originating (from:) e-mail for Let's Encrypt registration and expiry notifications")]
+        public string FromEmail { get; }
 
         [Option('c', Constants.ClientIdKey, Required = true, HelpText = "Client ID")]
         public Guid ClientId { get; }

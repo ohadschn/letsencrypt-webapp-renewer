@@ -7,6 +7,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public SharedRenewalParameters(
             AzureEnvironmentParams webAppEnvironment,
             string email,
+            string fromEmail,
             string servicePlanResourceGroup,
             AzureEnvironmentParams azureDnsEnvironment,
             string azureDnsZoneName,
@@ -23,6 +24,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         {
             WebAppEnvironment = webAppEnvironment;
             Email = email;
+            FromEmail = fromEmail;
             ServicePlanResourceGroup = servicePlanResourceGroup;
             AzureDnsEnvironment = azureDnsEnvironment;
             AzureDnsZoneName = azureDnsZoneName;
@@ -40,6 +42,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
         public AzureEnvironmentParams WebAppEnvironment { get; }
         public string Email { get; }
+        public string FromEmail { get; }
         public string ServicePlanResourceGroup { get; }
         public AzureEnvironmentParams AzureDnsEnvironment { get; }
         public string AzureDnsZoneName { get; }

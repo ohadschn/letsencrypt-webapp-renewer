@@ -61,9 +61,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob
             var renewer = new AppSettingsRenewer(
                 new RenewalManager(),
                 new AppSettingsRenewalParamsReader(new AppSettingsReader(ConfigurationManager.AppSettings, ConfigurationManager.ConnectionStrings)),
-                new SendGridNotifier(
-                    ConfigurationManager.ConnectionStrings[Constants.KeyPrefix + Constants.SendGridApiKey]?.ConnectionString,
-                    ConfigurationManager.AppSettings[Constants.KeyPrefix + Constants.FromEmailKey]));
+                new SendGridNotifier(ConfigurationManager.ConnectionStrings[Constants.KeyPrefix + Constants.SendGridApiKey]?.ConnectionString));
             try
             {
                 renewer.Renew().GetAwaiter().GetResult();

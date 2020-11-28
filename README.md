@@ -43,6 +43,7 @@ The `letsencrypt-webapp-renewer` WebJob is configured via [Web App Settings](htt
    1. `letsencrypt:webAppName-resourceGroup`
    1. `letsencrypt:webAppName-hosts` (semicolon-delimited)
    1. `letsencrypt:webAppName-email` (will be used for both Let's Encrypt registration and e-mail notifications)
+   1. `letsencrypt:webAppName-fromEmail` (will be used for both Let's Encrypt registration and e-mail notifications)      
    1. `letsencrypt:webAppName-clientId`
    1. `letsencrypt:webAppName-clientSecret` (should be set as a **connection string**)
    1. `letsencrypt:webAppName-servicePlanResourceGroup` (optional, defaults to the Web App Resource Group)
@@ -61,6 +62,7 @@ For more information about the various renewal settings see: https://github.com/
 - `letsencrypt:ohadsoft-resourceGroup`: `ohadsoft-rg`
 - `letsencrypt:ohadsoft-hosts`: `www.ohadsoft.com;ohadsoft.com;myümlautdomain.de` (note the Internationalized Domain Name [IDN] support)
 - `letsencrypt:ohadsoft-email`: `renewal@ohadsoft.com`
+- `letsencrypt:ohadsoft-fromEmail`: `donotreply@ohadsoft.com`
 - `letsencrypt:ohadsoft-clientId`: `5e1346b6-7db5-4eae-b9fa-7b3d5e42e6c7`
 - (**connection string**) `letsencrypt:ohadsoft-clientSecret`: `MySecretPassword123`
 - `letsencrypt:howlongtobeatsteam-subscriptionId`: `e432f869-4777-4380-a654-3440216992a2`
@@ -68,6 +70,7 @@ For more information about the various renewal settings see: https://github.com/
 - `letsencrypt:howlongtobeatsteam-resourceGroup`: `hltbs-rg`
 - `letsencrypt:howlongtobeatsteam-hosts`: `www.howlongtobeatsteam.com;howlongtobeatsteam.com`
 - `letsencrypt:howlongtobeatsteam-email`: `renewal@howlongtobeatsteam.com`
+- `letsencrypt:howlongtobeatsteam-fromEmail`: `donotreply@howlongtobeatsteam.com`
 - `letsencrypt:howlongtobeatsteam-clientId`: `5e1346b6-7db5-4eae-b9fa-7b3d5e42e6c7`
 - (**connection string**) `letsencrypt:howlongtobeatsteam-clientSecret`: `MySecretPassword123`
 
@@ -130,7 +133,6 @@ The following are optional but **highly recommended**.
 1. Set up [SendGrid](https://app.sendgrid.com/) email notifications to notify you of successful renewals:
    1. Set the `letsencrypt:SendGridApiKey` connection string to your [SendGrid API key](https://sendgrid.com/docs/Classroom/Send/How_Emails_Are_Sent/api_keys.html). At the time of writing, SendGrid offer a free plan in the [Azure Marketplace](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/SendGrid.SendGrid) which should easily suffice for this use case.
    1. Configure [Single Sender Verification](https://app.sendgrid.com/settings/sender_auth) for the email address that SendGrid should send email as.
-   1. Set the `letsencrypt:fromEmail` setting to a verified sender from the previous step.
 1. Set up [Zapier](https://zapier.com/help/windows-azure-web-sites/) to send you notifications on `letsencrypt-webapp-renewer` WebJob runs. While e-mail notifications are supported as described above, **they will not be fired when the WebJob has failed for any reason** (this is intentional - a WebJob cannot reliably handle any possible failure it might encounter). By contrast, Zapier operates externally to the WebJob and should be able to report any error that might have caused the WebJob to fail. At the time of writing, Zapier offer a free account which should easily suffice for any reasonable SSL renewal notification needs.
 1. If you created a Logic App to schedule the Web Job, set up notifications using any number of connectors 
    1. [Gmail](https://docs.microsoft.com/en-us/connectors/gmail/)
@@ -153,7 +155,8 @@ When executed outside of a WebJob context (as determined by the absence of the [
 | -r, --resourceGroup                         | Required. Resource Group
 | -w, --webApp                                | Required. Web App
 | -o, --hosts                                 | Required. Semicolon-delimited list of hosts to include in the certificate - the first will comprise the Subject Name (SN) and the rest will comprise the Subject Alternative Names (SANs)
-| -e, --email                                 | Required. E-mail for Let's Encrypt registration and expiry notifications 
+| -e, --email                                 | Required. Recipient (to:) e-mail for Let's Encrypt registration and expiry notifications 
+| --fromEmail                                 | Required. Originating (from:) e-mail for Let's Encrypt registration and expiry notifications 
 | -c, --clientId                              | Required. Client ID
 | -l, --clientSecret                          | Required. Client Secret
 | -p, --servicePlanResourceGroup              | Service Plan Resource Group (if not specified, the provided Web App resource group will be used)
@@ -178,7 +181,7 @@ When executed outside of a WebJob context (as determined by the absence of the [
 | --version                                   | Display version information.
 
 #### Example
-`AzureLetsEncryptRenewer.exe -s e432f869-4777-4380-a654-3440216992a2 -t ohadsoft.onmicrosoft.com -r ohadsoft-rg -w ohadsoft -o "www.ohadsoft.com;ohadsoft.com" -e renewal@ohadsoft.com -c 5e1346b6-7db5-4eae-b9fa-7b3d5e42e6c7 -l MySecretPassword123`
+`AzureLetsEncryptRenewer.exe -s e432f869-4777-4380-a654-3440216992a2 -t ohadsoft.onmicrosoft.com -r ohadsoft-rg -w ohadsoft -o "www.ohadsoft.com;ohadsoft.com" -e renewal@ohadsoft.com --fromEmail alerts@ohadsoft.com -c 5e1346b6-7db5-4eae-b9fa-7b3d5e42e6c7 -l MySecretPassword123`
 
 ### Exit codes
 - `0` - Success

@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings;
-using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email;
 using OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.Util;
 using AppSettingsReader = OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings.AppSettingsReader;
 
@@ -27,6 +26,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         private const string AzureDnsResourceGroupKeySuffix = "azureDnsResourceGroup";
         private const string HostsKeySuffix = "hosts";
         private const string EmailKeySuffix = "email";
+        private const string FromEmailKeySuffix = "fromEmail";
         private const string ClientIdKeySuffix = "clientId";
         private const string AzureDnsClientIdKeySuffix = "azureDnsClientId";
         private const string ClientSecretKeySuffix = "clientSecret";
@@ -62,7 +62,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             { BuildConfigKey(TenantIdKeySuffix, WebApp1), Tenant1 },
             { BuildConfigKey(AzureDnsTenantIdKeySuffix, WebApp1), TenantAzureDns },
             { BuildConfigKey(HostsKeySuffix, WebApp1), String.Join(";", Hosts1) },
-            { BuildConfigKey(EmailKeySuffix, WebApp1), Email1 },
+            { BuildConfigKey(EmailKeySuffix, WebApp1), ToEmail1 },
+            { BuildConfigKey(FromEmailKeySuffix, WebApp1), FromEmail1 },
             { BuildConfigKey(ClientIdKeySuffix, WebApp1), ClientId1.ToString() }, // override shared
             { BuildConfigKey(AzureDnsClientIdKeySuffix, WebApp1), ClientIdAzureDns.ToString() },
             { BuildConfigKey(UseIpBasedSslKeySuffix, WebApp1), UseIpBasedSsl1.ToString(CultureInfo.InvariantCulture) },
@@ -83,7 +84,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             { BuildConfigKey(TenantIdKeySuffix, WebApp2), Tenant2 },
             { BuildConfigKey(ResourceGroupKeySuffix, WebApp2), ResourceGroup2 },
             { BuildConfigKey(HostsKeySuffix, WebApp2), String.Join(";", Hosts2) },
-            { BuildConfigKey(EmailKeySuffix, WebApp2), Email2 },
+            { BuildConfigKey(EmailKeySuffix, WebApp2), ToEmail2 },
+            { BuildConfigKey(FromEmailKeySuffix, WebApp2), FromEmail2 },
             { BuildConfigKey(ClientIdKeySuffix, WebApp2), ClientId2.ToString() }, // override shared
         };
 
@@ -175,7 +177,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         [TestMethod]
         public void TestInvalidFromEmail()
         {
-            Assert.ThrowsException<ArgumentException>(() => new SendGridNotifier(string.Empty, "@address"));
+            AssertInvalidConfig(FromEmailKeySuffix, WebApp1, "@bad", "fromEmail");
         }
 
         [TestMethod]
@@ -217,7 +219,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             m_appSettings[BuildConfigKey(TenantIdKeySuffix, webApp)] = Tenant1;
             m_appSettings[BuildConfigKey(ResourceGroupKeySuffix, webApp)] = ResourceGroup1;
             m_appSettings[BuildConfigKey(HostsKeySuffix, webApp)] = String.Join(";", Hosts1);
-            m_appSettings[BuildConfigKey(EmailKeySuffix, webApp)] = Email1;
+            m_appSettings[BuildConfigKey(EmailKeySuffix, webApp)] = ToEmail1;
+            m_appSettings[BuildConfigKey(FromEmailKeySuffix, webApp)] = FromEmail1;
         }
 
         [TestMethod]
@@ -341,6 +344,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
                 { BuildConfigKey(TenantIdKeySuffix), TenantShared },
                 { BuildConfigKey(HostsKeySuffix, WebApp3), String.Join(";", Hosts3) },
                 { BuildConfigKey(EmailKeySuffix), EmailShared },
+                { BuildConfigKey(FromEmailKeySuffix), FromEmailShared },
                 { BuildConfigKey(ClientIdKeySuffix), ClientIdShared.ToString() },
                 { BuildConfigKey(AzureDnsClientIdKeySuffix), ClientIdAzureDnsShared.ToString() },
                 { BuildConfigKey(UseIpBasedSslKeySuffix), UseIpBasedSslShared.ToString(CultureInfo.InvariantCulture) },
@@ -382,7 +386,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
             m_appSettings[BuildConfigKey(ClientSecretKeySuffix, WebApp4)] = ClientSecret1;
             m_appSettings[BuildConfigKey(ResourceGroupKeySuffix, WebApp4)] = ResourceGroup1;
             m_appSettings[BuildConfigKey(HostsKeySuffix, WebApp4)] = String.Join(";", Hosts4);
-            m_appSettings[BuildConfigKey(EmailKeySuffix, WebApp4)] = Email1;
+            m_appSettings[BuildConfigKey(EmailKeySuffix, WebApp4)] = ToEmail1;
+            m_appSettings[BuildConfigKey(FromEmailKeySuffix, WebApp4)] = FromEmail1;
 
             await m_renewer.Renew().ConfigureAwait(false);
 
