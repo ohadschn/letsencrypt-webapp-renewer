@@ -13,6 +13,7 @@
 
         public const string HostsKey = "hosts";
         public const string EmailKey = "email";
+        public const string FromEmailKey = "fromEmail";
         public const string SiteSlotNameKey = "siteSlotName";
         public const string UseIpBasedSslKey = "useIpBasedSsl";
         public const string RsaKeyLengthKey = "rsaKeyLength";

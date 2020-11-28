@@ -1,5 +1,4 @@
 ﻿using System;
-using static System.FormattableString;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 {
@@ -8,6 +7,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public SharedRenewalParameters(
             AzureEnvironmentParams webAppEnvironment,
             string email,
+            string fromEmail,
             string servicePlanResourceGroup,
             AzureEnvironmentParams azureDnsEnvironment,
             string azureDnsZoneName,
@@ -24,6 +24,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         {
             WebAppEnvironment = webAppEnvironment;
             Email = email;
+            FromEmail = fromEmail;
             ServicePlanResourceGroup = servicePlanResourceGroup;
             AzureDnsEnvironment = azureDnsEnvironment;
             AzureDnsZoneName = azureDnsZoneName;
@@ -41,6 +42,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
         public AzureEnvironmentParams WebAppEnvironment { get; }
         public string Email { get; }
+        public string FromEmail { get; }
         public string ServicePlanResourceGroup { get; }
         public AzureEnvironmentParams AzureDnsEnvironment { get; }
         public string AzureDnsZoneName { get; }
@@ -54,10 +56,5 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public Uri AzureTokenAudience { get; }
         public Uri AzureManagementEndpoint { get; }
         public string AzureDefaultWebsiteDomainName { get; }
-
-        public override string ToString()
-        {
-            return Invariant($"{nameof(WebAppEnvironment)}: {WebAppEnvironment}, {nameof(Email)}: {Email}, {nameof(ServicePlanResourceGroup)}: {ServicePlanResourceGroup}, {nameof(AzureDnsEnvironment)}: {AzureDnsEnvironment}, {nameof(AzureDnsZoneName)}: {AzureDnsZoneName}, {nameof(AzureDnsRelativeRecordSetName)}: {AzureDnsRelativeRecordSetName}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBaseUri)}: {AcmeBaseUri}, {nameof(WebRootPath)}: {WebRootPath}, {nameof(RenewXNumberOfDaysBeforeExpiration)}: {RenewXNumberOfDaysBeforeExpiration}, {nameof(AuthenticationUri)}: {AuthenticationUri}, {nameof(AzureTokenAudience)}: {AzureTokenAudience}, {nameof(AzureManagementEndpoint)}: {AzureManagementEndpoint}, {nameof(AzureDefaultWebsiteDomainName)}: {AzureDefaultWebsiteDomainName}");
-        }
     }
 }
