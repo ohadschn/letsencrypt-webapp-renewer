@@ -1,7 +1,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/3fwuiks1yq4oro4v/branch/master?svg=true)](https://ci.appveyor.com/project/ohadschn/letsencrypt-webapp-renewer/branch/master)
 
 # letsencrypt-webapp-renewer
-A WebJob-ready console application for renewing Azure Web App TLS/SSL certificates (based on [letsencrypt-siteextension](https://github.com/sjkp/letsencrypt-siteextension) and[letsencrypt-azure](https://github.com/sjkp/letsencrypt-azure)). Officially [recommended by Microsoft](https://feedback.azure.com/forums/169385-web-apps/suggestions/6737285-add-support-for-free-ssl-certs-like-those-from-let) for Web App Let's Encrypt integration (prior to native feature availability).
+A WebJob-ready console application for renewing Azure Web App TLS/SSL certificates (based on [letsencrypt-siteextension](https://github.com/sjkp/letsencrypt-siteextension) and [letsencrypt-azure](https://github.com/sjkp/letsencrypt-azure)). Officially [recommended by Microsoft](https://feedback.azure.com/forums/169385-web-apps/suggestions/6737285-add-support-for-free-ssl-certs-like-those-from-let) for Web App Let's Encrypt integration (prior to native feature availability).
 
 ## Motivation
 HTTPS is the pervasive standard for all websites, regardless of size or field. 
@@ -13,6 +13,7 @@ Enter [Let's Encrypt](https://letsencrypt.org/) - a free, automated, and open Ce
 - The extension must be installed on the same web app as your site.
   - This means you must install the extension on each and every Web App you own.
   - Worse, if you happen to publish your Web App with the "Delete Existing files", it will silently delete the WebJob created by the extension, effectively nullifying it.
+- The extension setup wizard has been known to fall out of sync with the underlying WebJob it's installing (e.g. fail on missing Web App configuraion)
 - There are no e-mail notifications (you could set some basic ones with Zapier but they won't contain details on the actual renewals that took place).
 - It relies on an Azure Storage account which has to be [configured in a certain way](https://github.com/sjkp/letsencrypt-siteextension/issues/148), which is an unneeded possible point of failure.
 - The extension can only be run in the context of a web app. You might want to run it as a command-line tool (e.g. from your CI system).
@@ -22,6 +23,7 @@ Enter [Let's Encrypt](https://letsencrypt.org/) - a free, automated, and open Ce
 - Install on any Web App (doesn't have to be the same web app for which you want to manage SSL certs).
   - Multiple Web App management is supported.
   - Publishing with "Delete Existing files" has no effect when the WebJob is deployed to a different (preferably dedicated) Web App.
+- Trade off a little convenience (no extension with a setup wizrad) for a higher degree of consistency and reliability
 - E-mail notifications are built in (via SendGrid).
 - No external dependencies other than Let's Encrypt.
 - Can be executed as a plain command-line tool from any environment.
@@ -163,6 +165,9 @@ When executed outside of a WebJob context (as determined by the absence of the [
 | -b, --azureDefaultWebSiteDomainName         | The Azure Web Sites default domain name, defaults to: `azurewebsites.net`
 | --help                                      | Display the help screen.
 | --version                                   | Display version information.
+
+#### Example
+`AzureLetsEncryptRenewer.exe -s e432f869-4777-4380-a654-3440216992a2 -t ohadsoft.onmicrosoft.com -r ohadsoft-rg -w ohadsoft -o "www.ohadsoft.com;ohadsoft.com" -e renewal@ohadsoft.com -c 5e1346b6-7db5-4eae-b9fa-7b3d5e42e6c7 -l MySecretPassword123`
 
 ### Exit codes
 - `0` - Success
