@@ -51,7 +51,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
                 var body = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 var issuerNames = staging ? new[] { "Fake LE" } : new[] { "Let's Encrypt", "R3", "R4", "E1", "E2" };
-                var letsEncryptCerts = ExtractCertificates(body).Where(s => issuerNames.Any(i => s.Issuer.StartsWith(i)));
+                var letsEncryptCerts = ExtractCertificates(body).Where(s => issuerNames.Any(i => s.Issuer.StartsWith(i, StringComparison.InvariantCulture)));
 
                 var leCertThumbprints = new HashSet<string>(letsEncryptCerts.Select(c => c.Thumbprint));
                 return site.HostNameSslStates.Where(ssl => leCertThumbprints.Contains(ssl.Thumbprint)).Select(ssl => ssl.Name).ToArray();
