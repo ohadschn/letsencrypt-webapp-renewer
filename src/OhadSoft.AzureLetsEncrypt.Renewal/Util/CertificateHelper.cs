@@ -15,6 +15,9 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
 {
     internal static class CertificateHelper
     {
+        internal static string[] LetsEncryptIssuerNames = new[] { "Let's Encrypt Authority X1", "Let's Encrypt Authority X2", "Let's Encrypt Authority X3", "Let's Encrypt Authority X4", "R3", "R4", "E1", "E2" };
+        internal static string[] LetsEncrypStagingtIssuerNames = new[] { "Fake LE Intermediate X1" };
+
         private static readonly RNGCryptoServiceProvider s_randomGenerator = new RNGCryptoServiceProvider(); // thread-safe
 
         // https://github.com/sjkp/letsencrypt-siteextension/blob/8e758579b21b0dac5269337e30ac88b629818889/LetsEncrypt.SiteExtension.Core/CertificateManager.cs#L146
@@ -50,8 +53,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
                 Trace.TraceInformation("Reading ARM certificate query response");
                 var body = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                var issuerNames = staging ? new[] { "Fake LE" } : new[] { "Let's Encrypt", "R3", "R4", "E1", "E2" };
-                var letsEncryptCerts = ExtractCertificates(body).Where(s => issuerNames.Any(i => s.Issuer.StartsWith(i, StringComparison.InvariantCulture)));
+                var letsEncryptIssuerNames = staging ? LetsEncrypStagingtIssuerNames : LetsEncryptIssuerNames;
+                var letsEncryptCerts = ExtractCertificates(body).Where(cert => letsEncryptIssuerNames.Contains(cert.Issuer));
 
                 var leCertThumbprints = new HashSet<string>(letsEncryptCerts.Select(c => c.Thumbprint));
                 return site.HostNameSslStates.Where(ssl => leCertThumbprints.Contains(ssl.Thumbprint)).Select(ssl => ssl.Name).ToArray();
