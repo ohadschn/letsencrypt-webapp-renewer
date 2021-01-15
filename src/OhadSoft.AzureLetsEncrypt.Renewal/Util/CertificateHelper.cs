@@ -27,7 +27,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
 
         // https://github.com/sjkp/letsencrypt-siteextension/blob/8e758579b21b0dac5269337e30ac88b629818889/LetsEncrypt.SiteExtension.Core/CertificateManager.cs#L146
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Task")]
-        public static async Task<IReadOnlyList<string>> GetLetsEncryptHostNames(IAzureWebAppEnvironment webAppEnvironment, bool staging)
+        public static async Task<IReadOnlyList<string>> GetNonExpiringLetsEncryptHostNames(IAzureWebAppEnvironment webAppEnvironment, bool staging, int renewXNumberOfDaysBeforeExpiration)
         {
             Site site;
             using (var client = await ArmHelper.GetWebSiteManagementClient(webAppEnvironment).ConfigureAwait(false))
@@ -59,10 +59,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
                 var body = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 var letsEncryptIssuerNames = staging ? s_letsEncrypStagingtIssuerNames : s_letsEncryptIssuerNames;
-                var letsEncryptCerts = ExtractCertificates(body).Where(cert => letsEncryptIssuerNames.Contains(cert.Issuer, StringComparer.Ordinal));
 
-                var leCertThumbprints = new HashSet<string>(letsEncryptCerts.Select(c => c.Thumbprint));
-                return site.HostNameSslStates.Where(ssl => leCertThumbprints.Contains(ssl.Thumbprint)).Select(ssl => ssl.Name).ToArray();
+                var letsEncryptNonExpiringCerts = ExtractCertificates(body).Where(cert =>
+                    letsEncryptIssuerNames.Contains(cert.Issuer) &&
+                    cert.ExpirationDate > DateTime.UtcNow.AddDays(renewXNumberOfDaysBeforeExpiration));
+
+                var letsEncryptNonExpiringThumbprints = new HashSet<string>(letsEncryptNonExpiringCerts.Select(c => c.Thumbprint));
+                return site.HostNameSslStates.Where(ssl => letsEncryptNonExpiringThumbprints.Contains(ssl.Thumbprint)).Select(ssl => ssl.Name).ToArray();
             }
         }
 
