@@ -75,10 +75,6 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 {
                     await manager.AddCertificate().ConfigureAwait(false);
                 }
-                else
-                {
-                    await manager.RenewCertificate(false, renewalParams.RenewXNumberOfDaysBeforeExpiration).ConfigureAwait(false);
-                }
             }
 
             Trace.TraceInformation("Let's Encrypt SSL certs & bindings renewed for '{0}'", renewalParams.WebApp);
@@ -95,19 +91,19 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 return true;
             }
 
-            var letsEncryptHostNames = await CertificateHelper.GetLetsEncryptHostNames(webAppEnvironment, staging).ConfigureAwait(false);
-            Trace.TraceInformation("Let's Encrypt host names (staging: {0}): {1}", staging, String.Join(", ", letsEncryptHostNames));
+            var nonExpiringLetsEncryptHostNames = await CertificateHelper.GetNonExpiringLetsEncryptHostNames(webAppEnvironment, staging, renewalParams.RenewXNumberOfDaysBeforeExpiration).ConfigureAwait(false);
+            Trace.TraceInformation("Let's Encrypt non-expiring host names (staging: {0}): {1}", staging, String.Join(", ", nonExpiringLetsEncryptHostNames));
 
-            ICollection<string> missingHostNames = acmeConfig.Hostnames.Except(letsEncryptHostNames, StringComparer.OrdinalIgnoreCase).ToArray();
+            ICollection<string> missingHostNames = acmeConfig.Hostnames.Except(nonExpiringLetsEncryptHostNames, StringComparer.OrdinalIgnoreCase).ToArray();
             if (missingHostNames.Count > 0)
             {
                 Trace.TraceInformation(
-                    "Detected host name(s) with no associated Let's Encrypt certificates, will add a new certificate: {0}",
+                    "Detected host name(s) with no associated / expiring Let's Encrypt certificates, will add a new certificate: {0}",
                     String.Join(", ", missingHostNames));
                 return true;
             }
 
-            Trace.TraceInformation("All host names associated with Let's Encrypt certificates, will perform cert renewal");
+            Trace.TraceInformation("All host names associated with non-expiring Let's Encrypt certificates, no cert renewal necessary");
             return false;
         }
 
