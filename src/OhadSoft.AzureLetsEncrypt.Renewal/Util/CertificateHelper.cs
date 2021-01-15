@@ -15,8 +15,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
 {
     internal static class CertificateHelper
     {
-        private static readonly IEnumerable<string> s_letsEncrypStagingtIssuerNames = new[] { "Fake LE Intermediate X1" };
-        private static readonly IEnumerable<string> s_letsEncryptIssuerNames = new[]
+        private static readonly HashSet<string> s_letsEncrypStagingtIssuerNames = new HashSet<string>(StringComparer.Ordinal) { "Fake LE Intermediate X1" };
+        private static readonly HashSet<string> s_letsEncryptIssuerNames = new HashSet<string>(StringComparer.Ordinal)
         {
             "Let's Encrypt Authority X1", "Let's Encrypt Authority X2", "Let's Encrypt Authority X3", "Let's Encrypt Authority X4",
             "R3", "R4",
