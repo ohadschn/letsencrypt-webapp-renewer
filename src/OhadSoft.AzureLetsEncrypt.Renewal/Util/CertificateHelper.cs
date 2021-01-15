@@ -15,8 +15,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
 {
     internal static class CertificateHelper
     {
-        internal static string[] LetsEncryptIssuerNames { get; set; } = new[] { "Let's Encrypt Authority X1", "Let's Encrypt Authority X2", "Let's Encrypt Authority X3", "Let's Encrypt Authority X4", "R3", "R4", "E1", "E2" };
-        internal static string[] LetsEncrypStagingtIssuerNames { get; set; } = new[] { "Fake LE Intermediate X1" };
+        private static readonly IEnumerable<string> s_letsEncryptIssuerNames = new[] { "Let's Encrypt Authority X1", "Let's Encrypt Authority X2", "Let's Encrypt Authority X3", "Let's Encrypt Authority X4", "R3", "R4", "E1", "E2" };
+        private static readonly IEnumerable<string> s_letsEncrypStagingtIssuerNames = new[] { "Fake LE Intermediate X1" };
 
         private static readonly RNGCryptoServiceProvider s_randomGenerator = new RNGCryptoServiceProvider(); // thread-safe
 
@@ -53,7 +53,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
                 Trace.TraceInformation("Reading ARM certificate query response");
                 var body = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                var letsEncryptIssuerNames = staging ? LetsEncrypStagingtIssuerNames : LetsEncryptIssuerNames;
+                var letsEncryptIssuerNames = staging ? s_letsEncrypStagingtIssuerNames : s_letsEncryptIssuerNames;
                 var letsEncryptCerts = ExtractCertificates(body).Where(cert => letsEncryptIssuerNames.Contains(cert.Issuer));
 
                 var leCertThumbprints = new HashSet<string>(letsEncryptCerts.Select(c => c.Thumbprint));
