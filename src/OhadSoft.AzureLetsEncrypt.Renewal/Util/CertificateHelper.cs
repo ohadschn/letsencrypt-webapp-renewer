@@ -59,7 +59,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
                 var body = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 var letsEncryptIssuerNames = staging ? s_letsEncrypStagingtIssuerNames : s_letsEncryptIssuerNames;
-                var letsEncryptCerts = ExtractCertificates(body).Where(cert => letsEncryptIssuerNames.Contains(cert.Issuer));
+                var letsEncryptCerts = ExtractCertificates(body).Where(cert => letsEncryptIssuerNames.Contains(cert.Issuer, StringComparer.Ordinal));
 
                 var leCertThumbprints = new HashSet<string>(letsEncryptCerts.Select(c => c.Thumbprint));
                 return site.HostNameSslStates.Where(ssl => leCertThumbprints.Contains(ssl.Thumbprint)).Select(ssl => ssl.Name).ToArray();
