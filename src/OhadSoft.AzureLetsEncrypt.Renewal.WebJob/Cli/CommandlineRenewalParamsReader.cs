@@ -49,10 +49,20 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
                 throw new ArgumentValidationException("Error parsing Azure DNS environment parameters", e);
             }
 
+            GoDaddyEnvironmentParams goDaddyDnsEnvironmentParams;
+            try
+            {
+                goDaddyDnsEnvironmentParams = GetGoDaddyDnsEnvironmentParams(parsed);
+            }
+            catch (ArgumentException e)
+            {
+                throw new ArgumentValidationException("Error parsing GoDaddy DNS environment parameters", e);
+            }
+
             RenewalParameters renewalParameters;
             try
             {
-                renewalParameters = GetRenewalParameters(parsed, webAppEnvironmentParams, azureDnsEnvironmentParams);
+                renewalParameters = GetRenewalParameters(parsed, webAppEnvironmentParams, azureDnsEnvironmentParams, goDaddyDnsEnvironmentParams);
             }
             catch (ArgumentException e)
             {
@@ -82,7 +92,24 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
                 parsed.AzureDnsResourceGroup ?? parsed.ResourceGroup);
         }
 
-        private static RenewalParameters GetRenewalParameters(CliOptions parsed, AzureEnvironmentParams webAppEnvironmentParams, AzureEnvironmentParams azureDnsEnvironmentParams)
+        private static GoDaddyEnvironmentParams GetGoDaddyDnsEnvironmentParams(CliOptions parsed)
+        {
+            if (string.IsNullOrEmpty(parsed.GoDaddyDnsApiKey) ||
+                string.IsNullOrEmpty(parsed.GoDaddyDnsApiSecret) ||
+                string.IsNullOrEmpty(parsed.GoDaddyDnsDomain) ||
+                string.IsNullOrEmpty(parsed.GoDaddyDnsShopperId))
+            {
+                return null;
+            }
+
+            return new GoDaddyEnvironmentParams(
+                parsed.GoDaddyDnsApiKey,
+                parsed.GoDaddyDnsApiSecret,
+                parsed.GoDaddyDnsDomain,
+                parsed.GoDaddyDnsShopperId);
+        }
+
+        private static RenewalParameters GetRenewalParameters(CliOptions parsed, AzureEnvironmentParams webAppEnvironmentParams, AzureEnvironmentParams azureDnsEnvironmentParams, GoDaddyEnvironmentParams goDaddyEnvironmentParams)
         {
             return new RenewalParameters(
                 webAppEnvironmentParams,
@@ -95,6 +122,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
                 azureDnsEnvironmentParams,
                 parsed.AzureDnsZoneName,
                 parsed.AzureDnsRelativeRecordSetName,
+                goDaddyEnvironmentParams,
                 parsed.UseIpBasedSsl,
                 parsed.RsaKeyLength,
                 parsed.AcmeBaseUri,

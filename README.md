@@ -82,7 +82,9 @@ You can run the `Get-AzureEnvironment` PowerShell cmdlet to get the required val
 
 ### DNS Challenge
 
-You may use the ACME DNS challenge instead of the HTTP challenge. Currently only Azure DNS is supported, and it can be activated using the following configuration:
+You may use the ACME DNS challenge instead of the HTTP challenge. Currently only Azure or GoDaddy DNS is supported.
+
+Azure DNS can be activated using the following configuration:
 1. `letsencrypt:webAppName-azureDnsZoneName` (e.g. `yourDomain.com`, note that for Internationalized Domain Names [IDNs] you must use the punycode name e.g `xn--mymlautdomain-xob.de`)
 2. `letsencrypt:webAppName-azureDnsRelativeRecordSetName` (e.g. `yourSubDomain`)
 3. `letsencrypt:webAppName-azureDnsTenantId` (optional, defaults to Web App Tenant ID)
@@ -91,9 +93,15 @@ You may use the ACME DNS challenge instead of the HTTP challenge. Currently only
 6. `letsencrypt:webAppName-azureDnsClientId` (optional, defaults to Web App Client ID)
 7. `letsencrypt:webAppName-azureDnsClientSecret` (optional, defaults to Web App Client Secret)
 
+GoDaddy DNS can be activated using the following configuration:
+1. `letsencrypt:webAppName-goDaddyDnsApiKey`
+2. `letsencrypt:webAppName-goDaddyDnsApiSecret`
+3. `letsencrypt:webAppName-goDaddyDnsDomain` (e.g. `yourDomain.com`)
+4. `letsencrypt:webAppName-goDaddyDnsShopperId`
+
 #### DNS Challenge Limitations
 * Only wildcard host names are supported (must begin with `*.`)
-* App Service Plan and App Service must reside in the same resource group
+* App Service Plan and App Service must reside in the same resource group (Azure DNS)
 * `renewXNumberOfDaysBeforeExpiration` is not supported
 
 ### Site Deployment Slots
@@ -153,6 +161,10 @@ When executed outside of a WebJob context (as determined by the absence of the [
 | -v, --azureDnsClientSecret                  | Azure DNS Client Secret, defaults to Web App Client Secret
 | -z, --azureDnsZoneName                      | Azure DNS Zone Name (e.g. `yourDomain.com`)
 | -y, --azureDnsRelativeRecordSetName         | Azure DNS Relative Record Set Name (e.g. `yourSubDomain`)
+| --goDaddyDnsApiKey                          | GoDaddy DNS API key
+| --goDaddyDnsApiSecret                       | GoDaddy DNS API secret
+| --goDaddyDnsDomain                          | GoDaddy DNS domain name (e.g. 'yourDomain.com')
+| --goDaddyDnsShopperId                          | GoDaddy DNS shopper ID
 | -d, --siteSlotName                          | Site Deployment Slot
 | -i, --useIpBasedSsl                         | (Default: false) Use IP Based SSL
 | -k, --rsaKeyLength                          | (Default: 2048) Certificate RSA key length
