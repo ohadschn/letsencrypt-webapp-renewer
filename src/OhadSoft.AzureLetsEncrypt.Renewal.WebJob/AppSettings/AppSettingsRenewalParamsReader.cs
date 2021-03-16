@@ -57,6 +57,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
             }
 
             AzureEnvironmentParams sharedAzureDnsEnvironment;
+            GoDaddyEnvironmentParams sharedGoDaddyDnsEnvironment;
             try
             {
                 sharedAzureDnsEnvironment = new AzureEnvironmentParams(
@@ -66,10 +67,17 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                     GetCommonConnectionString(Constants.AzureDnsClientSecretKey),
                     GetCommonSetting(Constants.AzureDnsResourceGroupKey),
                     true);
+
+                sharedGoDaddyDnsEnvironment = new GoDaddyEnvironmentParams(
+                    GetCommonSetting(Constants.GoDaddyDnsApiKey),
+                    GetCommonSetting(Constants.GoDaddyDnsApiSecret),
+                    GetCommonSetting(Constants.GoDaddyDnsDomain),
+                    GetCommonSetting(Constants.GoDaddyDnsShopperId),
+                    true);
             }
             catch (ArgumentException e)
             {
-                throw new ConfigurationErrorsException("Error parsing shared Azure DNS environment parameters", e);
+                throw new ConfigurationErrorsException("Error parsing shared Azure or GoDaddy DNS environment parameters", e);
             }
 
             try
@@ -81,6 +89,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                     sharedAzureDnsEnvironment,
                     GetCommonSetting(Constants.AzureDnsZoneNameKey),
                     GetCommonSetting(Constants.AzureDnsRelativeRecordSetNameKey),
+                    sharedGoDaddyDnsEnvironment,
                     GetCommonBooleanSetting(Constants.UseIpBasedSslKey),
                     GetCommonInt32Setting(Constants.RsaKeyLengthKey),
                     GetCommonUriSetting(Constants.AcmeBaseUriKey),
@@ -118,6 +127,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
             }
 
             AzureEnvironmentParams azureDnsEnvironment;
+            GoDaddyEnvironmentParams goDaddyDnsEnvironment = null;
             try
             {
                 azureDnsEnvironment = new AzureEnvironmentParams(
@@ -126,10 +136,27 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                     ResolveGuidSetting(Constants.AzureDnsClientIdKey, webApp, sharedRenewalParams.AzureDnsEnvironment.ClientId ?? webAppEnvironment.ClientId),
                     ResolveConnectionString(Constants.AzureDnsClientSecretKey, webApp, sharedRenewalParams.AzureDnsEnvironment.ClientSecret ?? webAppEnvironment.ClientSecret),
                     ResolveSetting(Constants.AzureDnsResourceGroupKey, webApp, sharedRenewalParams.AzureDnsEnvironment.ResourceGroup ?? webAppEnvironment.ResourceGroup));
+
+                var goDaddyDnsApiKey = ResolveOptionalSetting(Constants.GoDaddyDnsApiKey, webApp);
+                var goDaddyDnsApiSecret = ResolveOptionalSetting(Constants.GoDaddyDnsApiSecret, webApp);
+                var goDaddyDnsDomain = ResolveOptionalSetting(Constants.GoDaddyDnsDomain, webApp);
+                var goDaddyDnsShopperId = ResolveOptionalSetting(Constants.GoDaddyDnsShopperId, webApp);
+
+                if (!string.IsNullOrEmpty(goDaddyDnsApiKey) &&
+                    !string.IsNullOrEmpty(goDaddyDnsApiSecret) &&
+                    !string.IsNullOrEmpty(goDaddyDnsDomain) &&
+                    !string.IsNullOrEmpty(goDaddyDnsShopperId))
+                {
+                    goDaddyDnsEnvironment = new GoDaddyEnvironmentParams(
+                        goDaddyDnsApiKey,
+                        goDaddyDnsApiSecret,
+                        goDaddyDnsDomain,
+                        goDaddyDnsShopperId);
+                }
             }
             catch (ArgumentException e)
             {
-                throw new ConfigurationErrorsException("Error parsing Azure DNS environment parameters for web app: " + webApp, e);
+                throw new ConfigurationErrorsException("Error parsing Azure or GoDaddy DNS environment parameters for web app: " + webApp, e);
             }
 
             try
@@ -145,6 +172,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                     azureDnsEnvironment,
                     ResolveOptionalSetting(Constants.AzureDnsZoneNameKey, webApp, sharedRenewalParams.AzureDnsZoneName),
                     ResolveOptionalSetting(Constants.AzureDnsRelativeRecordSetNameKey, webApp, sharedRenewalParams.AzureDnsRelativeRecordSetName),
+                    goDaddyDnsEnvironment,
                     ResolveOptionalBooleanSetting(Constants.UseIpBasedSslKey, webApp, sharedRenewalParams.UseIpBasedSsl, false),
                     ResolveOptionalInt32Setting(Constants.RsaKeyLengthKey, webApp, sharedRenewalParams.RsaKeyLength, 2048),
                     ResolveOptionalUriSetting(Constants.AcmeBaseUriKey, webApp, sharedRenewalParams.AcmeBaseUri),

@@ -24,6 +24,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
             string azureDnsClientSecret,
             string azureDnsZoneName,
             string azureDnsRelativeRecordSetName,
+            string goDaddyDnsApiKey,
+            string goDaddyDnsApiSecret,
+            string goDaddyDnsDomain,
+            string goDaddyDnsShopperId,
             string siteSlotName,
             bool useIpBasedSsl,
             int rsaKeyLength,
@@ -51,6 +55,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
             AzureDnsClientSecret = azureDnsClientSecret;
             AzureDnsZoneName = azureDnsZoneName;
             AzureDnsRelativeRecordSetName = azureDnsRelativeRecordSetName;
+            GoDaddyDnsApiKey = goDaddyDnsApiKey;
+            GoDaddyDnsApiSecret = goDaddyDnsApiSecret;
+            GoDaddyDnsDomain = goDaddyDnsDomain;
+            GoDaddyDnsShopperId = goDaddyDnsShopperId;
             SiteSlotName = siteSlotName;
             UseIpBasedSsl = useIpBasedSsl;
             RsaKeyLength = rsaKeyLength;
@@ -110,6 +118,18 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
 
         [Option('y', Constants.AzureDnsRelativeRecordSetNameKey, Required = false, HelpText = "Azure DNS Relative Record Set Name (e.g. 'yourSubDomain')")]
         public string AzureDnsRelativeRecordSetName { get; }
+
+        [Option(Constants.GoDaddyDnsApiKey, Required = false, HelpText = "GoDaddy DNS API key")]
+        public string GoDaddyDnsApiKey { get; }
+
+        [Option(Constants.GoDaddyDnsApiSecret, Required = false, HelpText = "GoDaddy DNS API secret")]
+        public string GoDaddyDnsApiSecret { get; }
+
+        [Option(Constants.GoDaddyDnsDomain, Required = false, HelpText = "GoDaddy DNS domain name (e.g. 'yourDomain.com')")]
+        public string GoDaddyDnsDomain { get; }
+
+        [Option(Constants.GoDaddyDnsShopperId, Required = false, HelpText = "GoDaddy DNS shopper ID")]
+        public string GoDaddyDnsShopperId { get; }
 
         [Option('d', Constants.SiteSlotNameKey, Required = false, HelpText = "Site Deployment Slot")]
         public string SiteSlotName { get; }
