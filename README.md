@@ -164,7 +164,7 @@ When executed outside of a WebJob context (as determined by the absence of the [
 | --goDaddyDnsApiKey                          | GoDaddy DNS API key
 | --goDaddyDnsApiSecret                       | GoDaddy DNS API secret
 | --goDaddyDnsDomain                          | GoDaddy DNS domain name (e.g. 'yourDomain.com')
-| --goDaddyDnsShopperId                          | GoDaddy DNS shopper ID
+| --goDaddyDnsShopperId                       | GoDaddy DNS shopper ID
 | -d, --siteSlotName                          | Site Deployment Slot
 | -i, --useIpBasedSsl                         | (Default: false) Use IP Based SSL
 | -k, --rsaKeyLength                          | (Default: 2048) Certificate RSA key length
