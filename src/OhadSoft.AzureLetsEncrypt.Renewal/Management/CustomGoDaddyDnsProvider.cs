@@ -37,7 +37,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             res.EnsureSuccessStatusCode();
 
             var txtRecords = JArray.Parse(await res.Content.ReadAsStringAsync().ConfigureAwait(false));
-            var acmeTxtRecord = txtRecords.FirstOrDefault(t => t["name"].ToString() == recordSetName);
+
+            // Because LetsEncrypt.Azure.Core.V2 call cleanup with the value of the record instead of the record name
+            // we check for both of them to work if they fix it in the future.
+            var acmeTxtRecord = txtRecords.FirstOrDefault(t => t["name"].ToString() == recordSetName || t["data"].ToString() == recordSetName);
             if (acmeTxtRecord != null)
             {
                 txtRecords.Remove(acmeTxtRecord);
