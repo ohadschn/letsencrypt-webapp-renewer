@@ -37,7 +37,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             res.EnsureSuccessStatusCode();
 
             var txtRecords = JArray.Parse(await res.Content.ReadAsStringAsync().ConfigureAwait(false));
-            var acmeTxtRecord = txtRecords.FirstOrDefault(t => t["name"].ToString() == "_acme-challenge");
+            var acmeTxtRecord = txtRecords.FirstOrDefault(t => t["name"].ToString() == recordSetName);
             if (acmeTxtRecord != null)
             {
                 txtRecords.Remove(acmeTxtRecord);
