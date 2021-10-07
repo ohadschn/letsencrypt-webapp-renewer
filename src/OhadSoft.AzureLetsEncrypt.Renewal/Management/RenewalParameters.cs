@@ -19,6 +19,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public AzureEnvironmentParams AzureDnsEnvironmentParams { get; }
         public string AzureDnsZoneName { get; }
         public string AzureDnsRelativeRecordSetName { get; }
+        public GoDaddyEnvironmentParams GoDaddyDnsEnvironmentParams { get; set; }
         public bool UseIpBasedSsl { get; }
         public int RsaKeyLength { get; }
         public Uri AcmeBaseUri { get; }
@@ -41,6 +42,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             AzureEnvironmentParams azureDnsEnvironmentParams = null,
             string azureDnsZoneName = null,
             string azureDnsRelativeRecordSetName = null,
+            GoDaddyEnvironmentParams goDaddyDnsEnvironmentParams = null,
             bool useIpBasedSsl = false,
             int rsaKeyLength = 2048,
             Uri acmeBaseUri = null,
@@ -64,6 +66,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             AzureDnsEnvironmentParams = azureDnsEnvironmentParams ?? WebAppEnvironmentParams;
             AzureDnsZoneName = ParamValidator.VerifyOptionalString(azureDnsZoneName, nameof(azureDnsZoneName));
             AzureDnsRelativeRecordSetName = ParamValidator.VerifyOptionalString(azureDnsRelativeRecordSetName, nameof(azureDnsRelativeRecordSetName));
+            GoDaddyDnsEnvironmentParams = goDaddyDnsEnvironmentParams;
             UseIpBasedSsl = useIpBasedSsl;
             RsaKeyLength = ParamValidator.VerifyPositiveInteger(rsaKeyLength, nameof(rsaKeyLength));
             AcmeBaseUri = ParamValidator.VerifyOptionalUri(acmeBaseUri, nameof(acmeBaseUri));
@@ -132,6 +135,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                    && Equals(AzureDnsEnvironmentParams, other.AzureDnsEnvironmentParams)
                    && string.Equals(AzureDnsZoneName, other.AzureDnsZoneName, StringComparison.OrdinalIgnoreCase)
                    && string.Equals(AzureDnsRelativeRecordSetName, other.AzureDnsRelativeRecordSetName, StringComparison.OrdinalIgnoreCase)
+                   && Equals(GoDaddyDnsEnvironmentParams, other.GoDaddyDnsEnvironmentParams)
                    && UseIpBasedSsl == other.UseIpBasedSsl
                    && RsaKeyLength == other.RsaKeyLength
                    && Equals(AcmeBaseUri, other.AcmeBaseUri)
@@ -166,6 +170,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
                 hashCode = (hashCode * 397) ^ (AzureDnsEnvironmentParams != null ? AzureDnsEnvironmentParams.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (AzureDnsZoneName != null ? AzureDnsZoneName.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (AzureDnsRelativeRecordSetName != null ? AzureDnsRelativeRecordSetName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (GoDaddyDnsEnvironmentParams != null ? GoDaddyDnsEnvironmentParams.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ UseIpBasedSsl.GetHashCode();
                 hashCode = (hashCode * 397) ^ RsaKeyLength;
                 hashCode = (hashCode * 397) ^ (AcmeBaseUri != null ? AcmeBaseUri.GetHashCode() : 0);

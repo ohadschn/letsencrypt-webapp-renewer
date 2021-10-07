@@ -52,12 +52,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             var acmeConfig = GetAcmeConfig(renewalParams, CertificateHelper.GenerateSecurePassword());
             var webAppEnvironment = GetWebAppEnvironment(renewalParams);
             var certificateServiceSettings = new CertificateServiceSettings { UseIPBasedSSL = renewalParams.UseIpBasedSsl };
-            var azureDnsEnvironment = GetAzureDnsEnvironment(renewalParams);
+            var dnsProvider = GetDnsProvider(renewalParams);
 
             bool staging = acmeConfig.BaseUri.Contains("staging", StringComparison.OrdinalIgnoreCase);
-            if (azureDnsEnvironment != null)
+            if (dnsProvider != null)
             {
-                await GetDnsRenewalService(renewalParams, azureDnsEnvironment, webAppEnvironment).Run(
+                await GetDnsRenewalService(renewalParams, dnsProvider, webAppEnvironment).Run(
                     new AcmeDnsRequest
                     {
                         AcmeEnvironment = staging ? (AcmeEnvironment)new LetsEncryptStagingV2() : new LetsEncryptV2(),
@@ -107,17 +107,11 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             return false;
         }
 
-        private static LetsencryptService GetDnsRenewalService(RenewalParameters renewalParams, IAzureDnsEnvironment azureDnsEnvironment, AzureWebAppEnvironment webAppEnvironment)
+        private static LetsencryptService GetDnsRenewalService(RenewalParameters renewalParams, IDnsProvider dnsProvider, AzureWebAppEnvironment webAppEnvironment)
         {
             return new LetsencryptService(
                 new AcmeClient(
-                    new AzureDnsProvider(
-                        new AzureDnsSettings(
-                            azureDnsEnvironment.ResourceGroupName,
-                            azureDnsEnvironment.ZoneName,
-                            GetAzureServicePrincipal(azureDnsEnvironment),
-                            GetAzureSubscription(azureDnsEnvironment),
-                            azureDnsEnvironment.RelativeRecordSetName)),
+                    dnsProvider,
                     new DnsLookupService(new Logger<DnsLookupService>(s_loggerFactory)),
                     new NullCertificateStore(),
                     new Logger<AcmeClient>(s_loggerFactory)),
@@ -182,6 +176,39 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             }
 
             throw new ConfigurationErrorsException($"Unknown token audience: {tokenAudience}");
+        }
+
+        private static IDnsProvider GetDnsProvider(RenewalParameters renewalParams)
+        {
+            var azureDnsEnvironment = GetAzureDnsEnvironment(renewalParams);
+            if (azureDnsEnvironment != null)
+            {
+                return new AzureDnsProvider(
+                           new AzureDnsSettings(
+                               azureDnsEnvironment.ResourceGroupName,
+                               azureDnsEnvironment.ZoneName,
+                               GetAzureServicePrincipal(azureDnsEnvironment),
+                               GetAzureSubscription(azureDnsEnvironment),
+                               azureDnsEnvironment.RelativeRecordSetName));
+            }
+
+            if (!string.IsNullOrEmpty(renewalParams.GoDaddyDnsEnvironmentParams?.ApiKey) &&
+                !string.IsNullOrEmpty(renewalParams.GoDaddyDnsEnvironmentParams?.ApiSecret) &&
+                !string.IsNullOrEmpty(renewalParams.GoDaddyDnsEnvironmentParams?.Domain) &&
+                !string.IsNullOrEmpty(renewalParams.GoDaddyDnsEnvironmentParams?.ShopperId))
+            {
+                return new CustomGoDaddyDnsProvider(
+                           new CustomGoDaddyDnsProvider.GoDaddyDnsSettings()
+                           {
+                               ApiKey = renewalParams.GoDaddyDnsEnvironmentParams.ApiKey,
+                               ApiSecret = renewalParams.GoDaddyDnsEnvironmentParams.ApiSecret,
+                               Domain = renewalParams.GoDaddyDnsEnvironmentParams.Domain,
+                               ShopperId = renewalParams.GoDaddyDnsEnvironmentParams.ShopperId,
+                           });
+            }
+
+            Trace.TraceInformation($"Either {nameof(renewalParams.GoDaddyDnsEnvironmentParams.ApiKey)} or {nameof(renewalParams.GoDaddyDnsEnvironmentParams.ApiSecret)} or {nameof(renewalParams.GoDaddyDnsEnvironmentParams.Domain)} or {nameof(renewalParams.GoDaddyDnsEnvironmentParams.ShopperId)} are null for {GetWebAppFullName(renewalParams)}, will not use GoDaddy DNS challenge");
+            return null;
         }
 
         private static IAzureDnsEnvironment GetAzureDnsEnvironment(RenewalParameters renewalParams)

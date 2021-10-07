@@ -1,4 +1,5 @@
 ﻿using System;
+using static System.FormattableString;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 {
@@ -12,6 +13,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             AzureEnvironmentParams azureDnsEnvironment,
             string azureDnsZoneName,
             string azureDnsRelativeRecordSetName,
+            GoDaddyEnvironmentParams goDaddyDnsEnvironment,
             bool? useIpBasedSsl,
             int? rsaKeyLength,
             Uri acmeBaseUri,
@@ -29,6 +31,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             AzureDnsEnvironment = azureDnsEnvironment;
             AzureDnsZoneName = azureDnsZoneName;
             AzureDnsRelativeRecordSetName = azureDnsRelativeRecordSetName;
+            GoDaddyDnsEnvironment = goDaddyDnsEnvironment;
             UseIpBasedSsl = useIpBasedSsl;
             RsaKeyLength = rsaKeyLength;
             AcmeBaseUri = acmeBaseUri;
@@ -47,6 +50,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public AzureEnvironmentParams AzureDnsEnvironment { get; }
         public string AzureDnsZoneName { get; }
         public string AzureDnsRelativeRecordSetName { get; }
+        public GoDaddyEnvironmentParams GoDaddyDnsEnvironment { get; }
         public bool? UseIpBasedSsl { get; }
         public int? RsaKeyLength { get; }
         public Uri AcmeBaseUri { get; }
@@ -56,5 +60,10 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
         public Uri AzureTokenAudience { get; }
         public Uri AzureManagementEndpoint { get; }
         public string AzureDefaultWebsiteDomainName { get; }
+
+        public override string ToString()
+        {
+            return Invariant($"{nameof(WebAppEnvironment)}: {WebAppEnvironment}, {nameof(Email)}: {Email}, {nameof(ServicePlanResourceGroup)}: {ServicePlanResourceGroup}, {nameof(AzureDnsEnvironment)}: {AzureDnsEnvironment}, {nameof(AzureDnsZoneName)}: {AzureDnsZoneName}, {nameof(AzureDnsRelativeRecordSetName)}: {AzureDnsRelativeRecordSetName}, {nameof(GoDaddyDnsEnvironment)}: {GoDaddyDnsEnvironment}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBaseUri)}: {AcmeBaseUri}, {nameof(WebRootPath)}: {WebRootPath}, {nameof(RenewXNumberOfDaysBeforeExpiration)}: {RenewXNumberOfDaysBeforeExpiration}, {nameof(AuthenticationUri)}: {AuthenticationUri}, {nameof(AzureTokenAudience)}: {AzureTokenAudience}, {nameof(AzureManagementEndpoint)}: {AzureManagementEndpoint}, {nameof(AzureDefaultWebsiteDomainName)}: {AzureDefaultWebsiteDomainName}");
+        }
     }
 }

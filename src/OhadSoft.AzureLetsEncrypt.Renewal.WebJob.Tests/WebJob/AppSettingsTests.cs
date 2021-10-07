@@ -141,7 +141,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         [TestMethod]
         public void TestInvalidAzureDnsTenantId()
         {
-            AssertInvalidConfig(AzureDnsTenantIdKeySuffix, WebApp1, "   ", "tenantId, Azure DNS", false);
+            AssertInvalidConfig(AzureDnsTenantIdKeySuffix, WebApp1, "   ", "tenantId, Azure, DNS", false);
         }
 
         [TestMethod]
@@ -153,7 +153,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         [TestMethod]
         public void TestInvalidAzureDnsResourceGroup()
         {
-            AssertInvalidConfig(AzureDnsResourceGroupKeySuffix, WebApp2, " ", "resourceGroup, Azure DNS", false);
+            AssertInvalidConfig(AzureDnsResourceGroupKeySuffix, WebApp2, " ", "resourceGroup, Azure, DNS", false);
         }
 
         [TestMethod]
@@ -246,7 +246,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests.WebJob
         {
             var azureDnsClientSecretKey = BuildConfigKey(AzureDnsClientSecretKeySuffix, WebApp2);
             m_connectionStrings.Add(new ConnectionStringSettings(azureDnsClientSecretKey, " "));
-            AssertInvalidConfigCore("clientSecret, Azure DNS");
+            AssertInvalidConfigCore("clientSecret, Azure, DNS");
         }
 
         [TestMethod]

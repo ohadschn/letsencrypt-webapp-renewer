@@ -33,5 +33,10 @@
         public const string AzureDnsClientSecretKey = "azureDnsClientSecret";
         public const string AzureDnsZoneNameKey = "azureDnsZoneName";
         public const string AzureDnsRelativeRecordSetNameKey = "azureDnsRelativeRecordSetName";
+
+        public const string GoDaddyDnsApiKey = "goDaddyDnsApiKey";
+        public const string GoDaddyDnsApiSecret = "goDaddyDnsApiSecret";
+        public const string GoDaddyDnsDomain = "goDaddyDnsDomain";
+        public const string GoDaddyDnsShopperId = "goDaddyDnsShopperId";
     }
 }
