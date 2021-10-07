@@ -1,5 +1,15 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/3fwuiks1yq4oro4v/branch/master?svg=true)](https://ci.appveyor.com/project/ohadschn/letsencrypt-webapp-renewer/branch/master)
 
+# !! IMPORTANT NOTE - YOU PROBABLY DON'T NEED THIS !!
+Microsoft has implemented fully-fledged free managed certificate support (including apex/root/naked domains), so it is highly recommended you use that instead: https://docs.microsoft.com/en-us/azure/app-service/configure-ssl-certificate#create-a-free-managed-certificate
+
+However, there might be some edge cases where you'd still need the extension, primarily:
+* Wildcard certs (DNS challenge)
+* Internationalized/punycode domains
+
+If that is the case, read on, but understand: 
+## Since I'm not actively using the project myself, I will not actively develop it, and all new releases (if at all), will be betas
+
 # letsencrypt-webapp-renewer
 A WebJob-ready console application for renewing Azure Web App TLS/SSL certificates (based on [letsencrypt-siteextension](https://github.com/sjkp/letsencrypt-siteextension) and [letsencrypt-azure](https://github.com/sjkp/letsencrypt-azure)). Officially [recommended by Microsoft](https://feedback.azure.com/forums/169385-web-apps/suggestions/6737285-add-support-for-free-ssl-certs-like-those-from-let) for Web App Let's Encrypt integration (prior to native feature availability).
 
