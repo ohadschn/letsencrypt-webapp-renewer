@@ -15,11 +15,19 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
 {
     internal static class CertificateHelper
     {
+        private static readonly HashSet<string> s_letsEncrypStagingtIssuerNames = new HashSet<string>(StringComparer.Ordinal) { "Fake LE Intermediate X1" };
+        private static readonly HashSet<string> s_letsEncryptIssuerNames = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "Let's Encrypt Authority X1", "Let's Encrypt Authority X2", "Let's Encrypt Authority X3", "Let's Encrypt Authority X4",
+            "R3", "R4",
+            "E1", "E2",
+        };
+
         private static readonly RNGCryptoServiceProvider s_randomGenerator = new RNGCryptoServiceProvider(); // thread-safe
 
         // https://github.com/sjkp/letsencrypt-siteextension/blob/8e758579b21b0dac5269337e30ac88b629818889/LetsEncrypt.SiteExtension.Core/CertificateManager.cs#L146
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Task")]
-        public static async Task<IReadOnlyList<string>> GetLetsEncryptHostNames(IAzureWebAppEnvironment webAppEnvironment, bool staging)
+        public static async Task<IReadOnlyList<string>> GetNonExpiringLetsEncryptHostNames(IAzureWebAppEnvironment webAppEnvironment, bool staging, int renewXNumberOfDaysBeforeExpiration)
         {
             Site site;
             using (var client = await ArmHelper.GetWebSiteManagementClient(webAppEnvironment).ConfigureAwait(false))
@@ -50,10 +58,14 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Util
                 Trace.TraceInformation("Reading ARM certificate query response");
                 var body = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                var letsEncryptCerts = ExtractCertificates(body).Where(s => s.Issuer.Contains(staging ? "Fake LE" : "Let's Encrypt"));
+                var letsEncryptIssuerNames = staging ? s_letsEncrypStagingtIssuerNames : s_letsEncryptIssuerNames;
 
-                var leCertThumbprints = new HashSet<string>(letsEncryptCerts.Select(c => c.Thumbprint));
-                return site.HostNameSslStates.Where(ssl => leCertThumbprints.Contains(ssl.Thumbprint)).Select(ssl => ssl.Name).ToArray();
+                var letsEncryptNonExpiringCerts = ExtractCertificates(body).Where(cert =>
+                    letsEncryptIssuerNames.Contains(cert.Issuer) &&
+                    cert.ExpirationDate > DateTime.UtcNow.AddDays(renewXNumberOfDaysBeforeExpiration));
+
+                var letsEncryptNonExpiringThumbprints = new HashSet<string>(letsEncryptNonExpiringCerts.Select(c => c.Thumbprint));
+                return site.HostNameSslStates.Where(ssl => letsEncryptNonExpiringThumbprints.Contains(ssl.Thumbprint)).Select(ssl => ssl.Name).ToArray();
             }
         }
 
