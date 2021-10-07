@@ -1,4 +1,5 @@
 ﻿using System;
+using static System.FormattableString;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 {
