@@ -27,9 +27,12 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
         protected const string WebApp3 = "bazApp";
         protected const string GroupName4 = "barBaz";
         protected const string WebApp4 = WebApp1Name + "[" + GroupName4 + "]";
-        protected const string Email1 = "foo@gmail.com";
-        protected const string Email2 = "bar@outlook.com";
+        protected const string ToEmail1 = "foo@gmail.com";
+        protected const string ToEmail2 = "bar@outlook.com";
+        protected const string FromEmail1 = "test@conteso.com";
+        protected const string FromEmail2 = "foobar@gmail.com";
         protected const string EmailShared = "shared@yahoo.com";
+        protected const string FromEmailShared = "common@yahoo.com";
         protected const string ClientSecret1 = "foo-secret123";
         protected const string ClientSecret2 = "bar-verySecret321";
         protected const string ClientSecretShared = "shared-secret4real";
@@ -75,7 +78,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             new AzureEnvironmentParams(Tenant1, Subscription1, ClientId1, ClientSecret1, ResourceGroup1),
             WebApp1Name,
             Hosts1,
-            Email1,
+            ToEmail1,
+            FromEmail1,
             ServicePlanResourceGroup1,
             null,
             SiteSlotName1,
@@ -97,19 +101,22 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             new AzureEnvironmentParams(Tenant1, Subscription1, ClientId1, ClientSecret1, ResourceGroup1),
             WebApp1Name,
             Hosts1,
-            Email1);
+            ToEmail1,
+            FromEmail1);
 
         protected static readonly RenewalParameters ExpectedPartialRenewalParameters2 = new RenewalParameters(
             new AzureEnvironmentParams(Tenant2, Subscription2, ClientId2, ClientSecret2, ResourceGroup2),
             WebApp2,
             Hosts2,
-            Email2);
+            ToEmail2,
+            FromEmail2);
 
         protected static readonly RenewalParameters ExpectedPartialRenewalParameters3 = new RenewalParameters(
             new AzureEnvironmentParams(TenantShared, SubscriptionShared, ClientIdShared, ClientSecretShared, ResourceGroupShared),
             WebApp3,
             Hosts3,
             EmailShared,
+            FromEmailShared,
             ServicePlanResourceGroupShared,
             null,
             null,
@@ -131,7 +138,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Tests
             new AzureEnvironmentParams(Tenant1, Subscription1, ClientId1, ClientSecret1, ResourceGroup1),
             WebApp1Name,
             Hosts4,
-            Email1,
+            ToEmail1,
+            FromEmail1,
             groupName: GroupName4);
 
         protected RenewalManagerMock RenewalManager { get; } = new RenewalManagerMock();

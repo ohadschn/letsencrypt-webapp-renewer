@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using static System.FormattableString;
+using Newtonsoft.Json;
+using OhadSoft.AzureLetsEncrypt.Renewal.Management.Util;
 
 namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 {
@@ -9,7 +10,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
     {
         public string WebApp { get; }
         public IReadOnlyList<string> Hosts { get; }
-        public string Email { get; }
+        public string ToEmail { get; }
+        public string FromEmail { get; }
         public string ServicePlanResourceGroup { get; }
         public string SiteSlotName { get; }
         public string GroupName { get; }
@@ -32,7 +34,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             AzureEnvironmentParams webAppEnvironmentParams,
             string webApp,
             IReadOnlyList<string> hosts,
-            string email,
+            string toEmail,
+            string fromEmail,
             string servicePlanResourceGroup = null,
             string groupName = null,
             string siteSlotName = null,
@@ -55,7 +58,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             WebAppEnvironmentParams = ParamValidator.VerifyNonNull(webAppEnvironmentParams, nameof(webAppEnvironmentParams));
             WebApp = ParamValidator.VerifyString(webApp, nameof(webApp));
             Hosts = VerifyHosts(hosts, dnsChallenge, nameof(hosts));
-            Email = VerifyEmail(email, nameof(email));
+            ToEmail = VerifyEmail(toEmail, nameof(toEmail));
+            FromEmail = VerifyEmail(fromEmail, nameof(fromEmail));
             ServicePlanResourceGroup = ParamValidator.VerifyOptionalString(servicePlanResourceGroup, nameof(servicePlanResourceGroup));
             GroupName = ParamValidator.VerifyOptionalString(groupName, nameof(groupName));
             SiteSlotName = ParamValidator.VerifyOptionalString(siteSlotName, nameof(siteSlotName));
@@ -92,8 +96,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
         public static string VerifyEmail(string email, string name)
         {
-            return !String.IsNullOrWhiteSpace(email) && email.Contains("@") && email.Length >= 3 && email.Length <= 254
-                   && !email.StartsWith("@", StringComparison.OrdinalIgnoreCase) && !email.EndsWith("@", StringComparison.OrdinalIgnoreCase)
+            return EmailHelper.IsValidEmail(email)
                 ? email
                 : throw new ArgumentException("E-mail address must not be null and must be valid", name);
         }
@@ -107,7 +110,13 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
         public override string ToString()
         {
-            return Invariant($"{nameof(WebApp)}: {WebApp}, {nameof(Hosts)}: {String.Join(", ", Hosts)}, {nameof(ServicePlanResourceGroup)}: {ServicePlanResourceGroup}, {nameof(SiteSlotName)}: {SiteSlotName}, {nameof(GroupName)}: {GroupName}, {nameof(WebAppEnvironmentParams)}: {WebAppEnvironmentParams}, {nameof(AzureDnsEnvironmentParams)}: {AzureDnsEnvironmentParams}, {nameof(AzureDnsZoneName)}: {AzureDnsZoneName}, {nameof(AzureDnsRelativeRecordSetName)}: {AzureDnsRelativeRecordSetName}, {nameof(GoDaddyDnsEnvironmentParams)}: {GoDaddyDnsEnvironmentParams}, {nameof(UseIpBasedSsl)}: {UseIpBasedSsl}, {nameof(RsaKeyLength)}: {RsaKeyLength}, {nameof(AcmeBaseUri)}: {AcmeBaseUri}, {nameof(WebRootPath)}: {WebRootPath}, {nameof(RenewXNumberOfDaysBeforeExpiration)}: {RenewXNumberOfDaysBeforeExpiration}, {nameof(AuthenticationUri)}: {AuthenticationUri}, {nameof(AzureTokenAudience)}: {AzureTokenAudience}, {nameof(AzureManagementEndpoint)}: {AzureManagementEndpoint}, {nameof(AzureDefaultWebsiteDomainName)}: {AzureDefaultWebsiteDomainName}");
+            return JsonConvert.SerializeObject(
+                this,
+                new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    Formatting = Formatting.Indented,
+                });
         }
 
         public bool Equals(RenewalParameters other)
@@ -117,7 +126,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
 
             return string.Equals(WebApp, other.WebApp, StringComparison.OrdinalIgnoreCase)
                    && Hosts.SequenceEqual(other.Hosts)
-                   && string.Equals(Email, other.Email, StringComparison.OrdinalIgnoreCase)
+                   && string.Equals(ToEmail, other.ToEmail, StringComparison.OrdinalIgnoreCase)
+                   && string.Equals(FromEmail, other.FromEmail, StringComparison.OrdinalIgnoreCase)
                    && string.Equals(ServicePlanResourceGroup, other.ServicePlanResourceGroup, StringComparison.OrdinalIgnoreCase)
                    && string.Equals(SiteSlotName, other.SiteSlotName, StringComparison.OrdinalIgnoreCase)
                    && string.Equals(GroupName, other.GroupName, StringComparison.OrdinalIgnoreCase)
@@ -151,7 +161,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.Management
             {
                 var hashCode = WebApp != null ? WebApp.GetHashCode() : 0;
                 hashCode = (hashCode * 397) ^ (Hosts != null ? Hosts.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Email != null ? Email.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (ToEmail != null ? ToEmail.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (FromEmail != null ? FromEmail.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (ServicePlanResourceGroup != null ? ServicePlanResourceGroup.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (SiteSlotName != null ? SiteSlotName.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (GroupName != null ? GroupName.GetHashCode() : 0);

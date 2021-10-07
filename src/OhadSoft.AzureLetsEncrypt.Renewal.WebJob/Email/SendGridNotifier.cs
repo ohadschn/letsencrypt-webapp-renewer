@@ -44,8 +44,8 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Email
             }
 
             var message = MailHelper.CreateSingleEmail(
-                new EmailAddress("letsencrypt-webapp-renewer@ohadsoft.com", "Azure Web App Let's Encrypt Renewer"),
-                new EmailAddress(renewalParams.Email),
+                new EmailAddress(renewalParams.FromEmail, name: $"Azure Web App Let's Encrypt Renewer"),
+                new EmailAddress(renewalParams.ToEmail),
                 "SSL Certificate renewal complete for web app: " + renewalParams.WebApp,
                 "Renewal parameters:" + Environment.NewLine + renewalParams,
                 null);

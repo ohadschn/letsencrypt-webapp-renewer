@@ -85,6 +85,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                 return new SharedRenewalParameters(
                     sharedWebAppEnvironment,
                     GetCommonSetting(Constants.EmailKey),
+                    GetCommonSetting(Constants.FromEmailKey),
                     GetCommonSetting(Constants.ServicePlanResourceGroupKey),
                     sharedAzureDnsEnvironment,
                     GetCommonSetting(Constants.AzureDnsZoneNameKey),
@@ -166,6 +167,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.AppSettings
                     webAppName,
                     m_appSettings.GetDelimitedList(BuildConfigKey(Constants.HostsKey, webApp)),
                     ResolveSetting(Constants.EmailKey, webApp, sharedRenewalParams.Email),
+                    ResolveSetting(Constants.FromEmailKey, webApp, sharedRenewalParams.FromEmail),
                     ResolveOptionalSetting(Constants.ServicePlanResourceGroupKey, webApp, sharedRenewalParams.ServicePlanResourceGroup),
                     groupName,
                     siteSlotName,

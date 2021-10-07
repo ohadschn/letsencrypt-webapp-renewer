@@ -116,6 +116,7 @@ namespace OhadSoft.AzureLetsEncrypt.Renewal.WebJob.Cli
                 parsed.WebApp,
                 parsed.Hosts,
                 parsed.Email,
+                parsed.FromEmail,
                 parsed.ServicePlanResourceGroup,
                 null,
                 parsed.SiteSlotName,
