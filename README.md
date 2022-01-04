@@ -1,6 +1,6 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/3fwuiks1yq4oro4v/branch/master?svg=true)](https://ci.appveyor.com/project/ohadschn/letsencrypt-webapp-renewer/branch/master)
 
-# !! IMPORTANT NOTE - YOU PROBABLY DON'T NEED THIS !!
+# !! IMPORTANT - YOU PROBABLY DON'T NEED THIS !!
 Microsoft has implemented fully-fledged free managed certificate support (including apex/root/naked domains), so it is highly recommended you use that instead: https://docs.microsoft.com/en-us/azure/app-service/configure-ssl-certificate#create-a-free-managed-certificate
 
 However, there might be some edge cases where you'd still need the extension, primarily:
