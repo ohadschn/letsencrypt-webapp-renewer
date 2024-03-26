@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OhadSoft.AzureLetsEncrypt.Renewal", "OhadSoft.AzureLetsEncrypt.Renewal\OhadSoft.AzureLetsEncrypt.Renewal.csproj", "{7173122F-CF8B-4D1E-9CC5-E3EC479ED6F8}"
 EndProject
