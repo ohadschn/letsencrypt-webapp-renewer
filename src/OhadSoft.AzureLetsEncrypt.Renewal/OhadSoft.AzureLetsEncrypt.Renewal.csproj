@@ -108,13 +108,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BouncyCastle">
-      <Version>1.8.6.1</Version>
+      <Version>1.8.9</Version>
     </PackageReference>
     <PackageReference Include="letsencrypt.azure.core.untested">
       <Version>1.0.7</Version>
     </PackageReference>
-    <PackageReference Include="LetsEncrypt.Azure.Core.V2">
-      <Version>1.0.132</Version>
+    <PackageReference Include="LetsEncrypt.Azure.Core.V2.untested">
+      <Version>1.0.134</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Azure.Management.Dns">
       <Version>3.0.1</Version>
